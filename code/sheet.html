@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DnD Анкета персонажа</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: transparent;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid #8b7355;
+            padding: 28px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(139, 115, 85, 0.2);
+        }
+
+        .form-title {
+            color: #d4c4a8;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 28px;
+            text-align: center;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #8b7355;
+            padding-bottom: 16px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            color: #d4c4a8;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #8b7355;
+            color: #d4c4a8;
+            font-size: 13px;
+            transition: all 0.25s ease;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: rgba(180, 160, 120, 0.5);
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #c9a87b;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 10px rgba(201, 168, 123, 0.3);
+        }
+
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #8b7355;
+            color: #d4c4a8;
+            padding: 12px 16px;
+            position: absolute;
+            z-index: 9999;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+            min-width: 250px;
+            max-width: 500px;
+            width: auto;
+            white-space: normal;
+            word-wrap: break-word;
+            font-size: 12px;
+            line-height: 1.5;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: auto;
+            border-radius: 8px;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .skills-section, .equipment-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #8b7355;
+            padding: 16px;
+            margin-top: 8px;
+        }
+
+        .skill-column, .equipment-column {
+            margin-bottom: 18px;
+        }
+
+        .skill-title, .equipment-title {
+            color: #c9a87b;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 13px;
+            border-left: 3px solid #8b7355;
+            padding-left: 10px;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .skill-row {
+			display: flex;
+			flex-wrap: wrap;
+			column-gap: 20px;
+			row-gap: 10px;
+			margin-bottom: 8px;
+		}
+		
+		.equipment-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            column-gap: 20px;
+            row-gap: 10px;
+            margin-bottom: 8px;
+            align-items: start;
+        }
+        
+		.equipment-item, .skill-item {
+            display: grid;
+            grid-template-columns: 16px 1fr;
+            align-items: center;
+            gap: 8px;
+            color: #d4c4a8;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .skill-item:hover, .equipment-item:hover {
+            color: #f0e0b0;
+            text-shadow: 0 0 3px rgba(201, 168, 123, 0.5);
+        }
+        
+        .skill-item input, .equipment-item input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .custom-checkbox {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #8b7355;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .skill-item:hover .custom-checkbox,
+        .equipment-item:hover .custom-checkbox {
+            border-color: #c9a87b;
+            box-shadow: 0 0 5px rgba(201, 168, 123, 0.5);
+        }
+        
+        .custom-checkbox.checked {
+            background: #8b7355;
+            border-color: #c9a87b;
+        }
+        
+        .custom-checkbox.checked::after {
+            content: "✓";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #d4c4a8;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .skill-item.disabled, .equipment-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .skill-item.disabled:hover, .equipment-item.disabled:hover {
+            color: #d4c4a8;
+            text-shadow: none;
+        }
+        
+        .skill-item.fixed, .equipment-item.fixed {
+            opacity: 0.8;
+            cursor: default;
+        }
+        
+        .skill-item.fixed:hover, .equipment-item.fixed:hover {
+            color: #d4c4a8;
+            text-shadow: none;
+        }
+        
+        .skill-item.fixed .custom-checkbox,
+        .equipment-item.fixed .custom-checkbox {
+            cursor: default;
+            background: #5a4a35;
+            border-color: #6b5a45;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(180deg, rgba(139, 115, 85, 0.8) 0%, rgba(100, 80, 60, 0.9) 100%);
+            color: #d4c4a8;
+            border: 2px solid #8b7355;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            cursor: pointer;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: all 0.25s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: linear-gradient(180deg, rgba(201, 168, 123, 0.8) 0%, rgba(139, 115, 85, 0.9) 100%);
+            color: #f0e0b0;
+            border-color: #c9a87b;
+            transform: translateY(-2px);
+            letter-spacing: 4px;
+        }
+
+        .choice-counter {
+            color: #c9a87b;
+            font-size: 12px;
+            margin-top: 8px;
+            text-align: right;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .choice-counter span {
+            color: #f0e0b0;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        select option {
+            background: #1a1a1a;
+            color: #d4c4a8;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .success-message, .error-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: none;
+        }
+        
+        .success-message {
+            background: rgba(60, 100, 60, 0.8);
+            color: #d4c4a8;
+            border: 1px solid #8b7355;
+        }
+        
+        .error-message {
+            background: rgba(139, 69, 19, 0.8);
+            color: #d4c4a8;
+            border: 1px solid #8b7355;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .tooltip-text p {
+            margin-bottom: 8px;
+        }
+        
+        .tooltip-text p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .tooltip-text b {
+            color: #c9a87b;
+        }
+        
+        /* Стили для характеристик - ТАБЛИЧНЫЙ ВИД */
+        .stats-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #8b7355;
+            padding: 16px;
+            margin-top: 8px;
+            overflow-x: auto;
+        }
+        
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #d4c4a8;
+            font-size: 13px;
+        }
+        
+        .stats-table th,
+        .stats-table td {
+            padding: 10px 6px;
+            text-align: center;
+            border-bottom: 1px solid rgba(139, 115, 85, 0.3);
+            vertical-align: middle;
+        }
+        
+        .stats-table th {
+            color: #c9a87b;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-name-cell {
+            text-align: left;
+            font-weight: 600;
+            color: #f0e0b0;
+            width: 85px;
+        }
+        
+        .stat-controls-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .stat-btn {
+            width: 28px;
+            height: 28px;
+            background: #8b7355;
+            border: none;
+            color: #d4c4a8;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .stat-btn:hover:not(:disabled) {
+            background: #c9a87b;
+            color: #0f172a;
+        }
+        
+        .stat-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .stat-value {
+            width: 40px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #f0e0b0;
+            display: inline-block;
+        }
+        
+        .bonus-value {
+            font-weight: bold;
+            color: #f0e0b0;
+            min-width: 25px;
+            display: inline-block;
+        }
+        
+        .radio-group-cell {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .radio-group-cell label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            text-transform: none;
+            letter-spacing: normal;
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+        
+        .custom-radio {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #8b7355;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 2px;
+        }
+        
+        .radio-group-cell label:hover .custom-radio {
+            border-color: #c9a87b;
+            box-shadow: 0 0 5px rgba(201, 168, 123, 0.5);
+        }
+        
+        .custom-radio.checked {
+            background: #8b7355;
+            border-color: #c9a87b;
+        }
+        
+        .custom-radio.checked::after {
+            content: "✓";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #d4c4a8;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .mode-switch {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(139, 115, 85, 0.3);
+            border: 1px solid #8b7355;
+            color: #d4c4a8;
+            cursor: pointer;
+            text-align: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .mode-btn.active {
+            background: #8b7355;
+            color: #f0e0b0;
+            border-color: #c9a87b;
+        }
+        
+        .points-counter {
+            text-align: right;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #8b7355;
+            color: #c9a87b;
+            font-size: 14px;
+        }
+        
+        .points-counter span {
+            color: #f0e0b0;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .dice-controls {
+            text-align: right;
+            margin-top: 15px;
+        }
+        
+        .reroll-all-btn {
+            background: #8b7355;
+            border: 1px solid #c9a87b;
+            color: #d4c4a8;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            width: auto;
+        }
+        
+        .reroll-all-btn:hover {
+            background: #c9a87b;
+            color: #0f172a;
+        }
+        
+        .trait-choice {
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .trait-choice select {
+            width: auto;
+            margin-left: 10px;
+            display: inline-block;
+            padding: 4px 8px;
+        }
+        
+        .trait-choice label {
+            display: inline;
+            text-transform: none;
+            font-size: 12px;
+        }
+        
+        .mod-value {
+            font-weight: bold;
+            color: #f0e0b0;
+        }
+        
+        .mod-negative {
+            color: #c9a87b;
+        }
+		
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-title">Лист персонажа</div>
+        
+        <form id="dndForm" action="https://api.web3forms.com/submit" method="POST">
+            <input type="hidden" name="access_key" value="704c9812-a761-48c3-b7e0-85b5382b51fa">
+            <input type="hidden" name="subject" value="Новый персонаж DnD">
+            
+            <div class="form-group">
+                <label>Имя персонажа</label>
+                <input type="text" name="name" id="characterName" placeholder="Введите имя" required>
+            </div>
+
+            <div class="form-group">
+                <label>Предыстория</label>
+                <div class="tooltip-container">
+                    <select id="background" name="background">
+                        <option value="">Выберите предысторию</option>
+                        <!-- опции предысторий -->
+                        <option value="acolyte">Прислужник</option>
+                        <option value="criminal">Преступник</option>
+                        <option value="charlatan">Шарлатан</option>
+                        <option value="artist">Артист</option>
+                        <option value="hero">Народный герой</option>
+                        <option value="noble">Обедневший аристократ</option>
+                        <option value="sage">Мудрец</option>
+                        <option value="sailor">Моряк</option>
+                        <option value="pirate">Пират</option>
+                        <option value="clerk">Писарь</option>
+                        <option value="soldier">Солдат</option>
+                        <option value="outlander">Скиталец</option>
+                        <option value="craftsman">Ремесленник</option>
+                        <option value="trader">Купец</option>
+                        <option value="hunter">Охотник</option>
+                        <option value="herbalist">Лекарь</option>
+                        <option value="mercenary">Наёмник</option>
+                        <option value="miner">Шахтёр</option>
+                        <option value="slave">Бывший раб</option>
+                        <option value="deserter">Дезертир</option>
+                    </select>
+                    <div class="tooltip-text" id="backgroundTooltip"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Класс</label>
+                <div class="tooltip-container">
+                    <select id="class" name="class">
+                        <option value="">Выберите класс</option>
+                        <option value="fighter">Воин</option>
+                        <option value="barbarian">Варвар</option>
+                        <option value="rogue">Плут</option>
+                        <option value="wizard">Волшебник</option>
+                        <option value="cleric">Жрец</option>
+                        <option value="ranger">Следопыт</option>
+                        <option value="sorcerer">Чародей</option>
+                        <option value="warlock">Колдун</option>
+                        <option value="monk">Монах</option>
+                        <option value="bard">Бард</option>
+                        <option value="paladin">Паладин</option>
+                        <option value="druid">Друид</option>
+                    </select>
+                    <div class="tooltip-text" id="classTooltip"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Раса</label>
+                <div class="tooltip-container">
+                    <select id="race" name="race">
+                        <option value="">Выберите расу</option>
+                        <option value="human">Люди</option>
+                        <option value="elf">Эльфы</option>
+                        <option value="half_elf">Полуэльфы</option>
+                        <option value="dwarf">Дварфы</option>
+                        <option value="gnome">Гномы</option>
+                        <option value="half_orc">Полуорки</option>
+                        <option value="halfling">Полурослики</option>
+                        <option value="tiefling">Тифлинги</option>
+                    </select>
+                    <div class="tooltip-text" id="raceTooltip"></div>
+                </div>
+            </div>
+
+            <div class="form-group" id="racialFeatureGroup" style="display: none;">
+                <label id="racialFeatureLabel">Черта</label>
+                <div class="tooltip-container">
+                    <select id="racialFeature" name="racial_feature">
+                        <option value="">Выберите...</option>
+                    </select>
+                    <div class="tooltip-text" id="racialFeatureTooltip"></div>
+                </div>
+                <div class="trait-choice" id="traitChoice">
+                    <label>Выберите характеристику: </label>
+                    <select id="traitStatChoice"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Владение навыками</label>
+                <div class="skills-section" id="skillsSection"></div>
+                <div class="choice-counter" id="skillCounter"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Владение снаряжением</label>
+                <div class="equipment-section" id="equipmentSection"></div>
+                <div class="choice-counter" id="equipmentCounter"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Распределение характеристик</label>
+                <div class="stats-section">
+                    <div class="mode-switch">
+                        <div class="mode-btn active" data-mode="points">Очки (27)</div>
+                        <div class="mode-btn" data-mode="dice">Кубики (3-18)</div>
+                    </div>
+                    
+                    <div id="pointsMode">
+                        <table class="stats-table" id="pointsTable">
+                            <thead>
+                                <tr><th>Характеристика</th><th>База</th><th>Раса</th><th>Черта</th><th>Доп. бонус</th><th>Итог</th><th>Модификатор</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr data-stat="strength"><td class="stat-name-cell">Сила</td><td><div class="stat-controls-cell"><button type="button" class="stat-btn" data-action="minus">−</button><span class="stat-value">8</span><button type="button" class="stat-btn" data-action="plus">+</button></div></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><div class="radio-group-cell" data-stat="strength"><label class="radio-opt" data-value="1"><span class="custom-radio"></span> +1</label><label class="radio-opt" data-value="2"><span class="custom-radio"></span> +2</label></div></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                                <tr data-stat="dexterity"><td class="stat-name-cell">Ловкость</td><td><div class="stat-controls-cell"><button type="button" class="stat-btn" data-action="minus">−</button><span class="stat-value">8</span><button type="button" class="stat-btn" data-action="plus">+</button></div></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><div class="radio-group-cell" data-stat="dexterity"><label class="radio-opt" data-value="1"><span class="custom-radio"></span> +1</label><label class="radio-opt" data-value="2"><span class="custom-radio"></span> +2</label></div></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                                <tr data-stat="constitution"><td class="stat-name-cell">Телосложение</td><td><div class="stat-controls-cell"><button type="button" class="stat-btn" data-action="minus">−</button><span class="stat-value">8</span><button type="button" class="stat-btn" data-action="plus">+</button></div></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><div class="radio-group-cell" data-stat="constitution"><label class="radio-opt" data-value="1"><span class="custom-radio"></span> +1</label><label class="radio-opt" data-value="2"><span class="custom-radio"></span> +2</label></div></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                                <tr data-stat="intelligence"><td class="stat-name-cell">Интеллект</td><td><div class="stat-controls-cell"><button type="button" class="stat-btn" data-action="minus">−</button><span class="stat-value">8</span><button type="button" class="stat-btn" data-action="plus">+</button></div></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><div class="radio-group-cell" data-stat="intelligence"><label class="radio-opt" data-value="1"><span class="custom-radio"></span> +1</label><label class="radio-opt" data-value="2"><span class="custom-radio"></span> +2</label></div></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                                <tr data-stat="wisdom"><td class="stat-name-cell">Мудрость</td><td><div class="stat-controls-cell"><button type="button" class="stat-btn" data-action="minus">−</button><span class="stat-value">8</span><button type="button" class="stat-btn" data-action="plus">+</button></div></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><div class="radio-group-cell" data-stat="wisdom"><label class="radio-opt" data-value="1"><span class="custom-radio"></span> +1</label><label class="radio-opt" data-value="2"><span class="custom-radio"></span> +2</label></div></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                                <tr data-stat="charisma"><td class="stat-name-cell">Харизма</td><td><div class="stat-controls-cell"><button type="button" class="stat-btn" data-action="minus">−</button><span class="stat-value">8</span><button type="button" class="stat-btn" data-action="plus">+</button></div></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><div class="radio-group-cell" data-stat="charisma"><label class="radio-opt" data-value="1"><span class="custom-radio"></span> +1</label><label class="radio-opt" data-value="2"><span class="custom-radio"></span> +2</label></div></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                            </tbody>
+                         </table>
+                        <div class="points-counter">Осталось очков: <span id="pointsLeft">27</span> / 27</div>
+                    </div>
+                    
+                    <div id="diceMode" style="display: none;">
+                        <table class="stats-table" id="diceTable">
+                            <thead><tr><th>Характеристика</th><th>База</th><th>Раса</th><th>Черта</th><th>Итог</th><th>Модификатор</th></tr></thead>
+                            <tbody>
+                                <tr data-stat="strength"><td class="stat-name-cell">Сила</td><td><span class="stat-value dice-value">8</span></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                                <tr data-stat="dexterity"><td class="stat-name-cell">Ловкость</td><td><span class="stat-value dice-value">8</span></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                                <tr data-stat="constitution"><td class="stat-name-cell">Телосложение</td><td><span class="stat-value dice-value">8</span></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                                <tr data-stat="intelligence"><td class="stat-name-cell">Интеллект</td><td><span class="stat-value dice-value">8</span></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                                <tr data-stat="wisdom"><td class="stat-name-cell">Мудрость</td><td><span class="stat-value dice-value">8</span></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                                <tr data-stat="charisma"><td class="stat-name-cell">Харизма</td><td><span class="stat-value dice-value">8</span></td><td><span class="bonus-value race-bonus">0</span></td><td><span class="bonus-value trait-bonus">0</span></td><td><span class="bonus-value stat-sum">8</span></td><td><span class="mod-value stat-mod">-1</span></td></tr>
+                            </tbody>
+                        </table>
+                        <div class="dice-controls"><button type="button" class="reroll-all-btn">Перебросить все</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Дополнительная информация</label>
+                <textarea id="additionalInfo" name="additional_info" placeholder="Напишите любую дополнительную информацию"></textarea>
+            </div>
+
+            <input type="hidden" name="skills" id="skillsInput">
+            <input type="hidden" name="equipment" id="equipmentInput">
+            <input type="hidden" name="trait" id="traitHidden">
+            <input type="hidden" name="stats" id="statsInput">
+            <input type="hidden" name="redirect" value="false">
+            
+            <button type="submit">Отправить</button>
+        </form>
+        
+        <div class="success-message" id="successMessage">Персонаж успешно отправлен!</div>
+        <div class="error-message" id="errorMessage">Ошибка отправки.</div>
+    </div>
+
+    <script>
+        // ==================== ДАННЫЕ ====================
+        const allSkills = ['Атлетика', 'Акробатика', 'Ловкость рук', 'Скрытность', 'Анализ', 'История', 'Магия', 'Природа', 'Религия', 'Внимание', 'Выживание', 'Медицина', 'Проницательность', 'Уход за животными', 'Выступление', 'Запугивание', 'Обман', 'Убеждение'];
+        const allEquipment = ['Лёгкая броня', 'Средняя броня', 'Тяжелая броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки'];
+
+        const backgroundSkillsMap = {
+            'acolyte': ['Проницательность', 'Религия'],
+			'criminal': ['Обман', 'Скрытность'],
+			'charlatan': ['Ловкость рук', 'Обман'],
+            'artist': ['Акробатика', 'Выступление'],
+			'hero': ['Атлетика', 'Выживание'],
+			'noble': ['История', 'Убеждение'],
+            'sage': ['История', 'Магия'],
+			'sailor': ['Атлетика', 'Внимание'],
+			'pirate': ['Внимание', 'Запугивание'],
+            'clerk': ['Анализ', 'Проницательность'],
+			'soldier': ['Атлетика', 'Запугивание'],
+			'outlander': ['Природа', 'Выживание'],
+            'craftsman': ['История', 'Убеждение'],
+			'trader': ['Проницательность', 'Убеждение'],
+			'hunter': ['Выживание', 'Уход за животными'],
+            'herbalist': ['Природа', 'Медицина'],
+			'mercenary': ['Атлетика', 'Внимание'],
+			'miner': ['Выживание', 'Внимание'],
+            'slave': ['Скрытность', 'Проницательность'],
+			'deserter': ['Проницательность', 'Убеждение']
+        };
+        
+        const backgroundTooltips = {
+            'acolyte': '<p>Служил при храме: помогал жрецам, выполнял поручения, жил по уставу. Не обязательно верующий фанатик — скорее человек, привыкший к дисциплине и порядку.</p><p><b>Особенность:</b> Может попросить небоевой помощи у настоятелей храма своей религии.</p>',
+            'criminal': '<p>Жил вне закона: вор, контрабандист, бандит или что-то рядом.</p><p><b>Особенность:</b> Имеет связи с преступным миром.</p>',
+            'charlatan': '<p>Мошенник и обманщик: подделывал документы, разводил людей, играл роли.</p><p><b>Особенность:</b> Может копировать почерк, подписи и штампы, если изучал их не менее 15 минут и имеет образец.</p>',
+            'artist': '<p>Выступал перед людьми: пел, играл, дрался на арене, развлекал публику.</p><p><b>Особенность:</b> Может получать еду и ночлег, выступая в заведениях.</p>',
+            'hero': '<p>Человек из народа, который однажды помог другим. Его знают и уважают простые люди.</p><p><b>Особенность:</b> Может просить небоевой помощи у селян.</p>',
+            'noble': '<p>Когда-то принадлежал к знати, но потерял статус или богатство. Сохранил знания, манеры и остатки связей.</p><p><b>Особенность:</b> Разбирается в гербах и этикете, имеет связи с аристократией.</p>',
+            'sage': '<p>Учёный, философ или исследователь.</p><p><b>Особенность:</b> Раз в сессию может задать мастеру 1 вопрос о мире и получить правдивый ответ.</p>',
+            'sailor': '<p>Жил морем: плавал, работал на кораблях.</p><p><b>Особенность:</b> Легко общается с моряками.</p>',
+            'pirate': '<p>Жил грабежом и риском. Знает силу страха и репутации, привык брать, а не просить.</p><p><b>Особенность:</b> Легко общается с пиратами.</p>',
+            'clerk': '<p>Работал с бумагами: законы, договоры, отчёты.</p><p><b>Особенность:</b> Знает, как добыть нужные документы или "правильную бумажку". Понимает подделки.</p>',
+            'soldier': '<p>Служил в армии, прошёл дисциплину и приказы.</p><p><b>Особенность:</b> Легко общается с другими солдатами.</p>',
+            'outlander': '<p>Жил вне цивилизации: странник, отшельник или выживальщик.</p><p><b>Особенность:</b> Не может заблудиться (кроме магических причин).</p>',
+            'craftsman': '<p>Работал руками: кузнец, кожевник, плотник и т.д.</p><p><b>Особенность:</b> Может чинить и создавать предметы своего ремесла. Создаёт их в 2 раза быстрее и тратит на 25% меньше материалов.</p>',
+            'trader': '<p>Занимался торговлей: сделки, рынки, переговоры. Хорошо чувствует цену и людей.</p><p><b>Особенность:</b> Знает реальную цену вещам.</p>',
+            'hunter': '<p>Профессионально занимался добычей зверя: выслеживал, выжидал, убивал. Привык читать следы, замечать детали и понимать поведение цели.</p><p><b>Особенность:</b> Если цель оставляла следы — он их найдёт без проверки. Потерять след можно только магией или намеренной маскировкой.</p>',
+            'herbalist': '<p>Деревенский травник и целитель. Лечил раны, болезни и отравления подручными средствами.</p><p><b>Особенность:</b> Определяет болезнь/яд без проверки.</p>',
+            'mercenary': '<p>Работал за деньги, а не за идею. Привык к опасности и всегда держит ухо востро.</p><p><b>Особенность:</b> Чует засаду. Если отряд не застигнут магией или заранее подготовленной ловушкой, наёмник не может быть застигнут врасплох. +2 к иницитиве.</p>',
+            'miner': '<p>Работал под землёй.</p><p><b>Особенность:</b> Определяет опасные участки (обвалы, пустоты) без проверки и легче ориентируется под землёй.</p>',
+            'slave': '<p>Жил в подчинении, изучил систему изнутри. Знает, как устроены охрана и контроль.</p><p><b>Особенность:</b> Понимает схемы рабства и умеет находить слабые места для побега.</p>',
+            'deserter': '<p>Сбежал с войны. Не герой, но выжил.</p><p><b>Особенность:</b> Может разговорить простых солдат о слабых местах, дисциплине и планах. Военные относятся с подозрением, но понимают его опыт.</p>'
+        };
+		
+        const raceSkillsMap = { 'elf': ['Внимание'], 'gnome': ['История'], 'half_orc': ['Запугивание'] };
+        const raceEquipmentMap = { 'elf': ['Короткие мечи', 'Длинные луки'], 'dwarf': ['Лёгкая броня', 'Средняя броня', 'Боевые топоры', 'Одноручные топоры', 'Двуручные топоры', 'Лёгкие молоты', 'Двуручные молоты', 'Боевые молоты'] };
+        const raceTooltips = {
+            'human': '<p>«Им не хватает ни силы, ни ума — зато хватает желания. А этого, как оказалось, достаточно.»</p><p><b>Возраст:</b> до 60 лет</p><p><b>Характеристики:</b> <li>+1 ко всем характеристикам</li><li>+1 владение навыком на выбор</li></p><p><b>Размер тела:</b> средний</p><p><b>Скорость:</b> 6 клеток</p><p><b>Владение снаряжением:</b> +1 на выбор</p><p><b>Дополнительный язык:</b> +1 любой язык</p><p><b>Прочее:</b></p>',
+            'elf': '<p>«Живут долго, говорят красиво, смотрят свысока. Как обычно.»</p><p><b>Возраст:</b> до 160 лет</p><p><b>Характеристики:</b> <li>+2 ловкость</li><li>+1 мудрость</li></p><p><b>Размер тела:</b> средний</p><p><b>Скорость:</b> 7 клеток</p><p><b>Владение снаряжением:</b> короткие мечи и длинные луки</p><p><b>Дополнительный язык:</b> эльфийский</p><p><b>Прочее:<li>Тёмное зрение</li><li>Спасброски от очаровывания с преимуществом</li><li>Невозможно усыпить магией</li><li>Не спят, в трансе по 4 часа в сутки</li><li>Маскируются под влиянием погоды</li></b></p>',
+            'half_elf': '<p>«Слишком люди для эльфов. Слишком эльфы для людей. И никому не нужны полностью.»</p><p><b>Возраст:</b> до 100 лет</p><p><b>Характеристики:</b> <li>+2 харизма</li><li>+1 к двум характеристикам на выбор</li></p><p><b>Размер тела:</b> средний</p><p><b>Скорость:</b> 6 клеток</p><p><b>Владение снаряжением:</b></p><p><b>Дополнительный язык:</b> +1 любой язык</p><p><b>Прочее:</b><li>Тёмное зрение</li><li>Спасброски от очаровывания с преимуществом</li><li>Невозможно усыпить магией</li></p>',
+            'dwarf': '<p>«Дай дворфу камень, пиво и слово — и он построит крепость, напьётся и сдержит обещание.»</p><p><b>Возраст:</b> до 120 лет</p><p><b>Характеристики:</b> <li>+2 телосложение</li></p><p><b>Размер тела:</b> средний</p><p><b>Скорость:</b> 5 клеток</p><p><b>Владение снаряжением:</b><li>Лёгкая броня</li><li>Средняя броня</li><li>Молоты</li><li>Топоры</li></p><p><b>Дополнительный язык:</b> дварфский</p><p><b>Прочее:</b><li>Тёмное зрение</li><li>Тяжёлая броня не замедляет</li><li>Сопротивление к урону от яда</li><li>Спасброски от яда с преимуществом</li></p>',
+            'gnome': '<p>«Если оно ещё не взорвалось — значит, гном просто не закончил.»</p><p><b>Возраст:</b> до 100 лет</p><p><b>Характеристики:</b> <li>+1 ловкость</li><li>+1 интеллект</li></p><p><b>Размер тела:</b> маленький</p><p><b>Скорость:</b> 5 клеток</p><p><b>Владение снаряжением:</b></p><p><b>Дополнительный язык:</b><p><b>Прочее: <li>Тёмное зрение</li><li>Спасброски интеллекта, мудрости и харизмы против магии с преимуществом</li><li>При проверке интеллекта (История) добавляется удвоенный бонус мастерства</li><li>Можно создавать из материалов на сумму в 10 зм зажигалку и музыкальную шкатулку. Шкатулка перестаёт играть если мелодия закончилась или если шкатулку закрыли. Эти предметы можно разобрать в любой момент и вернуть половину материалов. Есть возможность изучить другие крафты</li></p>',
+            'half_orc': '<p>«Лучше с ним дружить. Или хотя бы не злить.»</p><p><b>Возраст:</b> до 50 лет</p><p><b>Характеристики:</b> <li>+2 сила</li><li>+1 телосложение</li></p><p><b>Размер тела:</b> средний</p><p><b>Скорость:</b> 6 клеток</p><p><b>Владение снаряжением:</b></p><p><b>Дополнительный язык:</b> орочий</p><p><b>Прочее:</b><li>Тёмное зрение</li><li>1 раз может получить смертельный урон и пережить его с 1 хитом (Перезарядка: долгий отдых)</li><li>Наносит дополнительный куб урона при крите</li></p>',
+            'halfling': '<p>«Пока ты ищешь их глазами — они уже унесли твою еду, кошелёк и спокойствие.»</p><p><b>Возраст:</b> до 90 лет</p><p><b>Характеристики:</b> <li>+2 ловкость</li><li>+1 харизма</li></p><p><b>Размер тела:</b> маленький</p><p><b>Скорость:</b> 5 клеток</p><p><b>Владение снаряжением:</b></p><p><b>Дополнительный язык:</b></p><p><b>Прочее:</b><li>Если на кубе выпало 1, то перебрасываешь этот куб 1 раз</li><li>Спасброски от испуга с преимуществом</li><li>Вы можете проходить сквозь существ, чей размер больше вашего</li><li>Вы можете попытаться скрыться даже если заслонены только существом, превосходящими вас в размере</li></p>',
+            'tiefling': '<p>«Им не доверяют при встрече. И, если честно, иногда не зря.»</p><p><b>Возраст:</b> до 90 лет</p><p><b>Характеристики:</b> <li>+1 интеллект</li><li>+1 харизма</li></p><p><b>Размер тела:</b> средний</p><p><b>Скорость:</b> 6 клеток</p><p><b>Владение снаряжением:</b></p><p><b>Дополнительный язык:</b> инфернальный</p><p><b>Прочее:</b><li>Тёмное зрение</li><li>Сопротивление к урону от огня</li><li>Знают заклинание чудотворство. С 3 уровня заклинание адское возмездие как заклинание 2 круга. С 5 уровня заклинание тьма</li></p>',
+        };
+        
+        const humanTraits = [
+            { name: 'Актер', desc: 'Харизма +1 (с лимитом 20). Бонус мастерства удваивается при проверках на обман и выступление.', statBonus: 'charisma', grantsArmor: null, requirements: null },
+            { name: 'Атлет', desc: 'Сила или Ловкость +1 (с лимитом 20). Вставание за 1 клетку передвижения, лазание без двойной траты клеток передвижения, прыжки с разбега можно делать, разбежавшиась не с 2 клеток, с 1 клетки.', statBonus: 'choice', choices: ['strength', 'dexterity'], grantsArmor: null, requirements: null },
+            { name: 'Бдительный', desc: '+5 к инициативе. Вас нельзя застать врасплох.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Боевой заклинатель', desc: 'Преимущество на спасброски Телосложения для концентрации. Можно наложить заклинание как реакцию.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Борец', desc: 'Ваши роски атаки по существу, которое держите в захвате с преимуществом. Можно скрутить цель, совершив ещё одну проверку захвата, тогда вы оба становитесь опутанными.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Везунчик', desc: '3 единицы удачи для получения преимущества.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Верховой боец', desc: '<li>Вы совершаете с преимуществом броски рукопашных атак по существам, чей размер меньше вашего скакуна, и не находящимся при этом верхом.</li><li>Вы можете сделать так, что атака, нацеленная на вашего скакуна, будет перенацелена на вас.</li><li>Если ваш скакун попадает под эффект, позволяющий совершить спасбросок Ловкости для получения половины урона, то он не получает урон при успехе и получает всего половину урона при провале.</li>', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Внимательный', desc: 'Интеллект или Мудрость +1 (с лимитом 20). Можно читать по губам, если существо говорит на языке, который вы знаете.', statBonus: 'choice', choices: ['intelligence', 'wisdom'], grantsArmor: null, requirements: null },
+            { name: 'Воинский адепт', desc: 'Два приёма из списка архетипа воина «мастер боевых искусств» и одна кость превосходства d6. Если приём требует, чтобы цель совершила спасбросок для сопротивления эффекту приёма, то сложность спасброска равна 8 + ваш бонус мастерства + ваш модификатор Силы или Ловкости (на ваш выбор).', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Воодушевляющий лидер', desc: '<p>Требование: Харизма 13+.</p> Можете потратить 10 минут на воодушевление спутников. Они получают временные хиты в количестве ваш уровень + модификатор Харизмы.', statBonus: null, grantsArmor: null, requirements: { stat: 'charisma', minValue: 13 } },
+            { name: 'Неистово атакующий', desc: 'Можно один раз перебросить все кости урона в ближнем бою.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Драчун', desc: 'Сила или Телосложение +1 (с лимитом 20). Ваши кулаки наносят 1d4 урона. Можно добавить бонус мастерства к броскам атаки импровизированного оружия и безоружными атаками. После успешной атаки можно схватить существо бонусным действием.', statBonus: 'choice', choices: ['strength', 'constitution'], grantsArmor: null, requirements: null },
+            { name: 'Знаток лёгких доспехов', desc: 'Сила или Ловкость +1 (с лимитом 20). Вы получаете владение лёгкой бронёй.', statBonus: 'choice', choices: ['strength', 'dexterity'], grantsArmor: 'Лёгкая броня', requirements: null },
+            { name: 'Знаток средних доспехов', desc: '<p>Требование: владение лёгкой бронёй.</p> Сила или Ловкость +1. Вы получаете владение средней бронёй.', statBonus: 'choice', choices: ['strength', 'dexterity'], grantsArmor: 'Средняя броня', requirements: { armor: 'Лёгкая броня' } },
+            { name: 'Знаток тяжёлых доспехов', desc: '<p>Требование: владение средней бронёй.</p> Сила +1. Вы получаете владение тяжёлой бронёй.', statBonus: 'strength', grantsArmor: 'Тяжелая броня', requirements: { armor: 'Средняя броня' } },
+            { name: 'Обоерукий', desc: 'Можно сражаться двумя одноручными оружиями без свойства «лёгкое». +1 к КД, когда в каждой руке оружие. Обнажить оба оружия можно за 1 действие.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Исследователь подземелий', desc: '<p>Преимущество на проверки для обнаружения потайных дверей.</p><p>Преимущество на спасброски от ловушек.</p><p>Сопротивление урону от ловушек.</p>', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Живучий', desc: 'Максимум хитов увеличивается на удвоенный уровень.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Мастер двуручного оружия', desc: '<p>При критическом ударе или убийстве можно бонусным действием атаковать ещё раз.</p><p>Можно принять штраф -5 к атаке за +10 к урону тяжёлым оружием.</p>', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Мастер древкового оружия', desc: '<p>Держа глефу, алебарду, копьё или боевой посох, можно бонусным действием атаковать противоположным концом (1d4) оружия.</p><p>Пока вы держите такое оружие, враги провоцируют вашу атаку, входя в зону досягаемости, а не только покидая её.</p>', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Мастер оружия', desc: 'Сила или Ловкость +1 (с лимитом 20). Вы получаете +4 владения оружием на выбор.', statBonus: 'choice', choices: ['strength', 'dexterity'], grantsArmor: null, requirements: null },
+            { name: 'Мастер средних доспехов', desc: '<p>Требование: Владение средними доспехами.</p> Ношение среднего доспеха не даёт помеху к Скрытности. Максимальный бонус к КД от Ловкости, составляет +3.', statBonus: null, grantsArmor: null, requirements: { armor: 'Средняя броня' } },
+            { name: 'Мастер тяжёлых доспехов', desc: '<p>Требование: Владение тяжёлыми доспехами.</p> Сила +1. Уменьшение дробящего, колющего и рубящего урона на 3.', statBonus: 'strength', grantsArmor: null, requirements: { armor: 'Тяжелая броня' } },
+            { name: 'Мастер щитов', desc: '<p>Можно бонусным действием толкнуть щитом.</p><p>Можно добавить бонус щита к спасброскам Ловкости от эффектов, нацеленных только на вас.</p><p>Реакцией можно выставить щит и не получить урон при успешном спасброске Ловкости.</p>', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Меткие заклинания', desc: '<p>Требование: Класс заклинателя.</p> Дистанция атакующих заклинаний удваивается. Они игнорируют укрытие наполовину и на три четверти. Получаете один атакующий заговор своего класса.', statBonus: null, grantsArmor: null, requirements: { class: 'spellcaster' } },
+            { name: 'Меткий стрелок', desc: '<p>При атаке дальнобойным оружием, дистанция не даёт помеху.</p><p>Такие атаки игнорируют укрытие наполовину и на три четверти.</p><p>Можно принять штраф -5 к атаке за +10 к урону.</p>', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Налётчик', desc: 'При Рывке можно бонусным действием атаковать или толкнуть. Если перед этим переместились на 2 клетки по прямой, бонус +5 к урону или толчок на 2 клетки.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Оборонительный дуэлянт', desc: '<p>Требование: Ловкость 13+.</p> Если используете фехтовальное оружие, реакцией можете добавить бонус мастерства к КД против рукопашной атаки.', statBonus: null, grantsArmor: null, requirements: { stat: 'dexterity', minValue: 13 } },
+            { name: 'Одарённый', desc: 'Вы получаете +3 владения любыми навыками на выбор.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Отличная память', desc: 'Интеллект +1 (с лимитом 20). Всегда знаете, где север, через сколько наступит закат/восход. Можете вспомнить всё, что видели или слышали за последний месяц.', statBonus: 'intelligence', grantsArmor: null, requirements: null },
+            { name: 'Подвижный', desc: 'Скорость +2 клетки. При Рывке труднопроходимая местность не замедляет. После атаки по существу и отходе от неё, вы не провоцируете атаки от этого существа.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Посвящённый в магию', desc: 'Узнаёте два любых заговора и одно заклинание 1 круга, главная характеристика которых определяется вашим классом (например, если ваша главная характеристика это Харизма, то характеристика заклинания полученная этой чертой, будет Харизма). После использования заклинания из черты, нужен долгий отдых.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Проныра', desc: '<p>Требование: Ловкость 13+.</p> Можно спрятаться при слабом заслоне. Промах атакой из укрытия не раскрывает позицию. Тусклый свет не мешает вашим проверкам Внимания.', statBonus: null, grantsArmor: null, requirements: { stat: 'dexterity', minValue: 13 } },
+            { name: 'Ритуальный заклинатель', desc: '<p>Требование: Интеллект или Мудрость 13+.</p> Вы знаете два ритуальных заклинания на выбор. Вне боя на них не тратятся ячейки.', statBonus: null, grantsArmor: null, requirements: { stat: 'intelligence_or_wisdom', minValue: 13 } },
+            { name: 'Адепт стихий', desc: '<p>Требование: Класс заклинателя.</p> Выберите вид урона: звук, кислота, огонь, холод или электричество. Накладываемые заклинания игнорируют сопротивление этому виду урона. Значения "1" на кубах урона считаются как "2".', statBonus: null, grantsArmor: null, requirements: { class: 'spellcaster' } },
+            { name: 'Стойкий', desc: 'Телосложение +1 (с лимитом 20). При восстановлении хитов, восстановленный минимум = удвоенному модификатору Телосложения.', statBonus: 'constitution', grantsArmor: null, requirements: null },
+            { name: 'Страж', desc: '<p>Попадание вашей провоцированной атакой по существу, снижает скорость цели до 0.</p><p>Существа провоцируют атаку даже при действии Отступление.</p><p>Реакцией можно атаковать существо, атакующее союзника.</p>', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Убийца магов', desc: '<p>Реакцией можно атаковать существо, кастующее заклинание в пределах 1 клейтки от вас.</p><p>Когда вы причиняете урон существу, концентрирующемуся на заклинании, это существо совершает с помехой спасбросок для поддержания концентрации.</p><p>Преимущество на спасброски от заклинаний от существ в пределах 1 клетки от вас.</p>', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Устойчивый', desc: 'Одна любая характеристика +1. Получаете владение спасбросками этой характеристики.', statBonus: 'choice', choices: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'], grantsArmor: null, requirements: null },
+            { name: 'Эксперт в арбалетах', desc: 'Игнорируете свойство «перезарядка». Нахождение рядом с врагом не даёт помеху к дальнобойным атакам. Можно стрелять из двух одноручных арбалетов.', statBonus: null, grantsArmor: null, requirements: null },
+            { name: 'Лингвист', desc: 'Интеллект +1 (с лимитом 20). Узнаёте три языка на выбор. Можете писать шифрованные письма. Другие не могут расшифровать код, пока либо вы не научите их, либо они не преуспеют в проверке Интеллекта сложностью Ваше значение интеллекта + ваш бонус мастерства', statBonus: 'intelligence', grantsArmor: null, requirements: null },
+            { name: 'Крушитель', desc: 'Сила или Телосложение +1 (с лимитом 20). Раз в ход при попадании дробящим уроном можно оттолкнуть цель на 1 клетку. При критическом ударе броски атаки по цели имеют преимущество до вашего следующего хода.', statBonus: 'choice', choices: ['strength', 'constitution'], grantsArmor: null, requirements: null },
+            { name: 'Посвящённый в боевое искусство', desc: '<p>Требование: Владение воинским оружием.</p> Выберите один боевой стиль воина. Нелья выбрать уже известный боевой стиль.', statBonus: null, grantsArmor: null, requirements: { weaponProficiency: true } },
+            { name: 'Повышение характеристики', desc: 'Увеличиваете любую характеристику на 2, либо две любые на 1 (до 20).', statBonus: 'any', grantsArmor: null, requirements: null }
+        ];
+        
+        const raceBonuses = {
+            'human': { strength: 1, dexterity: 1, constitution: 1, intelligence: 1, wisdom: 1, charisma: 1 },
+            'elf': { dexterity: 2, wisdom: 1 }, 'half_elf': { charisma: 2 }, 'dwarf': { constitution: 2 },
+            'gnome': { intelligence: 2 }, 'half_orc': { strength: 2, constitution: 1 }, 'halfling': { dexterity: 2 },
+            'tiefling': { charisma: 2, intelligence: 1 },
+        };
+        
+        const classSkillsMap = {
+            'fighter': { choices: 2, options: ['Акробатика', 'Атлетика', 'Внимание', 'Выживание', 'Запугивание', 'История', 'Проницательность', 'Уход за животными'] },
+            'barbarian': { choices: 2, options: ['Атлетика', 'Внимание', 'Выживание', 'Запугивание', 'Природа', 'Уход за животными'] },
+            'rogue': { choices: 3, options: ['Акробатика', 'Анализ', 'Атлетика', 'Внимание', 'Выступление', 'Запугивание', 'Ловкость рук', 'Обман', 'Проницательность', 'Скрытность', 'Убеждение'] },
+            'wizard': { choices: 2, options: ['Анализ', 'История', 'Магия', 'Медицина', 'Проницательность', 'Религия'] },
+            'cleric': { choices: 2, options: ['История', 'Медицина', 'Проницательность', 'Религия', 'Убеждение'] },
+            'ranger': { choices: 3, options: ['Анализ', 'Атлетика', 'Внимание', 'Выживание', 'Природа', 'Проницательность', 'Скрытность', 'Уход за животными'] },
+            'sorcerer': { choices: 2, options: ['Запугивание', 'Магия', 'Обман', 'Проницательность', 'Религия', 'Убеждение'] },
+            'warlock': { choices: 2, options: ['Анализ', 'Запугивание', 'История', 'Магия', 'Обман', 'Природа', 'Религия'] },
+            'monk': { choices: 2, options: ['Акробатика', 'Атлетика', 'История', 'Проницательность', 'Религия', 'Скрытность'] },
+            'bard': { choices: 3, options: allSkills },
+            'paladin': { choices: 2, options: ['Атлетика', 'Запугивание', 'Медицина', 'Проницательность', 'Религия', 'Убеждение'] },
+            'druid': { choices: 2, options: ['Внимание', 'Выживание', 'Магия', 'Медицина', 'Уход за животными', 'Природа', 'Проницательность', 'Религия'] }
+        };
+        
+        const classEquipmentMap = {
+            'fighter': allEquipment,
+            'barbarian': ['Лёгкая броня', 'Средняя броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки'],
+            'rogue': ['Лёгкая броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Короткие мечи', 'Длинные мечи', 'Рапиры', 'Одноручные арбалеты'],
+            'wizard': ['Боевые посохи', 'Копья', 'Лёгкие арбалеты'],
+            'cleric': ['Лёгкая броня', 'Средняя броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки'],
+            'ranger': ['Лёгкая броня', 'Средняя броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки'],
+            'sorcerer': ['Боевые посохи', 'Копья', 'Лёгкие арбалеты'],
+            'warlock': ['Лёгкая броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки'],
+            'monk': ['Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Короткие мечи'],
+            'bard': ['Лёгкая броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Короткие мечи', 'Длинные мечи', 'Рапиры'],
+            'paladin': allEquipment,
+            'druid': ['Лёгкая броня', 'Средняя броня', 'Боевые посохи', 'Булавы', 'Дубинки', 'Копья', 'Короткие мечи']
+        };
+
+        // ==================== СОСТОЯНИЕ ====================
+		let pendingStatIncrease2 = 0;
+		let pendingStatIncrease1 = 0;
+		let pendingStatIncrease = 0;
+        let extraSkillChoicesFromTraits = 0;
+        let extraEquipmentChoicesFromTraits = 0;
+        let selectedSkills = [];
+        let selectedEquipment = [];
+        let freeSkillChoices = 0;
+        let freeEquipmentChoices = 0;
+        let currentAvailableSkills = [];
+        
+        let currentBackgroundSkills = [];
+        let currentRaceSkills = [];
+        let currentRaceEquipment = [];
+        let currentClassEquipment = [];
+        let currentClassSkills = { choices: 0, options: [] };
+        
+        let currentTrait = null;
+        let currentTraitArmor = null;
+        let currentTraitChoice = null;
+        
+        let currentMode = 'points';
+        let statValues = { strength: 8, dexterity: 8, constitution: 8, intelligence: 8, wisdom: 8, charisma: 8 };
+        let statExtras = { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
+        let statDice = { strength: 8, dexterity: 8, constitution: 8, intelligence: 8, wisdom: 8, charisma: 8 };
+        
+        // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+        function getModifier(value) {
+			if (value <= 1) return -5;
+			if (value <= 3) return -4;
+			if (value <= 5) return -3;
+			if (value <= 7) return -2;
+            if (value <= 9) return -1;
+            if (value <= 11) return 0;
+            if (value <= 13) return 1;
+            if (value <= 15) return 2;
+            if (value <= 17) return 3;
+            if (value <= 19) return 4;
+			if (value === 20) return 5;
+            return 5;
+        }
+        
+        function getRaceBonus(stat) {
+            const race = document.getElementById('race').value;
+            const bonuses = raceBonuses[race] || {};
+            return bonuses[stat] || 0;
+        }
+        
+        function getTraitBonus() {
+            const trait = humanTraits.find(t => t.name === currentTrait);
+            if (!trait) return {};
+            
+            if (trait.statBonus === 'strength') return { strength: 1 };
+            if (trait.statBonus === 'dexterity') return { dexterity: 1 };
+            if (trait.statBonus === 'constitution') return { constitution: 1 };
+            if (trait.statBonus === 'intelligence') return { intelligence: 1 };
+            if (trait.statBonus === 'wisdom') return { wisdom: 1 };
+            if (trait.statBonus === 'charisma') return { charisma: 1 };
+            
+            if (trait.statBonus === 'choice' && currentTraitChoice) {
+                const result = {};
+                result[currentTraitChoice] = 1;
+                return result;
+            }
+            
+            if (trait.name === 'Повышение характеристики' && pendingStatIncrease) {
+                const result = {};
+                if (pendingStatIncrease.type === 'two') {
+                    result[pendingStatIncrease.stat] = 2;
+                } else if (pendingStatIncrease.type === 'one') {
+                    result[pendingStatIncrease.stat] = 1;
+                } else if (pendingStatIncrease.type === 'two_stats') {
+                    result[pendingStatIncrease.stat1] = 1;
+                    result[pendingStatIncrease.stat2] = 1;
+                }
+                return result;
+            }
+            
+            return {};
+        }
+        
+        function getStatCost(value) {
+            if (value <= 8) return 0;
+            if (value === 9) return 1;
+            if (value === 10) return 2;
+            if (value === 11) return 3;
+            if (value === 12) return 4;
+            if (value === 13) return 5;
+            if (value === 14) return 7;
+            if (value === 15) return 9;
+            return 0;
+        }
+        
+        function getAllFixedEquipment() {
+            let fixed = [...currentRaceEquipment, ...currentClassEquipment];
+            if (currentTraitArmor) fixed.push(currentTraitArmor);
+            return [...new Set(fixed)];
+        }
+        
+        function hasLightArmor() {
+            const fixed = getAllFixedEquipment();
+            if (fixed.includes('Лёгкая броня')) return true;
+            if (selectedEquipment.includes('Лёгкая броня')) return true;
+            return false;
+        }
+        
+        function hasMediumArmor() {
+            const fixed = getAllFixedEquipment();
+            if (fixed.includes('Средняя броня')) return true;
+            if (selectedEquipment.includes('Средняя броня')) return true;
+            return false;
+        }
+        
+        const armorTraits = ['Знаток лёгких доспехов', 'Знаток средних доспехов', 'Знаток тяжёлых доспехов'];
+        
+        function hasAnyArmorTrait() {
+            if (!currentTrait) return false;
+            return armorTraits.includes(currentTrait);
+        }
+        
+        function checkTraitRequirements(trait, statSnapshot = null) {
+            if (!trait || !trait.requirements) return true;
+            const req = trait.requirements;
+            
+            if (req.stat) {
+                const statKey = req.stat;
+                let baseValue, raceBonus, extra, traitBonusFromOther = 0;
+                if (statSnapshot && statSnapshot[statKey] !== undefined) {
+                    baseValue = statSnapshot[statKey];
+                } else {
+                    baseValue = currentMode === 'points' ? statValues[statKey] : statDice[statKey];
+                }
+                raceBonus = getRaceBonus(statKey);
+                extra = currentMode === 'points' ? (statExtras[statKey] || 0) : 0;
+                if (currentTrait && currentTrait !== trait.name) {
+                    const otherTrait = humanTraits.find(t => t.name === currentTrait);
+                    if (otherTrait && otherTrait.statBonus) {
+                        if (otherTrait.statBonus === statKey) {
+                            traitBonusFromOther = 1;
+                        } else if (otherTrait.statBonus === 'choice' && currentTraitChoice === statKey) {
+                            traitBonusFromOther = 1;
+                        }
+                    }
+                }
+                const currentStatValue = baseValue + raceBonus + traitBonusFromOther + extra;
+                if (currentStatValue < req.minValue) return false;
+            }
+            
+            if (req.armor) {
+                const fixedEquipment = getAllFixedEquipment();
+                const hasArmor = fixedEquipment.includes(req.armor) || selectedEquipment.includes(req.armor);
+                if (!hasArmor) return false;
+            }
+            
+            if (req.class === 'spellcaster') {
+                const classValue = document.getElementById('class').value;
+                const spellcasterClasses = ['wizard', 'cleric', 'sorcerer', 'warlock', 'bard', 'druid'];
+                if (!spellcasterClasses.includes(classValue)) return false;
+            }
+            
+            if (req.weaponProficiency) {
+                const classValue = document.getElementById('class').value;
+                const martialClasses = ['fighter', 'barbarian', 'ranger', 'paladin', 'monk', 'rogue'];
+                let hasMartialWeapon = martialClasses.includes(classValue);
+                const raceValue = document.getElementById('race').value;
+                if (raceValue === 'elf') hasMartialWeapon = true;
+                const fixedEquipment = getAllFixedEquipment();
+                const martialWeapons = ['Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки'];
+                const hasMartialFromEquipment = fixedEquipment.some(item => martialWeapons.includes(item)) || selectedEquipment.some(item => martialWeapons.includes(item));
+                if (!hasMartialWeapon && !hasMartialFromEquipment) return false;
+            }
+            
+            if (req.stat === 'intelligence_or_wisdom') {
+                let intValue = currentMode === 'points' ? statValues.intelligence : statDice.intelligence;
+                let wisValue = currentMode === 'points' ? statValues.wisdom : statDice.wisdom;
+                intValue += getRaceBonus('intelligence') + (statExtras.intelligence || 0);
+                wisValue += getRaceBonus('wisdom') + (statExtras.wisdom || 0);
+                if (intValue < req.minValue && wisValue < req.minValue) return false;
+            }
+            
+            return true;
+        }
+        
+        function validateCurrentTrait() {
+            if (!currentTrait) return;
+            const trait = humanTraits.find(t => t.name === currentTrait);
+            if (!trait) return;
+            
+            let requirementFailed = false;
+            
+            if (trait.requirements && trait.requirements.stat) {
+                const statKey = trait.requirements.stat;
+                let baseValue = currentMode === 'points' ? statValues[statKey] : statDice[statKey];
+                const raceBonus = getRaceBonus(statKey);
+                const extra = currentMode === 'points' ? (statExtras[statKey] || 0) : 0;
+                let total = baseValue + raceBonus + extra;
+                const currentTraitBonus = getTraitBonus()[statKey] || 0;
+                total = total - currentTraitBonus;
+                if (total < trait.requirements.minValue) requirementFailed = true;
+            }
+            
+            if (trait.requirements && trait.requirements.armor) {
+                const fixedEquipment = getAllFixedEquipment();
+                let hasArmor = fixedEquipment.includes(trait.requirements.armor) || selectedEquipment.includes(trait.requirements.armor);
+                if (currentTraitArmor === trait.requirements.armor) hasArmor = false;
+                if (!hasArmor) requirementFailed = true;
+            }
+            
+            if (trait.requirements && trait.requirements.class === 'spellcaster') {
+                const classValue = document.getElementById('class').value;
+                const spellcasterClasses = ['wizard', 'cleric', 'sorcerer', 'warlock', 'bard', 'druid'];
+                if (!spellcasterClasses.includes(classValue)) requirementFailed = true;
+            }
+            
+            if (trait.requirements && trait.requirements.weaponProficiency) {
+                const classValue = document.getElementById('class').value;
+                const martialClasses = ['fighter', 'barbarian', 'ranger', 'paladin', 'monk', 'rogue'];
+                let hasMartialWeapon = martialClasses.includes(classValue);
+                const raceValue = document.getElementById('race').value;
+                if (raceValue === 'elf') hasMartialWeapon = true;
+                const fixedEquipment = getAllFixedEquipment();
+                const martialWeapons = ['Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки'];
+                const hasMartialFromEquipment = fixedEquipment.some(item => martialWeapons.includes(item)) || selectedEquipment.some(item => martialWeapons.includes(item));
+                if (!hasMartialWeapon && !hasMartialFromEquipment) requirementFailed = true;
+            }
+            
+            if (trait.requirements && trait.requirements.stat === 'intelligence_or_wisdom') {
+                let intValue = currentMode === 'points' ? statValues.intelligence : statDice.intelligence;
+                let wisValue = currentMode === 'points' ? statValues.wisdom : statDice.wisdom;
+                intValue += getRaceBonus('intelligence') + (statExtras.intelligence || 0);
+                wisValue += getRaceBonus('wisdom') + (statExtras.wisdom || 0);
+                if (intValue < 13 && wisValue < 13) requirementFailed = true;
+            }
+            
+            if (requirementFailed) {
+                const select = document.getElementById('racialFeature');
+                currentTrait = null;
+                currentTraitArmor = null;
+                currentTraitChoice = null;
+                if (select) select.value = '';
+                renderEquipment();
+                updateTraitDropdown();
+                updateStatSums();
+                updateTraitChoiceUI();
+            }
+        }
+        
+        function updateTraitDropdown() {
+            const select = document.getElementById('racialFeature');
+            if (!select) return;
+            const currentValue = select.value;
+            const statSnapshot = {};
+            const stats = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+            stats.forEach(stat => {
+                statSnapshot[stat] = currentMode === 'points' ? statValues[stat] : statDice[stat];
+            });
+            
+            for (let i = 0; i < select.options.length; i++) {
+                const opt = select.options[i];
+                if (!opt.value) continue;
+                const trait = humanTraits.find(t => t.name === opt.value);
+                let available = true;
+                
+                if (armorTraits.includes(opt.value) && hasAnyArmorTrait() && currentTrait !== opt.value) available = false;
+                if (opt.value === 'Знаток средних доспехов' && !hasLightArmor()) available = false;
+                if (opt.value === 'Знаток тяжёлых доспехов' && !hasMediumArmor()) available = false;
+                if (trait && trait.requirements) {
+                    if (!checkTraitRequirements(trait, statSnapshot)) available = false;
+                }
+                opt.disabled = !available;
+            }
+            
+            if (currentValue && currentTrait) {
+                const currentTraitObj = humanTraits.find(t => t.name === currentValue);
+                if (currentTraitObj && !checkTraitRequirements(currentTraitObj, statSnapshot)) {
+                    clearTrait();
+                    select.value = '';
+                    document.getElementById('racialFeatureTooltip').innerHTML = 'Черта - дополнительная особенность';
+                    updateTraitChoiceUI();
+                }
+            }
+        }
+        
+        function updateStatSums() {
+            const stats = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+            const traitBonus = getTraitBonus();
+            
+            stats.forEach(stat => {
+                const baseValue = currentMode === 'points' ? statValues[stat] : statDice[stat];
+                const raceBonus = getRaceBonus(stat);
+                const traitVal = traitBonus[stat] || 0;
+                const extra = currentMode === 'points' ? (statExtras[stat] || 0) : 0;
+                let total = baseValue + raceBonus + traitVal + extra;
+                if (total > 20) total = 20;
+                const mod = getModifier(total);
+                const modText = mod >= 0 ? `+${mod}` : `${mod}`;
+                
+                if (currentMode === 'points') {
+                    const row = document.querySelector(`#pointsTable tbody tr[data-stat="${stat}"]`);
+                    if (row) {
+                        row.querySelector('.stat-sum').textContent = total;
+                        row.querySelector('.stat-mod').textContent = modText;
+                        row.querySelector('.race-bonus').textContent = raceBonus;
+                        row.querySelector('.trait-bonus').textContent = traitVal;
+                        row.querySelector('.stat-value').textContent = baseValue;
+                    }
+                } else {
+                    const row = document.querySelector(`#diceTable tbody tr[data-stat="${stat}"]`);
+                    if (row) {
+                        row.querySelector('.stat-sum').textContent = total;
+                        row.querySelector('.stat-mod').textContent = modText;
+                        row.querySelector('.race-bonus').textContent = raceBonus;
+                        row.querySelector('.trait-bonus').textContent = traitVal;
+                        row.querySelector('.dice-value').textContent = baseValue;
+                    }
+                }
+            });
+            
+            validateCurrentTrait();
+            updateTraitDropdown();
+            updateTraitChoiceUI();
+        }
+        
+        function updatePointsCounter() {
+            if (currentMode !== 'points') return;
+            let totalPoints = 27;
+            for (const stat of ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma']) {
+                totalPoints -= getStatCost(statValues[stat]);
+            }
+            document.getElementById('pointsLeft').textContent = totalPoints;
+            return totalPoints;
+        }
+        
+        function adjustStat(stat, delta) {
+            if (currentMode !== 'points') return;
+            const newVal = statValues[stat] + delta;
+            if (newVal < 8 || newVal > 15) return;
+            const oldPoints = getStatCost(statValues[stat]);
+            const newPoints = getStatCost(newVal);
+            const currentRemaining = parseInt(document.getElementById('pointsLeft')?.textContent || 27);
+            const pointsNeeded = newPoints - oldPoints;
+            if (delta > 0 && currentRemaining - pointsNeeded < 0) return;
+            statValues[stat] = newVal;
+            updateStatSums();
+            updatePointsCounter();
+            updateStatButtons();
+        }
+        
+        function updateStatButtons() {
+            if (currentMode !== 'points') return;
+            const remaining = parseInt(document.getElementById('pointsLeft')?.textContent || 27);
+            for (const stat of ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma']) {
+                const row = document.querySelector(`#pointsTable tbody tr[data-stat="${stat}"]`);
+                if (!row) continue;
+                const plusBtn = row.querySelector('.stat-btn[data-action="plus"]');
+                const minusBtn = row.querySelector('.stat-btn[data-action="minus"]');
+                const currentVal = statValues[stat];
+                const costToIncrease = getStatCost(currentVal + 1) - getStatCost(currentVal);
+                if (plusBtn) plusBtn.disabled = (currentVal >= 15) || (costToIncrease > remaining);
+                if (minusBtn) minusBtn.disabled = (currentVal <= 8);
+            }
+        }
+        
+        function setupExtras() {
+            const stats = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+            stats.forEach(stat => {
+                const container = document.querySelector(`.radio-group-cell[data-stat="${stat}"]`);
+                if (!container) return;
+                const options = container.querySelectorAll('.radio-opt');
+                options.forEach(opt => {
+                    const value = parseInt(opt.getAttribute('data-value'));
+                    const customSpan = opt.querySelector('.custom-radio');
+                    if (statExtras[stat] === value) {
+                        customSpan.classList.add('checked');
+                    } else {
+                        customSpan.classList.remove('checked');
+                    }
+                    opt.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        let plusOneCount = 0, plusTwoCount = 0;
+                        for (const s of stats) {
+                            if (s === stat) continue;
+                            if (statExtras[s] === 1) plusOneCount++;
+                            if (statExtras[s] === 2) plusTwoCount++;
+                        }
+                        if (statExtras[stat] === value) {
+                            statExtras[stat] = 0;
+                            customSpan.classList.remove('checked');
+                        } else {
+                            if (value === 1 && plusOneCount >= 1) {
+                                alert('Нельзя выбрать больше одной кнопки +1!');
+                                return;
+                            }
+                            if (value === 2 && plusTwoCount >= 1) {
+                                alert('Нельзя выбрать больше одной кнопки +2!');
+                                return;
+                            }
+                            options.forEach(otherOpt => {
+                                const otherValue = parseInt(otherOpt.getAttribute('data-value'));
+                                if (otherValue !== value && statExtras[stat] === otherValue) {
+                                    otherOpt.querySelector('.custom-radio').classList.remove('checked');
+                                }
+                            });
+                            statExtras[stat] = value;
+                            customSpan.classList.add('checked');
+                        }
+                        updateStatSums();
+                    });
+                });
+            });
+        }
+        
+        function generateStatValue() {
+            let rolls = [];
+            for (let i = 0; i < 4; i++) rolls.push(Math.floor(Math.random() * 6) + 1);
+            let minRoll = Math.min(...rolls);
+            return rolls.reduce((a, b) => a + b, 0) - minRoll;
+        }
+        
+        function rerollAllDice() {
+            if (currentMode !== 'dice') return;
+            const stats = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+            stats.forEach(stat => { statDice[stat] = generateStatValue(); });
+            updateStatSums();
+        }
+        
+        function switchMode(mode) {
+            currentMode = mode;
+            const pointsMode = document.getElementById('pointsMode');
+            const diceMode = document.getElementById('diceMode');
+            const modeBtns = document.querySelectorAll('.mode-btn');
+            modeBtns.forEach(btn => {
+                if (btn.getAttribute('data-mode') === mode) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            if (mode === 'points') {
+                pointsMode.style.display = 'block';
+                diceMode.style.display = 'none';
+                updateStatSums();
+                updatePointsCounter();
+                updateStatButtons();
+            } else {
+                pointsMode.style.display = 'none';
+                diceMode.style.display = 'block';
+                updateStatSums();
+            }
+        }
+        
+        function applyTrait(traitName, chosenStat = null) {
+            const trait = humanTraits.find(t => t.name === traitName);
+            
+            // Сброс дополнительных выборов
+            extraSkillChoicesFromTraits = 0;
+            
+            if (trait && trait.name === 'Одарённый') {
+                extraSkillChoicesFromTraits = 3;
+            }
+            
+            if (trait && trait.name === 'Мастер оружия') {
+                // Не сбрасываем selectedEquipment при выборе черты
+                extraEquipmentChoicesFromTraits = 4;
+            }
+            
+            if (trait && trait.statBonus === 'choice' && chosenStat) {
+                currentTraitChoice = chosenStat;
+            } else {
+                currentTraitChoice = null;
+            }
+            
+            if (trait && trait.grantsArmor) {
+                currentTraitArmor = trait.grantsArmor;
+            } else {
+                currentTraitArmor = null;
+            }
+            
+            // Обновляем свободные выборы навыков
+            let total = currentClassSkills.choices || 0;
+            if (document.getElementById('race').value === 'human') total++;
+            if (document.getElementById('race').value === 'half_elf') total++;
+            total += extraSkillChoicesFromTraits;
+            freeSkillChoices = total;
+            
+            if (selectedSkills.length > freeSkillChoices) {
+                selectedSkills = selectedSkills.slice(0, freeSkillChoices);
+            }
+            
+            renderSkills();
+            renderEquipment();
+            updateTraitDropdown();
+            updateStatSums();
+            updateSkillCounter();
+        }
+
+        
+        function clearTrait() {
+            currentTrait = null;
+            currentTraitArmor = null;
+            currentTraitChoice = null;
+            pendingStatIncrease = null;
+            
+            extraSkillChoicesFromTraits = 0;
+            extraEquipmentChoicesFromTraits = 0;
+            
+            // Не очищаем выбранное снаряжение при снятии черты
+        
+            let total = currentClassSkills.choices || 0;
+            if (document.getElementById('race').value === 'human') total++;
+            if (document.getElementById('race').value === 'half_elf') total++;
+            freeSkillChoices = total;
+            
+            if (selectedSkills.length > freeSkillChoices) {
+                selectedSkills = selectedSkills.slice(0, freeSkillChoices);
+            }
+            
+            renderSkills();
+            renderEquipment();
+            updateTraitDropdown();
+            updateStatSums();
+            updateSkillCounter();
+        }
+        
+        function updateTraitChoiceUI() {
+            const trait = humanTraits.find(t => t.name === currentTrait);
+            const choiceDiv = document.getElementById('traitChoice');
+            
+            if (!choiceDiv) return;
+            choiceDiv.style.display = 'none';
+            choiceDiv.innerHTML = '';
+            
+            if (trait && trait.name === 'Повышение характеристики') {
+                choiceDiv.style.display = 'block';
+                choiceDiv.innerHTML = `
+                    <div style="margin-bottom: 12px;">
+                        <label>Выберите характеристику (первое повышение): </label>
+                        <select id="traitStatChoice1"></select>
+                    </div>
+                    <div>
+                        <label>Выберите характеристику (второе повышение): </label>
+                        <select id="traitStatChoice2"></select>
+                    </div>
+                `;
+                
+                const select1 = document.getElementById('traitStatChoice1');
+                const select2 = document.getElementById('traitStatChoice2');
+                const statNames = {
+                    'strength': 'Сила', 'dexterity': 'Ловкость', 'constitution': 'Телосложение',
+                    'intelligence': 'Интеллект', 'wisdom': 'Мудрость', 'charisma': 'Харизма'
+                };
+                
+                let options = '<option value="">Не выбрано</option>';
+                for (const [key, name] of Object.entries(statNames)) {
+                    options += `<option value="${key}">${name}</option>`;
+                }
+                select1.innerHTML = options;
+                select2.innerHTML = options;
+                
+                select1.disabled = false;
+                select2.disabled = false;
+                
+                // Восстанавливаем предыдущие значения, если они были
+                if (pendingStatIncrease1) select1.value = pendingStatIncrease1;
+                if (pendingStatIncrease2) select2.value = pendingStatIncrease2;
+                
+                function updatePendingIncrease() {
+                    const val1 = select1.value;
+                    const val2 = select2.value;
+                    
+                    pendingStatIncrease1 = val1 || null;
+                    pendingStatIncrease2 = val2 || null;
+                    
+                    if (!val1 && !val2) {
+                        pendingStatIncrease = null;
+                    } else if (val1 && val2 && val1 === val2) {
+                        pendingStatIncrease = { type: 'two', stat: val1 };
+                    } else if (val1 && !val2) {
+                        pendingStatIncrease = { type: 'one', stat: val1 };
+                    } else if (!val1 && val2) {
+                        pendingStatIncrease = { type: 'one', stat: val2 };
+                    } else if (val1 && val2 && val1 !== val2) {
+                        pendingStatIncrease = { type: 'two_stats', stat1: val1, stat2: val2 };
+                    }
+                    updateStatSums();
+                }
+                
+                select1.onchange = updatePendingIncrease;
+                select2.onchange = updatePendingIncrease;
+            }
+            else if (trait && trait.statBonus === 'choice' && trait.choices && trait.choices.length > 0) {
+                choiceDiv.style.display = 'block';
+                choiceDiv.innerHTML = '<label>Выберите характеристику: </label><select id="traitStatChoice"></select>';
+                const newSelect = document.getElementById('traitStatChoice');
+                const currentChoice = currentTraitChoice || trait.choices[0];
+                newSelect.innerHTML = trait.choices.map(c => {
+                    const statName = {
+                        'strength': 'Сила', 'dexterity': 'Ловкость', 'constitution': 'Телосложение',
+                        'intelligence': 'Интеллект', 'wisdom': 'Мудрость', 'charisma': 'Харизма'
+                    }[c] || c;
+                    return `<option value="${c}" ${currentChoice === c ? 'selected' : ''}>${statName}</option>`;
+                }).join('');
+                newSelect.disabled = false;
+                newSelect.onchange = function() {
+                    currentTraitChoice = this.value;
+                    applyTrait(currentTrait, currentTraitChoice);
+                };
+            }
+        }
+        
+        // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
+    function createCustomCheckbox(checked, disabled, onChange, itemName, isEquipment = false) {
+    const span = document.createElement('span');
+    span.className = 'custom-checkbox';
+    if (checked) span.classList.add('checked');
+    span.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (disabled) return;
+        
+        // Подсчитываем текущее количество выбранных (только нефиксированных)
+        let currentSelectedCount;
+        if (isEquipment) {
+            currentSelectedCount = selectedEquipment.length;
+        } else {
+            currentSelectedCount = selectedSkills.length;
+        }
+        const maxAllowed = isEquipment ? freeEquipmentChoices : freeSkillChoices;
+        
+        if (span.classList.contains('checked')) {
+            span.classList.remove('checked');
+            onChange(false, itemName);
+            if (!isEquipment) updateSkillCounter();
+            else updateEquipmentCounter();
+            if (isEquipment) updateTraitDropdown();
+        } else {
+            if (currentSelectedCount >= maxAllowed) {
+                alert(`Можно выбрать только ${maxAllowed} ${isEquipment ? 'предметов снаряжения' : 'навыков'}!`);
+                return;
+            }
+            if (onChange(true, itemName)) {
+                span.classList.add('checked');
+                if (!isEquipment) updateSkillCounter();
+                else updateEquipmentCounter();
+                if (isEquipment) updateTraitDropdown();
+            }
+        }
+    });
+    return span;
+}
+        
+    function renderSkills() {
+    const container = document.getElementById('skillsSection');
+    container.innerHTML = '';
+    const skillGroups = {
+        'Сила': ['Атлетика'],
+        'Ловкость': ['Акробатика', 'Ловкость рук', 'Скрытность'],
+        'Интеллект': ['Анализ', 'История', 'Магия', 'Природа', 'Религия'],
+        'Мудрость': ['Внимание', 'Выживание', 'Медицина', 'Проницательность', 'Уход за животными'],
+        'Харизма': ['Выступление', 'Запугивание', 'Обман', 'Убеждение']
+    };
+    
+    const isGifted = currentTrait === 'Одарённый';
+    const currentClass = document.getElementById('class').value;
+    const isBard = currentClass === 'bard';
+    const classSkills = currentClassSkills.options || [];
+    
+    for (const [groupName, skills] of Object.entries(skillGroups)) {
+        const col = document.createElement('div'); col.className = 'skill-column';
+        col.innerHTML = `<div class="skill-title">${groupName}</div><div class="skill-row"></div>`;
+        const row = col.querySelector('.skill-row');
+        skills.forEach(skill => {
+            const label = document.createElement('label'); label.className = 'skill-item';
+            const isFixed = currentBackgroundSkills.includes(skill) || currentRaceSkills.includes(skill);
+            
+            // Если черта Одарённый активна - доступны ВСЕ навыки
+            const isAvailable = isGifted || classSkills.includes(skill) || isBard;
+            const isDisabled = !isFixed && !isAvailable;
+            
+            if (isFixed) label.classList.add('fixed');
+            if (isDisabled) label.classList.add('disabled');
+            
+            const checkboxSpan = createCustomCheckbox(isFixed, isFixed || isDisabled, (newState, skillName) => {
+                if (newState) {
+                    if (selectedSkills.length >= freeSkillChoices) return false;
+                    selectedSkills.push(skillName);
+                    return true;
+                } else {
+                    const idx = selectedSkills.indexOf(skillName);
+                    if (idx > -1) selectedSkills.splice(idx, 1);
+                    return true;
+                }
+            }, skill, false);
+            label.appendChild(checkboxSpan);
+            label.appendChild(document.createTextNode(' ' + skill));
+            row.appendChild(label);
+        });
+        container.appendChild(col);
+    }
+    updateSkillCounter();
+}
+        
+        function renderEquipment() {
+            const container = document.getElementById('equipmentSection');
+            container.innerHTML = '';
+            const fixedEquipment = getAllFixedEquipment();
+            
+            const isWeaponMaster = currentTrait === 'Мастер оружия';
+            const isHuman = document.getElementById('race').value === 'human';
+            
+            // Рассчитываем очки
+            let humanPoints = 0;
+            let weaponMasterPoints = 0;
+            
+            if (isHuman) {
+                humanPoints = 1;
+            }
+            
+            if (isWeaponMaster) {
+                weaponMasterPoints = 4;
+            }
+            
+            // Обновляем глобальную переменную
+            freeEquipmentChoices = humanPoints + weaponMasterPoints;
+            
+            // Собираем уже выбранные предметы (кроме фиксированных)
+            let selectedNonFixed = selectedEquipment.filter(item => !fixedEquipment.includes(item));
+            
+            // Ограничиваем количество выбранных, если черта была снята
+            if (selectedNonFixed.length > freeEquipmentChoices) {
+                selectedNonFixed = selectedNonFixed.slice(0, freeEquipmentChoices);
+                selectedEquipment = [...fixedEquipment, ...selectedNonFixed];
+            }
+            
+            // Считаем, сколько очков какого типа потрачено
+            let usedHumanPoints = 0;
+            let usedWeaponMasterPoints = 0;
+            
+            selectedNonFixed.forEach(item => {
+                const isArmor = ['Лёгкая броня', 'Средняя броня', 'Тяжелая броня'].includes(item);
+                if (isArmor) {
+                    if (humanPoints > 0) {
+                        usedHumanPoints++;
+                    }
+                } else {
+                    if (usedWeaponMasterPoints < weaponMasterPoints) {
+                        usedWeaponMasterPoints++;
+                    } else if (usedHumanPoints < humanPoints) {
+                        usedHumanPoints++;
+                    }
+                }
+            });
+            
+            const remainingHumanPoints = humanPoints - usedHumanPoints;
+            const remainingWeaponMasterPoints = weaponMasterPoints - usedWeaponMasterPoints;
+            
+            const equipGroups = {
+                'Броня': ['Лёгкая броня', 'Средняя броня', 'Тяжелая броня'],
+                'Простое оружие': ['Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки'],
+                'Воинское оружие': ['Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки']
+            };
+            
+            for (const [groupName, items] of Object.entries(equipGroups)) {
+                const col = document.createElement('div'); col.className = 'equipment-column';
+                col.innerHTML = `<div class="equipment-title">${groupName}</div><div class="equipment-row"></div>`;
+                const row = col.querySelector('.equipment-row');
+                
+                items.forEach(item => {
+                    const label = document.createElement('label'); label.className = 'equipment-item';
+                    const isArmor = groupName === 'Броня';
+                    const isFixed = fixedEquipment.includes(item);
+                    
+                    if (isFixed) {
+                        label.classList.add('fixed');
+                        const checkboxSpan = createCustomCheckbox(true, true, () => {}, item, true);
+                        label.appendChild(checkboxSpan);
+                        label.appendChild(document.createTextNode(' ' + item));
+                        row.appendChild(label);
+                        return;
+                    }
+                    
+                    const isSelected = selectedNonFixed.includes(item);
+                    
+                    let canSelect = false;
+                    let disabledReason = '';
+                    
+                    if (isArmor) {
+                        if (remainingHumanPoints > 0) {
+                            canSelect = true;
+                        }
+                    } else {
+                        if (remainingWeaponMasterPoints > 0) {
+                            canSelect = true;
+                        } else if (remainingHumanPoints > 0) {
+                            canSelect = true;
+                        }
+                    }
+                    
+                    if (!canSelect && !isSelected) {
+                        label.classList.add('disabled');
+                        label.style.opacity = '0.4';
+                        label.style.cursor = 'not-allowed';
+                    }
+                    
+                    const checkboxSpan = createCustomCheckbox(isSelected, !canSelect && !isSelected, (newState, equipName) => {
+                        if (!canSelect && !isSelected) return false;
+                        
+                        if (newState) {
+                            if (isArmor) {
+                                if (usedHumanPoints >= humanPoints) {
+                                    alert(`Нельзя выбрать больше ${humanPoints} предмета брони!`);
+                                    return false;
+                                }
+                                usedHumanPoints++;
+                            } else {
+                                if (remainingWeaponMasterPoints <= 0 && remainingHumanPoints <= 0) {
+                                    alert(`Нет свободных очков для выбора оружия!`);
+                                    return false;
+                                }
+                                if (remainingWeaponMasterPoints > 0) {
+                                    usedWeaponMasterPoints++;
+                                } else {
+                                    usedHumanPoints++;
+                                }
+                            }
+                            selectedEquipment.push(equipName);
+                            renderEquipment();
+                            updateTraitDropdown();
+                            return true;
+                        } else {
+                            const idx = selectedEquipment.indexOf(equipName);
+                            if (idx > -1) {
+                                if (isArmor) {
+                                    usedHumanPoints--;
+                                } else {
+                                    if (usedWeaponMasterPoints > 0) {
+                                        usedWeaponMasterPoints--;
+                                    } else {
+                                        usedHumanPoints--;
+                                    }
+                                }
+                                selectedEquipment.splice(idx, 1);
+                                renderEquipment();
+                                updateTraitDropdown();
+                            }
+                            return true;
+                        }
+                    }, item, true);
+                    label.appendChild(checkboxSpan);
+                    label.appendChild(document.createTextNode(' ' + item + disabledReason));
+                    row.appendChild(label);
+                });
+                container.appendChild(col);
+            }
+            
+            const totalRemaining = remainingHumanPoints + remainingWeaponMasterPoints;
+            const counterEl = document.getElementById('equipmentCounter');
+            if (totalRemaining > 0 || isWeaponMaster || isHuman) {
+                if (totalRemaining === 1) {
+                    counterEl.innerHTML = `Можно выбрать ещё <span>${totalRemaining}</span> предмет снаряжения`;
+                } else if (totalRemaining > 1) {
+                    counterEl.innerHTML = `Можно выбрать ещё <span>${totalRemaining}</span> предметов снаряжения`;
+                } else {
+                    counterEl.innerHTML = `Можно выбрать ещё <span>${totalRemaining}</span> предметов снаряжения`;
+                }
+                counterEl.style.color = totalRemaining === 0 ? '#f0e0b0' : '#c9a87b';
+            } else {
+                counterEl.innerHTML = '';
+            }
+        }
+        
+        function updateSkillCounter() {
+            const remaining = freeSkillChoices - selectedSkills.length;
+            const counterEl = document.getElementById('skillCounter');
+            if (freeSkillChoices > 0) {
+                counterEl.innerHTML = `Можно выбрать ещё <span>${remaining}</span> из <span>${freeSkillChoices}</span> навыков`;
+                counterEl.style.color = remaining === 0 ? '#f0e0b0' : '#c9a87b';
+            } else {
+                counterEl.innerHTML = '';
+            }
+        }
+        
+        function updateEquipmentCounter() {
+            const remaining = freeEquipmentChoices - selectedEquipment.length;
+            const counterEl = document.getElementById('equipmentCounter');
+            if (freeEquipmentChoices > 0) {
+                counterEl.innerHTML = `Можно выбрать ещё <span>${remaining}</span> из <span>${freeEquipmentChoices}</span> предметов снаряжения`;
+                counterEl.style.color = remaining === 0 ? '#f0e0b0' : '#c9a87b';
+            } else {
+                counterEl.innerHTML = '';
+            }
+        }
+        
+            function updateAll() {
+            renderSkills();
+            renderEquipment();
+            
+            let total = currentClassSkills.choices || 0;
+            if (document.getElementById('race').value === 'human') total++;
+            if (document.getElementById('race').value === 'half_elf') total++;
+            total += extraSkillChoicesFromTraits;
+            freeSkillChoices = total;
+            
+            // Обрезаем выбранные навыки до нового лимита
+            if (selectedSkills.length > freeSkillChoices) {
+                selectedSkills = selectedSkills.slice(0, freeSkillChoices);
+            }
+            
+            updateSkillCounter();
+            updateTraitDropdown();
+            updateStatSums();
+            if (currentMode === 'points') {
+                updatePointsCounter();
+                updateStatButtons();
+            }
+        }
+        
+        function updateRacialFeature() {
+            const race = document.getElementById('race').value;
+            const group = document.getElementById('racialFeatureGroup');
+            const select = document.getElementById('racialFeature');
+            const label = document.getElementById('racialFeatureLabel');
+            const tooltip = document.getElementById('racialFeatureTooltip');
+            
+            if (race === 'human') {
+                group.style.display = 'block';
+                label.textContent = 'Черта';
+                select.innerHTML = '<option value="">Выберите черту</option>' + humanTraits.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+                select.disabled = false;
+                updateTraitDropdown();
+                
+                select.onchange = function() {
+                    const selected = humanTraits.find(t => t.name === this.value);
+                    if (selected && isTraitAvailable(selected.name)) {
+                        tooltip.innerHTML = selected.desc;
+                        currentTrait = selected.name;
+                        updateTraitChoiceUI();
+                        if (selected.statBonus === 'choice') {
+                            const firstChoice = selected.choices[0];
+                            applyTrait(selected.name, firstChoice);
+                        } else {
+                            applyTrait(selected.name);
+                        }
+                    } else if (selected && !isTraitAvailable(selected.name)) {
+                        this.value = '';
+                        tooltip.innerHTML = 'Черта - дополнительная особенность';
+                        clearTrait();
+                        updateTraitChoiceUI();
+                    } else {
+                        tooltip.innerHTML = 'Черта - дополнительная особенность';
+                        clearTrait();
+                        updateTraitChoiceUI();
+                    }
+                };
+            } else {
+                group.style.display = 'none';
+                select.disabled = true;
+                clearTrait();
+                updateTraitChoiceUI();
+            }
+        }
+        
+        function isTraitAvailable(traitName) {
+            const trait = humanTraits.find(t => t.name === traitName);
+            if (!trait) return true;
+            if (armorTraits.includes(traitName) && hasAnyArmorTrait() && currentTrait !== traitName) return false;
+            if (traitName === 'Знаток средних доспехов') return hasLightArmor();
+            if (traitName === 'Знаток тяжёлых доспехов') return hasMediumArmor();
+            if (trait.requirements) {
+                if (trait.requirements.stat) {
+                    const statKey = trait.requirements.stat;
+                    let baseValue = currentMode === 'points' ? statValues[statKey] : statDice[statKey];
+                    const raceBonus = getRaceBonus(statKey);
+                    const extra = currentMode === 'points' ? (statExtras[statKey] || 0) : 0;
+                    let total = baseValue + raceBonus + extra;
+                    if (currentTrait && currentTrait !== traitName) {
+                        const otherTrait = humanTraits.find(t => t.name === currentTrait);
+                        if (otherTrait) {
+                            if (otherTrait.statBonus === statKey) total += 1;
+                            else if (otherTrait.statBonus === 'choice' && currentTraitChoice === statKey) total += 1;
+                        }
+                    }
+                    if (total < trait.requirements.minValue) return false;
+                }
+                if (trait.requirements.armor) {
+                    const fixedEquipment = getAllFixedEquipment();
+                    const hasArmor = fixedEquipment.includes(trait.requirements.armor) || selectedEquipment.includes(trait.requirements.armor);
+                    if (!hasArmor) return false;
+                }
+                if (trait.requirements.class === 'spellcaster') {
+                    const classValue = document.getElementById('class').value;
+                    const spellcasterClasses = ['wizard', 'cleric', 'sorcerer', 'warlock', 'bard', 'druid'];
+                    if (!spellcasterClasses.includes(classValue)) return false;
+                }
+                if (trait.requirements.weaponProficiency) {
+                    const classValue = document.getElementById('class').value;
+                    const martialClasses = ['fighter', 'barbarian', 'ranger', 'paladin', 'monk', 'rogue'];
+                    let hasMartialWeapon = martialClasses.includes(classValue);
+                    const raceValue = document.getElementById('race').value;
+                    if (raceValue === 'elf') hasMartialWeapon = true;
+                    const fixedEquipment = getAllFixedEquipment();
+                    const martialWeapons = ['Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки'];
+                    const hasMartialFromEquipment = fixedEquipment.some(item => martialWeapons.includes(item)) || selectedEquipment.some(item => martialWeapons.includes(item));
+                    if (!hasMartialWeapon && !hasMartialFromEquipment) return false;
+                }
+                if (trait.requirements.stat === 'intelligence_or_wisdom') {
+                    let intValue = currentMode === 'points' ? statValues.intelligence : statDice.intelligence;
+                    let wisValue = currentMode === 'points' ? statValues.wisdom : statDice.wisdom;
+                    intValue += getRaceBonus('intelligence') + (statExtras.intelligence || 0);
+                    wisValue += getRaceBonus('wisdom') + (statExtras.wisdom || 0);
+                    if (intValue < 13 && wisValue < 13) return false;
+                }
+            }
+            return true;
+        }
+        
+        // ==================== СЛУШАТЕЛИ ====================
+        document.getElementById('background').addEventListener('change', function() {
+            currentBackgroundSkills = backgroundSkillsMap[this.value] || [];
+            document.getElementById('backgroundTooltip').innerHTML = backgroundTooltips[this.value] || '';
+            updateAll();
+        });
+        
+        document.getElementById('class').addEventListener('change', function() {
+            const val = this.value;
+            if (val && classSkillsMap[val]) {
+                currentClassSkills = classSkillsMap[val];
+                currentAvailableSkills = currentClassSkills.options;
+                document.getElementById('classTooltip').innerHTML = `<div>Класс даёт ${currentClassSkills.choices} навыка на выбор</div><a href="https://www.google.com" target="_blank" style="display:inline-block;padding:5px 12px;background:#8b7355;color:#fff;text-decoration:none;margin-top:5px">Узнать больше</a>`;
+            } else {
+                currentClassSkills = { choices: 0, options: [] };
+                currentAvailableSkills = [];
+                document.getElementById('classTooltip').innerHTML = '';
+            }
+            currentClassEquipment = classEquipmentMap[val] || [];
+            updateAll();
+        });
+        
+        document.getElementById('race').addEventListener('change', function() {
+            const val = this.value;
+            currentRaceSkills = raceSkillsMap[val] || [];
+            currentRaceEquipment = raceEquipmentMap[val] || [];
+            document.getElementById('raceTooltip').innerHTML = raceTooltips[val] || '';
+            updateRacialFeature();
+            updateAll();
+        });
+        
+        document.querySelectorAll('.stat-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const stat = row.getAttribute('data-stat');
+                const action = this.getAttribute('data-action');
+                const delta = action === 'plus' ? 1 : -1;
+                adjustStat(stat, delta);
+            });
+        });
+        
+        const rerollBtn = document.querySelector('.reroll-all-btn');
+        if (rerollBtn) rerollBtn.addEventListener('click', () => rerollAllDice());
+        
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                switchMode(this.getAttribute('data-mode'));
+            });
+        });
+        
+        // ==================== ОТПРАВКА ====================
+        const form = document.getElementById('dndForm');
+        const successMsg = document.getElementById('successMessage');
+        const errorMsg = document.getElementById('errorMessage');
+        
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('characterName').value;
+            const bg = document.getElementById('background').options[document.getElementById('background').selectedIndex]?.text || 'Не выбрано';
+            const cls = document.getElementById('class').options[document.getElementById('class').selectedIndex]?.text || 'Не выбрано';
+            const race = document.getElementById('race').options[document.getElementById('race').selectedIndex]?.text || 'Не выбрано';
+            const trait = document.getElementById('racialFeature').value || 'Не выбрано';
+            const additional = document.getElementById('additionalInfo').value;
+            
+            const skills = [...currentBackgroundSkills, ...currentRaceSkills, ...selectedSkills];
+            const equipment = [...getAllFixedEquipment(), ...selectedEquipment];
+            
+            const stats = {
+                strength: { base: currentMode === 'points' ? statValues.strength : statDice.strength, extra: statExtras.strength },
+                dexterity: { base: currentMode === 'points' ? statValues.dexterity : statDice.dexterity, extra: statExtras.dexterity },
+                constitution: { base: currentMode === 'points' ? statValues.constitution : statDice.constitution, extra: statExtras.constitution },
+                intelligence: { base: currentMode === 'points' ? statValues.intelligence : statDice.intelligence, extra: statExtras.intelligence },
+                wisdom: { base: currentMode === 'points' ? statValues.wisdom : statDice.wisdom, extra: statExtras.wisdom },
+                charisma: { base: currentMode === 'points' ? statValues.charisma : statDice.charisma, extra: statExtras.charisma }
+            };
+            
+            for (const s of Object.keys(stats)) {
+                const raceBonus = getRaceBonus(s);
+                const traitBonus = getTraitBonus()[s] || 0;
+                stats[s].total = stats[s].base + raceBonus + traitBonus + stats[s].extra;
+                if (stats[s].total > 20) stats[s].total = 20;
+                stats[s].mod = getModifier(stats[s].total);
+            }
+            
+            const statsText = `Сила: ${stats.strength.base} + ${getRaceBonus('strength')} (раса) + ${getTraitBonus().strength || 0} (черта) + ${stats.strength.extra} = ${stats.strength.total} (модификатор ${stats.strength.mod >= 0 ? '+' : ''}${stats.strength.mod})
+Ловкость: ${stats.dexterity.base} + ${getRaceBonus('dexterity')} (раса) + ${getTraitBonus().dexterity || 0} (черта) + ${stats.dexterity.extra} = ${stats.dexterity.total} (модификатор ${stats.dexterity.mod >= 0 ? '+' : ''}${stats.dexterity.mod})
+Телосложение: ${stats.constitution.base} + ${getRaceBonus('constitution')} (раса) + ${getTraitBonus().constitution || 0} (черта) + ${stats.constitution.extra} = ${stats.constitution.total} (модификатор ${stats.constitution.mod >= 0 ? '+' : ''}${stats.constitution.mod})
+Интеллект: ${stats.intelligence.base} + ${getRaceBonus('intelligence')} (раса) + ${getTraitBonus().intelligence || 0} (черта) + ${stats.intelligence.extra} = ${stats.intelligence.total} (модификатор ${stats.intelligence.mod >= 0 ? '+' : ''}${stats.intelligence.mod})
+Мудрость: ${stats.wisdom.base} + ${getRaceBonus('wisdom')} (раса) + ${getTraitBonus().wisdom || 0} (черта) + ${stats.wisdom.extra} = ${stats.wisdom.total} (модификатор ${stats.wisdom.mod >= 0 ? '+' : ''}${stats.wisdom.mod})
+Харизма: ${stats.charisma.base} + ${getRaceBonus('charisma')} (раса) + ${getTraitBonus().charisma || 0} (черта) + ${stats.charisma.extra} = ${stats.charisma.total} (модификатор ${stats.charisma.mod >= 0 ? '+' : ''}${stats.charisma.mod})`;
+            
+            const msg = `Имя: ${name}
+Предыстория: ${bg}
+Класс: ${cls}
+Раса: ${race}
+Черта: ${trait}${currentTraitChoice ? ' (' + {strength:'Сила',dexterity:'Ловкость',constitution:'Телосложение',intelligence:'Интеллект',wisdom:'Мудрость',charisma:'Харизма'}[currentTraitChoice] + ')' : ''}
+Навыки: ${[...new Set(skills)].join(', ') || 'Нет'}
+Снаряжение: ${[...new Set(equipment)].join(', ') || 'Нет'}
+Характеристики:
+${statsText}
+Доп. информация: ${additional || 'Нет'}`;
+            
+            document.getElementById('skillsInput').value = [...new Set(skills)].join(', ');
+            document.getElementById('equipmentInput').value = [...new Set(equipment)].join(', ');
+            document.getElementById('traitHidden').value = trait;
+            document.getElementById('statsInput').value = statsText;
+            
+            const btn = form.querySelector('button[type="submit"]');
+            btn.classList.add('loading');
+            btn.textContent = 'Отправка...';
+            
+            const fd = new FormData(form);
+            fd.set('message', msg);
+            
+            try {
+                const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.success) {
+                    successMsg.style.display = 'block';
+                    setTimeout(() => successMsg.style.display = 'none', 5000);
+                    form.reset();
+                    currentBackgroundSkills = [];
+                    currentRaceSkills = [];
+                    currentRaceEquipment = [];
+                    currentClassEquipment = [];
+                    currentClassSkills = { choices: 0, options: [] };
+                    currentTrait = null;
+                    currentTraitArmor = null;
+                    currentTraitChoice = null;
+                    selectedSkills = [];
+                    selectedEquipment = [];
+                    statValues = { strength: 8, dexterity: 8, constitution: 8, intelligence: 8, wisdom: 8, charisma: 8 };
+                    statExtras = { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
+                    statDice = { strength: 8, dexterity: 8, constitution: 8, intelligence: 8, wisdom: 8, charisma: 8 };
+                    updateRacialFeature();
+                    updateAll();
+                    switchMode('points');
+                    setupExtras();
+                } else throw new Error();
+            } catch(e) {
+                errorMsg.style.display = 'block';
+                setTimeout(() => errorMsg.style.display = 'none', 5000);
+            } finally {
+                btn.classList.remove('loading');
+                btn.textContent = 'Отправить';
+            }
+        });
+        
+        updateAll();
+        setupExtras();
+        switchMode('points');
+        const stats = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+        stats.forEach(stat => { statDice[stat] = generateStatValue(); });
+        updateStatSums();
+    </script>
+</body>
+</html>

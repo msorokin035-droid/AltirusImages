@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
+  <title>Интерактивная фэнтези-карта</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0c12;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .map-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #0b0d14;
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    .map-container.grabbing {
+      cursor: grabbing;
+    }
+
+    .world-map-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      will-change: transform;
+      transform: translate(0px, 0px) scale(1);
+    }
+
+    .world-map {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      will-change: filter, opacity;
+      transition: filter 0.3s ease, opacity 0.25s ease;
+    }
+
+    .map-container.zone-active .world-map {
+      filter: brightness(0.5) saturate(0.8);
+    }
+
+    .map-zone {
+      position: absolute;
+      z-index: 10;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.15s ease, box-shadow 0.15s ease;
+      /* Координаты задаются в процентах от размера картинки */
+    }
+
+    .map-zone:hover {
+      background: rgba(255, 215, 0, 0.12);
+      box-shadow: 0 0 20px rgba(255, 200, 50, 0.5);
+    }
+
+    /* Полноэкранный оверлей */
+    .detail-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(8, 10, 15, 0.96);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      overflow: hidden;
+    }
+
+    .detail-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .zoom-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+    }
+
+    .zoom-wrapper.grabbing {
+      cursor: grabbing;
+    }
+
+    .detail-image {
+      display: block;
+      object-fit: contain;
+      will-change: transform;
+      transform: translate(0px, 0px) scale(1);
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      opacity: 1;
+      transition: opacity 0.2s ease;
+    }
+
+    .detail-image.loading {
+      opacity: 0.25;
+    }
+
+    .detail-spinner {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 105;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3px solid rgba(184, 155, 75, 0.25);
+      border-top-color: #b89b4b;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .detail-spinner.active {
+      opacity: 1;
+      visibility: visible;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .detail-title {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 110;
+      background: rgba(20, 25, 38, 0.9);
+      color: #f0e6c5;
+      padding: 10px 28px;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      border: 1px solid #b89b4b;
+      backdrop-filter: blur(6px);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .close-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 120;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(20, 25, 35, 0.9);
+      border: 1px solid #b89b4b;
+      color: #f0e6c5;
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.15s;
+      backdrop-filter: blur(6px);
+    }
+
+    .close-btn:hover {
+      background: rgba(180, 50, 50, 0.85);
+      border-color: #d48080;
+      transform: scale(1.1);
+    }
+
+    .zoom-controls {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 120;
+      display: flex;
+      gap: 10px;
+    }
+
+    .zoom-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(20, 25, 35, 0.9);
+      border: 1px solid #b89b4b;
+      color: #f0e6c5;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.15s;
+      backdrop-filter: blur(6px);
+    }
+
+    .zoom-btn:hover {
+      background: rgba(40, 45, 58, 0.95);
+      transform: scale(1.08);
+    }
+
+    .zoom-btn.reset-btn {
+      width: auto;
+      border-radius: 30px;
+      padding: 0 18px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    .zoom-level {
+      position: fixed;
+      bottom: 82px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 115;
+      color: #ccc8b0;
+      font-size: 0.8rem;
+      background: rgba(10, 12, 18, 0.8);
+      padding: 4px 12px;
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+    .hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      background: rgba(10, 12, 18, 0.85);
+      backdrop-filter: blur(4px);
+      color: #ccc8b0;
+      padding: 10px 26px;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      border: 1px solid #5e5a44;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 700px) {
+      .hint { font-size: 0.75rem; padding: 6px 16px; bottom: 12px; }
+      .close-btn { width: 38px; height: 38px; top: 12px; right: 12px; }
+      .detail-title { font-size: 0.9rem; top: 12px; padding: 8px 20px; }
+      .zoom-btn { width: 36px; height: 36px; }
+      .zoom-level { bottom: 72px; }
+      .zoom-controls { bottom: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="map-container" id="mapContainer">
+    <!-- Обертка для всей карты -->
+    <div class="world-map-wrapper" id="worldMapWrapper">
+      <img 
+        src="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/compressed/world%20map.jpg" 
+        alt="Фэнтези карта мира" 
+        class="world-map" 
+        id="worldMap"
+        loading="lazy"
+        decoding="async"
+        draggable="false"
+        data-src="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/compressed/world%20map.jpg"
+      >
+
+      <!-- Зоны (позиционируются в процентах относительно размера картинки) -->
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/valentis.jpg" data-label="Валентис" data-top="31" data-left="13.8" data-width="5" data-height="15"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/kordenia.jpg" data-label="Кордения" data-top="19" data-left="53" data-width="18" data-height="17"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/benares.jpg" data-label="Бенарес" data-top="64" data-left="53" data-width="20" data-height="18"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/khirdia.jpg" data-label="Хирдия" data-top="10" data-left="52" data-width="14" data-height="10"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/sangar.jpg" data-label="Сангар" data-top="35" data-left="53" data-width="18" data-height="30"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/targay.jpg" data-label="Таргай" data-top="20" data-left="70" data-width="22" data-height="55"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/askania.jpg" data-label="Аскания" data-top="4" data-left="10" data-width="22" data-height="28"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/velos.jpg" data-label="Велос" data-top="48" data-left="28" data-width="20" data-height="38"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/w_araukana.jpg" data-label="Восточная Араукана" data-top="25" data-left="1" data-width="8" data-height="30"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/s_araukana.jpg" data-label="Южная Араукана" data-top="65" data-left="10" data-width="15" data-height="18"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/n_araukana.jpg" data-label="Северная Араукана" data-top="45" data-left="8" data-width="10" data-height="18"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/kurugef.jpg" data-label="Куругеф" data-top="28" data-left="8" data-width="5" data-height="15"></div>
+    </div>
+    
+    <!-- Оверлей -->
+    <div class="detail-overlay" id="detailOverlay">
+      <div class="detail-title" id="detailTitle"></div>
+      <button class="close-btn" id="closeBtn" title="Закрыть (Esc)" aria-label="Закрыть">✕</button>
+
+      <div class="detail-spinner" id="detailSpinner"></div>
+
+      <div class="zoom-wrapper" id="zoomWrapper">
+        <img class="detail-image" id="detailImage" src="" alt="Детальная карта" draggable="false">
+      </div>
+
+      <div class="zoom-level" id="zoomLevel">100%</div>
+
+      <div class="zoom-controls">
+        <button class="zoom-btn" id="zoomOutBtn" aria-label="Уменьшить">−</button>
+        <button class="zoom-btn reset-btn" id="resetZoomBtn">Сбросить</button>
+        <button class="zoom-btn" id="zoomInBtn" aria-label="Увеличить">+</button>
+      </div>
+    </div>
+
+    <div class="hint" id="hintText">Кликните на регион — появится подробная карта</div>
+  </div>
+
+  <script>
+    (() => {
+      // =====================================================================
+      // КЭШИРОВАНИЕ ИЗОБРАЖЕНИЙ (Cache Storage API)
+      //
+      // GitHub отдаёт картинки с коротким временем жизни в HTTP-кэше браузера,
+      // поэтому при каждом визите они качаются заново. Чтобы обойти это, мы
+      // сами скачиваем файл один раз через fetch() и кладём его в постоянное
+      // хранилище Cache Storage (тот же API, что использует Service Worker,
+      // но доступен и напрямую со страницы, без регистрации SW — это удобно
+      // для встраивания в Wix). При повторных заходах картинка берётся из
+      // этого хранилища, а не с github.com.
+      // =====================================================================
+      const CACHE_NAME = 'altirus-map-cache-v2'; // версия увеличена, чтобы сбросить возможные повреждённые записи из v1
+      const cacheSupported = typeof window !== 'undefined' && 'caches' in window;
+      const blobUrlCache = new Map(); // url -> blob: URL, чтобы не создавать дубликаты за сессию
+
+      // Достаёт "сырые" байты картинки (Blob) — либо из Cache Storage, либо
+      // из сети (и в этом случае сохраняет их в Cache Storage на будущее).
+      // Общая точка входа, которой пользуются и getCachedImageURL (полное
+      // изображение), и генератор LOD ниже (уменьшенные версии).
+      async function getRawBlob(url) {
+        if (!cacheSupported) {
+          const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
+          if (!resp || !resp.ok) throw new Error('Сетевой запрос не удался: ' + url);
+          return await resp.blob();
+        }
+
+        const cache = await caches.open(CACHE_NAME);
+        const cachedResponse = await cache.match(url);
+        if (cachedResponse) {
+          return await cachedResponse.blob();
+        }
+
+        const networkResponse = await fetch(url, { mode: 'cors', credentials: 'omit' });
+        if (!networkResponse || !networkResponse.ok) throw new Error('Сетевой запрос не удался: ' + url);
+
+        // ВАЖНО: читаем тело ответа только ОДИН раз через arrayBuffer().
+        // По спецификации этот метод ждёт полной загрузки всех байт (или
+        // отклоняет промис при обрыве соединения) — в отличие от связки
+        // response.clone() + двойное чтение, которая на некоторых браузерах
+        // (особенно Safari/iOS) может при больших файлах терять часть данных.
+        const arrayBuffer = await networkResponse.arrayBuffer();
+        const contentType = networkResponse.headers.get('content-type') || 'image/jpg';
+
+        const declaredLength = networkResponse.headers.get('content-length');
+        if (declaredLength && parseInt(declaredLength, 10) !== arrayBuffer.byteLength) {
+          console.warn('Изображение загрузилось не полностью, кэш не сохраняем:', url,
+            'ожидалось байт:', declaredLength, 'получено:', arrayBuffer.byteLength);
+          throw new Error('Неполная загрузка: ' + url);
+        }
+
+        try {
+          await cache.put(url, new Response(arrayBuffer.slice(0), {
+            headers: { 'Content-Type': contentType }
+          }));
+        } catch (putErr) {
+          console.warn('Не удалось сохранить изображение в кэш (например, не хватает места):', url, putErr);
+        }
+
+        return new Blob([arrayBuffer], { type: contentType });
+      }
+
+      async function getCachedImageURL(url) {
+        // Уже создавали blob-URL в этой сессии — используем его повторно
+        if (blobUrlCache.has(url)) return blobUrlCache.get(url);
+
+        try {
+          const blob = await getRawBlob(url);
+          const objectUrl = URL.createObjectURL(blob);
+          blobUrlCache.set(url, objectUrl);
+          return objectUrl;
+        } catch (err) {
+          // CORS-блок, офлайн, приватный режим, неполная загрузка и т.п. —
+          // просто грузим напрямую по исходной ссылке
+          console.warn('Кэш изображений недоступен, используется прямая ссылка:', url, err);
+          return url;
+        }
+      }
+
+      // Фоновая предзагрузка и кэширование картинки без блокировки интерфейса
+      function warmCache(url) {
+        getCachedImageURL(url).catch(() => {});
+      }
+
+      // =====================================================================
+      // УРОВНИ ДЕТАЛИЗАЦИИ (LOD) ДЛЯ РЕГИОНАЛЬНЫХ КАРТ
+      //
+      // Проблема: когда <img> с очень большим натуральным разрешением
+      // рисуется через CSS transform: scale() с маленьким коэффициентом
+      // (в нашем случае это происходит при отдалении ≤20%, т.е. scale ≈
+      // 0.05–0.20), браузер должен "на лету" сжать в разы больше пикселей,
+      // чем помещается на экране. На слабом мобильном GPU движок композитинга
+      // не успевает отрисовать все тайлы текстуры за кадр — часть из них
+      // остаётся пустой, из-за чего картинка выглядит "рваной на чанки".
+      // Файл при этом не повреждён и полностью скачан.
+      //
+      // Решение — классический LOD/mipmap: заранее (при первом обращении)
+      // готовим уменьшенные растровые копии региона через
+      // createImageBitmap + OffscreenCanvas, и при сильном отдалении
+      // подменяем src у <img> на уменьшенную копию. Тогда реальный
+      // коэффициент CSS-масштабирования, который видит браузер, остаётся
+      // в разумных пределах (не ниже ~0.4), и проблема не возникает.
+      //
+      // "scale" в коде детальной карты по-прежнему означает масштаб
+      // относительно ПОЛНОГО (натурального) изображения — это сохраняет
+      // всю существующую логику зума/панорамирования и проценты в UI
+      // без изменений. Меняется только то, какой физический файл сейчас
+      // показан и с каким множителем.
+      // =====================================================================
+
+      const LOD_SUPPORTED = typeof createImageBitmap === 'function' && typeof OffscreenCanvas !== 'undefined';
+
+      // Тиры отсортированы от самого мелкого к самому крупному.
+      // ratio — во сколько раз уменьшена копия относительно оригинала.
+      // switchDown — переключаемся на этот тир, когда scale опускается ниже.
+      // switchUp — возвращаемся к более детальному тиру, когда scale поднимается выше
+      // (зазор между switchDown/switchUp — гистерезис, чтобы не было мигания на границе).
+      const LOD_TIERS = [
+        { name: 'low', ratio: 0.12, switchDown: 0.08, switchUp: 0.11 },
+        { name: 'mid', ratio: 0.35, switchDown: 0.22, switchUp: 0.30 }
+      ];
+      // Всё, что выше mid.switchUp — показывается тиром 'full' (оригинал).
+
+      const lodUrlCache = new Map();       // "src::tierName" -> object URL уменьшенной копии
+      const fullBitmapPromises = new Map(); // src -> Promise<ImageBitmap> полного изображения (для генерации LOD)
+      const fullNaturalDims = new Map();    // src -> {w, h} натуральные размеры (не зависят от того, какой тир сейчас показан)
+
+      async function getFullBitmapForLOD(src) {
+        if (fullBitmapPromises.has(src)) return fullBitmapPromises.get(src);
+        const p = (async () => {
+          const blob = await getRawBlob(src);
+          const bitmap = await createImageBitmap(blob);
+          if (!fullNaturalDims.has(src)) {
+            fullNaturalDims.set(src, { w: bitmap.width, h: bitmap.height });
+          }
+          return bitmap;
+        })();
+        fullBitmapPromises.set(src, p);
+        return p;
+      }
+
+      async function generateLOD(src, ratio, tierName) {
+        const key = src + '::' + tierName;
+        if (lodUrlCache.has(key)) return lodUrlCache.get(key);
+
+        if (!LOD_SUPPORTED) {
+          // Нет поддержки createImageBitmap/OffscreenCanvas (очень старый браузер) —
+          // отдаём оригинал, пусть браузер справляется как умеет.
+          return getCachedImageURL(src);
+        }
+
+        const bitmap = await getFullBitmapForLOD(src);
+        const w = Math.max(1, Math.round(bitmap.width * ratio));
+        const h = Math.max(1, Math.round(bitmap.height * ratio));
+
+        const canvas = new OffscreenCanvas(w, h);
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(bitmap, 0, 0, w, h);
+
+        const outBlob = await canvas.convertToBlob({ type: 'image/webp', quality: 0.85 });
+        const url = URL.createObjectURL(outBlob);
+        lodUrlCache.set(key, url);
+        return url;
+      }
+
+      // Определяет, какой тир должен быть активен при данном scale,
+      // с учётом гистерезиса вокруг текущего тира.
+      function pickTier(s, current) {
+        const low = LOD_TIERS[0];
+        const mid = LOD_TIERS[1];
+        if (s < low.switchDown) return 'low';
+        if (current === 'low' && s < low.switchUp) return 'low';
+        if (s < mid.switchDown) return 'mid';
+        if (current === 'mid' && s < mid.switchUp) return 'mid';
+        return 'full';
+      }
+
+      // Удаляем кэши старых версий (например, altirus-map-cache-v1 с возможными
+      // повреждёнными файлами), чтобы не занимали место и точно не использовались
+      if (cacheSupported && 'keys' in caches) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            if (name.startsWith('altirus-map-cache-') && name !== CACHE_NAME) {
+              caches.delete(name);
+            }
+          });
+        }).catch(() => {});
+      }
+
+      // =====================================================================
+      // Элементы
+      // =====================================================================
+      const container = document.getElementById('mapContainer');
+      const wrapper = document.getElementById('worldMapWrapper');
+      const worldMapImg = document.getElementById('worldMap');
+      const detailOverlay = document.getElementById('detailOverlay');
+      const detailImage = document.getElementById('detailImage');
+      const detailSpinner = document.getElementById('detailSpinner');
+      const detailTitle = document.getElementById('detailTitle');
+      const hintText = document.getElementById('hintText');
+      const zoomWrapper = document.getElementById('zoomWrapper');
+      const zoomLevelEl = document.getElementById('zoomLevel');
+      const zones = document.querySelectorAll('.map-zone');
+
+      // --- Состояние основной карты ---
+      let worldScale = 1;
+      let worldTranslateX = 0;
+      let worldTranslateY = 0;
+      let isWorldDragging = false;
+      let worldStartX = 0, worldStartY = 0;
+      let worldLastTX = 0, worldLastTY = 0;
+      let worldAnimationId = null;
+      let worldTargetScale = 1;
+      let worldTargetTX = 0, worldTargetTY = 0;
+      let isWorldAnimating = false;
+
+      // --- Состояние детальной карты ---
+      let currentZone = null;
+      let scale = 1;
+      let translateX = 0;
+      let translateY = 0;
+      let isDragging = false;
+      let startX = 0, startY = 0;
+      let lastTX = 0, lastTY = 0;
+      let animationId = null;
+      let targetScale = 1;
+      let targetTX = 0, targetTY = 0;
+      let isAnimating = false;
+      let detailLoadToken = 0; // защита от гонки, если пользователь быстро кликает по разным зонам
+
+      // --- Состояние текущего LOD-тира детальной карты ---
+      let activeTierName = 'full';   // 'full' | 'mid' | 'low'
+      let currentTierRatio = 1;      // во сколько раз показанный файл меньше оригинала
+      let tierSwitchInProgress = false;
+
+      const MIN_SCALE = 0.05;
+      const MAX_SCALE = 1;
+      const ZOOM_STEP = 0.25;
+      const WORLD_MIN_SCALE = 0.3;
+      const WORLD_MAX_SCALE = 4;
+      const MIN_ZONE_PX = 26; // минимальный размер зоны клика на экране (px), чтобы попасть пальцем на маленьком виджете
+
+      // --- Утилиты для основной карты ---
+      const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+
+      // =====================================================================
+      // Позиционирование зон клика
+      //
+      // Картинка вписывается в контейнер через object-fit:contain, поэтому
+      // при несовпадении пропорций контейнера и картинки по краям появляются
+      // пустые поля (letterboxing). Проценты, заданные в data-атрибутах,
+      // относятся к самой картинке, а не к контейнеру — поэтому фактическое
+      // положение и размер каждой зоны в пикселях считаем здесь, с учётом
+      // этих полей. Благодаря этому зоны совпадают с картой при любых
+      // пропорциях виджета (растянутом на телефоне, широком на компьютере
+      // и т.д.), пересчёт запускается при каждом изменении размера.
+      // =====================================================================
+      function updateZoneLayout() {
+        if (!worldMapImg.naturalWidth || !worldMapImg.naturalHeight) return;
+
+        const cw = container.clientWidth;
+        const ch = container.clientHeight;
+        const ir = worldMapImg.naturalWidth / worldMapImg.naturalHeight;
+        const cr = cw / ch;
+
+        let renderW, renderH, offsetX, offsetY;
+        if (ir > cr) {
+          // Картинка шире контейнера по пропорциям — поля сверху/снизу
+          renderW = cw;
+          renderH = cw / ir;
+          offsetX = 0;
+          offsetY = (ch - renderH) / 2;
+        } else {
+          // Картинка выше/уже контейнера по пропорциям — поля по бокам
+          renderH = ch;
+          renderW = ch * ir;
+          offsetY = 0;
+          offsetX = (cw - renderW) / 2;
+        }
+
+        zones.forEach(zone => {
+          const top = parseFloat(zone.dataset.top);
+          const left = parseFloat(zone.dataset.left);
+          const width = parseFloat(zone.dataset.width);
+          const height = parseFloat(zone.dataset.height);
+
+          let w = width / 100 * renderW;
+          let h = height / 100 * renderH;
+          let x = offsetX + left / 100 * renderW;
+          let y = offsetY + top / 100 * renderH;
+
+          // Расширяем слишком маленькие зоны, не сдвигая их центр —
+          // чтобы по ним было проще попасть пальцем на маленьком виджете
+          if (w < MIN_ZONE_PX) {
+            const zcx = x + w / 2;
+            w = MIN_ZONE_PX;
+            x = zcx - w / 2;
+          }
+          if (h < MIN_ZONE_PX) {
+            const zcy = y + h / 2;
+            h = MIN_ZONE_PX;
+            y = zcy - h / 2;
+          }
+
+          zone.style.left = x + 'px';
+          zone.style.top = y + 'px';
+          zone.style.width = w + 'px';
+          zone.style.height = h + 'px';
+        });
+      }
+
+      let zoneResizeTimer = null;
+      function scheduleZoneLayoutUpdate() {
+        clearTimeout(zoneResizeTimer);
+        zoneResizeTimer = setTimeout(updateZoneLayout, 60);
+      }
+
+      function getWorldClampedTranslations(s = worldScale) {
+        const containerRect = container.getBoundingClientRect();
+        const imgRect = worldMapImg.getBoundingClientRect();
+        if (!imgRect.width || !imgRect.height) return { tx: worldTranslateX, ty: worldTranslateY };
+        
+        const scaledW = (imgRect.width / s) * s;
+        const scaledH = (imgRect.height / s) * s;
+        const maxTX = Math.max(0, (scaledW - containerRect.width) / 2);
+        const maxTY = Math.max(0, (scaledH - containerRect.height) / 2);
+        
+        return {
+          tx: clamp(worldTranslateX, -maxTX, maxTX),
+          ty: clamp(worldTranslateY, -maxTY, maxTY)
+        };
+      }
+
+      function applyWorldTransform(s = worldScale, tx = worldTranslateX, ty = worldTranslateY) {
+        wrapper.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+        // Обновляем отображение масштаба только если оверлей не активен
+        if (!detailOverlay.classList.contains('active')) {
+          zoomLevelEl.textContent = `${Math.round(s * 100)}%`;
+        }
+      }
+
+      function smoothWorldTransform() {
+        const speed = 0.25;
+        worldScale += (worldTargetScale - worldScale) * speed;
+        worldTranslateX += (worldTargetTX - worldTranslateX) * speed;
+        worldTranslateY += (worldTargetTY - worldTranslateY) * speed;
+
+        const clamped = getWorldClampedTranslations(worldScale);
+        worldTranslateX = clamped.tx;
+        worldTranslateY = clamped.ty;
+
+        applyWorldTransform(worldScale, worldTranslateX, worldTranslateY);
+
+        if (Math.abs(worldTargetScale - worldScale) > 0.001 || 
+            Math.abs(worldTargetTX - worldTranslateX) > 0.1 || 
+            Math.abs(worldTargetTY - worldTranslateY) > 0.1) {
+          worldAnimationId = requestAnimationFrame(smoothWorldTransform);
+        } else {
+          worldScale = worldTargetScale;
+          const finalClamped = getWorldClampedTranslations(worldScale);
+          worldTranslateX = finalClamped.tx;
+          worldTranslateY = finalClamped.ty;
+          worldTargetTX = worldTranslateX;
+          worldTargetTY = worldTranslateY;
+          applyWorldTransform(worldScale, worldTranslateX, worldTranslateY);
+          isWorldAnimating = false;
+          worldAnimationId = null;
+        }
+      }
+
+      function setWorldTransform(s, tx, ty, instant = false) {
+        worldTargetScale = clamp(s, WORLD_MIN_SCALE, WORLD_MAX_SCALE);
+        worldTargetTX = tx;
+        worldTargetTY = ty;
+
+        if (instant) {
+          worldScale = worldTargetScale;
+          worldTranslateX = worldTargetTX;
+          worldTranslateY = worldTargetTY;
+          const clamped = getWorldClampedTranslations(worldScale);
+          worldTranslateX = clamped.tx;
+          worldTranslateY = clamped.ty;
+          worldTargetTX = worldTranslateX;
+          worldTargetTY = worldTranslateY;
+          applyWorldTransform(worldScale, worldTranslateX, worldTranslateY);
+          isWorldAnimating = false;
+          if (worldAnimationId) cancelAnimationFrame(worldAnimationId);
+        } else {
+          if (!isWorldAnimating) {
+            isWorldAnimating = true;
+            worldAnimationId = requestAnimationFrame(smoothWorldTransform);
+          }
+        }
+      }
+
+      function resetWorldView(instant = true) {
+        setWorldTransform(1, 0, 0, instant);
+      }
+
+      function zoomWorldAtPoint(newScale, cx, cy, instant = false) {
+        const containerRect = container.getBoundingClientRect();
+        const px = cx - containerRect.left - containerRect.width / 2;
+        const py = cy - containerRect.top - containerRect.height / 2;
+        const ratio = newScale / worldScale;
+        setWorldTransform(newScale, px - ratio * (px - worldTranslateX), py - ratio * (py - worldTranslateY), instant);
+      }
+
+      // --- Утилиты для детальной карты ---
+      function getClampedTranslations(s = scale) {
+        const wrapperRect = zoomWrapper.getBoundingClientRect();
+        const imgRect = detailImage.getBoundingClientRect();
+        if (!imgRect.width || !imgRect.height) return { tx: translateX, ty: translateY };
+        
+        const scaledW = (imgRect.width / s) * s;
+        const scaledH = (imgRect.height / s) * s;
+        const maxTX = Math.max(0, (scaledW - wrapperRect.width) / 2);
+        const maxTY = Math.max(0, (scaledH - wrapperRect.height) / 2);
+        
+        return {
+          tx: clamp(translateX, -maxTX, maxTX),
+          ty: clamp(translateY, -maxTY, maxTY)
+        };
+      }
+
+      // Проверяет, нужно ли при текущем scale переключить показанный файл
+      // детальной карты на другой LOD-тир (или обратно на оригинал), и если
+      // да — асинхронно готовит нужную копию и подменяет src без мигания.
+      async function maybeSwitchTier(s) {
+        if (!currentZone || tierSwitchInProgress) return;
+
+        const desired = pickTier(s, activeTierName);
+        if (desired === activeTierName) return;
+
+        tierSwitchInProgress = true;
+        const zoneSrc = currentZone.dataset.detail;
+        const myToken = detailLoadToken;
+
+        try {
+          const newSrc = desired === 'full'
+            ? await getCachedImageURL(zoneSrc)
+            : await generateLOD(zoneSrc, LOD_TIERS.find(t => t.name === desired).ratio, desired);
+
+          // Пользователь мог закрыть оверлей или открыть другую зону, пока мы готовили файл
+          if (myToken !== detailLoadToken || !currentZone || currentZone.dataset.detail !== zoneSrc) return;
+
+          // Предзагружаем и декодируем вне DOM, чтобы избежать мигания при подмене src
+          const preload = new Image();
+          preload.src = newSrc;
+          try { await preload.decode(); } catch (e) { /* не критично, покажем как есть */ }
+
+          if (myToken !== detailLoadToken || !currentZone || currentZone.dataset.detail !== zoneSrc) return;
+
+          activeTierName = desired;
+          currentTierRatio = desired === 'full' ? 1 : LOD_TIERS.find(t => t.name === desired).ratio;
+          detailImage.src = newSrc;
+        } catch (err) {
+          console.warn('Не удалось переключить уровень детализации карты:', err);
+        } finally {
+          tierSwitchInProgress = false;
+        }
+      }
+
+      function applyTransform(s = scale, tx = translateX, ty = translateY) {
+        // "s" всегда в масштабе оригинального изображения; если сейчас показан
+        // уменьшенный LOD-файл, компенсируем это дополнительным множителем,
+        // чтобы визуальный размер на экране не изменился.
+        const displayScale = s / (currentTierRatio || 1);
+        detailImage.style.transform = `translate(${tx}px, ${ty}px) scale(${displayScale})`;
+        if (detailOverlay.classList.contains('active')) {
+          zoomLevelEl.textContent = `${Math.round(s * 100)}%`;
+          maybeSwitchTier(s);
+        }
+      }
+
+      function smoothTransform() {
+        const speed = 0.25;
+        scale += (targetScale - scale) * speed;
+        translateX += (targetTX - translateX) * speed;
+        translateY += (targetTY - translateY) * speed;
+
+        const clamped = getClampedTranslations(scale);
+        translateX = clamped.tx;
+        translateY = clamped.ty;
+
+        applyTransform(scale, translateX, translateY);
+
+        if (Math.abs(targetScale - scale) > 0.001 || 
+            Math.abs(targetTX - translateX) > 0.1 || 
+            Math.abs(targetTY - translateY) > 0.1) {
+          animationId = requestAnimationFrame(smoothTransform);
+        } else {
+          scale = targetScale;
+          const finalClamped = getClampedTranslations(scale);
+          translateX = finalClamped.tx;
+          translateY = finalClamped.ty;
+          targetTX = translateX;
+          targetTY = translateY;
+          applyTransform(scale, translateX, translateY);
+          isAnimating = false;
+          animationId = null;
+        }
+      }
+
+      function setTransform(s, tx, ty, instant = false) {
+        targetScale = clamp(s, MIN_SCALE, MAX_SCALE);
+        targetTX = tx;
+        targetTY = ty;
+
+        if (instant) {
+          scale = targetScale;
+          translateX = targetTX;
+          translateY = targetTY;
+          const clamped = getClampedTranslations(scale);
+          translateX = clamped.tx;
+          translateY = clamped.ty;
+          targetTX = translateX;
+          targetTY = translateY;
+          applyTransform(scale, translateX, translateY);
+          isAnimating = false;
+          if (animationId) cancelAnimationFrame(animationId);
+        } else {
+          if (!isAnimating) {
+            isAnimating = true;
+            animationId = requestAnimationFrame(smoothTransform);
+          }
+        }
+      }
+
+      function resetView(instant = true) {
+        // Используем закэшированные натуральные размеры ПОЛНОГО изображения
+        // (а не detailImage.naturalWidth/Height), т.к. в момент вызова на
+        // экране может быть уже показан уменьшенный LOD-файл с другими
+        // натуральными размерами — это сломало бы расчёт fitScale.
+        const src = currentZone ? currentZone.dataset.detail : null;
+        const dims = (src && fullNaturalDims.get(src)) || { w: detailImage.naturalWidth, h: detailImage.naturalHeight };
+
+        if (!dims.w || !dims.h) {
+          setTransform(1, 0, 0, instant);
+          return;
+        }
+        
+        const wrapperRect = zoomWrapper.getBoundingClientRect();
+        const scaleX = wrapperRect.width / dims.w;
+        const scaleY = wrapperRect.height / dims.h;
+        const fitScale = Math.min(scaleX, scaleY, 1);
+        
+        setTransform(fitScale, 0, 0, instant);
+      }
+
+      function zoomAtPoint(newScale, cx, cy, instant = false) {
+        const wrapperRect = zoomWrapper.getBoundingClientRect();
+        const px = cx - wrapperRect.left - wrapperRect.width / 2;
+        const py = cy - wrapperRect.top - wrapperRect.height / 2;
+        const ratio = newScale / scale;
+        setTransform(newScale, px - ratio * (px - translateX), py - ratio * (py - translateY), instant);
+      }
+
+      // --- Оверлей ---
+      async function showDetail(zone) {
+        const src = zone.dataset.detail;
+        const label = zone.dataset.label || 'Континент';
+        if (!src) return;
+
+        const myToken = ++detailLoadToken;
+
+        detailTitle.textContent = label;
+        detailOverlay.classList.add('active');
+        container.classList.add('zone-active');
+        currentZone = zone;
+        hintText.style.opacity = '0';
+        document.getElementById('closeBtn').focus();
+
+        // Каждая новая зона всегда начинает показ с полного изображения —
+        // сбрасываем состояние LOD-тира
+        activeTierName = 'full';
+        currentTierRatio = 1;
+
+        // Показываем спиннер и приглушаем предыдущую картинку, пока грузим новую
+        detailImage.classList.add('loading');
+        detailSpinner.classList.add('active');
+
+        const resolvedUrl = await getCachedImageURL(src);
+
+        // Если пользователь уже открыл другую зону, пока эта грузилась — выходим
+        if (myToken !== detailLoadToken) return;
+
+        detailImage.onerror = () => {
+          detailImage.classList.remove('loading');
+          detailSpinner.classList.remove('active');
+        };
+
+        detailImage.src = resolvedUrl;
+
+        // Важно: событие 'load' срабатывает, когда байты картинки скачаны,
+        // но НЕ гарантирует, что браузер полностью её декодировал в растр.
+        // У очень крупных региональных карт при сильном уменьшении масштаба
+        // (≤20%) это приводит к тому, что видны только частично
+        // раздекодированные "чанки" изображения. decode() дожидается именно
+        // полного декодирования, поэтому используем его вместо/вместе с 'load'.
+        try {
+          await detailImage.decode();
+        } catch (err) {
+          // decode() может отклониться, если src уже сменился, картинка
+          // повреждена и т.п. — в этом случае просто показываем как есть
+        }
+
+        // Пока decode() ждал — пользователь мог открыть другую зону
+        if (myToken !== detailLoadToken) return;
+
+        // Запоминаем натуральные размеры полного изображения для этой зоны —
+        // пригодится resetView() и генератору LOD, даже когда на экране
+        // впоследствии будет показан уменьшенный файл
+        if (!fullNaturalDims.has(src) && detailImage.naturalWidth && detailImage.naturalHeight) {
+          fullNaturalDims.set(src, { w: detailImage.naturalWidth, h: detailImage.naturalHeight });
+        }
+
+        resetView(true);
+        detailImage.classList.remove('loading');
+        detailSpinner.classList.remove('active');
+      }
+
+      function hideDetail() {
+        detailLoadToken++; // отменяем незавершённую загрузку, если она была
+        detailOverlay.classList.remove('active');
+        container.classList.remove('zone-active');
+        currentZone = null;
+        activeTierName = 'full';
+        currentTierRatio = 1;
+        setTransform(1, 0, 0, true);
+        hintText.style.opacity = '1';
+        detailImage.classList.remove('loading');
+        detailSpinner.classList.remove('active');
+        // Показываем масштаб основной карты
+        zoomLevelEl.textContent = `${Math.round(worldScale * 100)}%`;
+      }
+
+      // --- События зон ---
+      zones.forEach(zone => {
+        zone.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (detailOverlay.classList.contains('active') && currentZone === zone) {
+            hideDetail();
+          } else {
+            showDetail(zone);
+          }
+        });
+        // Заранее подогреваем кэш при наведении (десктоп) — к клику картинка уже готова
+        zone.addEventListener('mouseenter', () => warmCache(zone.dataset.detail));
+      });
+
+      // --- Закрытие ---
+      document.getElementById('closeBtn').addEventListener('click', (e) => { e.stopPropagation(); hideDetail(); });
+      detailOverlay.addEventListener('click', (e) => { if (e.target === detailOverlay) hideDetail(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && detailOverlay.classList.contains('active')) hideDetail(); });
+
+      // --- Зум кнопками (для активного режима) ---
+      document.getElementById('zoomInBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (detailOverlay.classList.contains('active')) {
+          const rect = zoomWrapper.getBoundingClientRect();
+          zoomAtPoint(scale + ZOOM_STEP, rect.left + rect.width / 2, rect.top + rect.height / 2);
+        } else {
+          const rect = container.getBoundingClientRect();
+          zoomWorldAtPoint(worldScale + ZOOM_STEP, rect.left + rect.width / 2, rect.top + rect.height / 2);
+        }
+      });
+
+      document.getElementById('zoomOutBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (detailOverlay.classList.contains('active')) {
+          const rect = zoomWrapper.getBoundingClientRect();
+          zoomAtPoint(scale - ZOOM_STEP, rect.left + rect.width / 2, rect.top + rect.height / 2);
+        } else {
+          const rect = container.getBoundingClientRect();
+          zoomWorldAtPoint(worldScale - ZOOM_STEP, rect.left + rect.width / 2, rect.top + rect.height / 2);
+        }
+      });
+
+      document.getElementById('resetZoomBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (detailOverlay.classList.contains('active')) {
+          resetView(false);
+        } else {
+          resetWorldView(false);
+        }
+      });
+
+      // --- Колёсико мыши (для активного режима) ---
+      container.addEventListener('wheel', (e) => {
+        if (detailOverlay.classList.contains('active')) {
+          e.preventDefault();
+          zoomAtPoint(scale - Math.sign(e.deltaY) * 0.15, e.clientX, e.clientY);
+        } else {
+          e.preventDefault();
+          zoomWorldAtPoint(worldScale - Math.sign(e.deltaY) * 0.15, e.clientX, e.clientY);
+        }
+      }, { passive: false });
+
+      // --- Двойной клик (отключен для обоих режимов) ---
+      container.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+      });
+
+      // --- Перетаскивание основной карты ---
+      container.addEventListener('mousedown', (e) => {
+        if (detailOverlay.classList.contains('active')) return;
+        if (e.button !== 0) return;
+        e.preventDefault();
+        isWorldDragging = true;
+        worldStartX = e.clientX;
+        worldStartY = e.clientY;
+        worldLastTX = worldTranslateX;
+        worldLastTY = worldTranslateY;
+        container.classList.add('grabbing');
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (detailOverlay.classList.contains('active')) return;
+        if (!isWorldDragging) return;
+        const dx = e.clientX - worldStartX;
+        const dy = e.clientY - worldStartY;
+        setWorldTransform(worldScale, worldLastTX + dx, worldLastTY + dy, true);
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (detailOverlay.classList.contains('active')) return;
+        if (!isWorldDragging) return;
+        isWorldDragging = false;
+        container.classList.remove('grabbing');
+        const clamped = getWorldClampedTranslations();
+        setWorldTransform(worldScale, clamped.tx, clamped.ty, false);
+      });
+
+      // --- Сенсорное управление для основной карты ---
+      let worldTouchDist0 = 0, worldTouchScale0 = 1, worldTouchTX0 = 0, worldTouchTY0 = 0, worldTouchMidX = 0, worldTouchMidY = 0;
+
+      container.addEventListener('touchstart', (e) => {
+        if (detailOverlay.classList.contains('active')) return;
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          worldTouchDist0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+          worldTouchScale0 = worldScale;
+          worldTouchTX0 = worldTranslateX;
+          worldTouchTY0 = worldTranslateY;
+          worldTouchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          worldTouchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          isWorldDragging = false;
+        } else if (e.touches.length === 1) {
+          isWorldDragging = true;
+          worldStartX = e.touches[0].clientX;
+          worldStartY = e.touches[0].clientY;
+          worldLastTX = worldTranslateX;
+          worldLastTY = worldTranslateY;
+          container.classList.add('grabbing');
+        }
+      }, { passive: false });
+
+      container.addEventListener('touchmove', (e) => {
+        if (detailOverlay.classList.contains('active')) return;
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+          const newScale = worldTouchScale0 * (dist / worldTouchDist0);
+          const rect = container.getBoundingClientRect();
+          const px = worldTouchMidX - rect.left - rect.width / 2;
+          const py = worldTouchMidY - rect.top - rect.height / 2;
+          const ratio = newScale / worldScale;
+          setWorldTransform(newScale, px - ratio * (px - worldTouchTX0), py - ratio * (py - worldTouchTY0), true);
+        } else if (e.touches.length === 1 && isWorldDragging) {
+          e.preventDefault();
+          setWorldTransform(worldScale, worldLastTX + e.touches[0].clientX - worldStartX, worldLastTY + e.touches[0].clientY - worldStartY, true);
+        }
+      }, { passive: false });
+
+      container.addEventListener('touchend', (e) => {
+        if (detailOverlay.classList.contains('active')) return;
+        if (e.touches.length < 2) worldTouchDist0 = 0;
+        if (e.touches.length === 0 && isWorldDragging) {
+          isWorldDragging = false;
+          container.classList.remove('grabbing');
+          const clamped = getWorldClampedTranslations();
+          setWorldTransform(worldScale, clamped.tx, clamped.ty, false);
+        }
+      });
+
+      // --- Перетаскивание детальной карты ---
+      zoomWrapper.addEventListener('mousedown', (e) => {
+        if (!detailOverlay.classList.contains('active')) return;
+        if (e.button !== 0) return;
+        e.preventDefault();
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        lastTX = translateX;
+        lastTY = translateY;
+        zoomWrapper.classList.add('grabbing');
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!detailOverlay.classList.contains('active')) return;
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        setTransform(scale, lastTX + dx, lastTY + dy, true);
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!detailOverlay.classList.contains('active')) return;
+        if (!isDragging) return;
+        isDragging = false;
+        zoomWrapper.classList.remove('grabbing');
+        const clamped = getClampedTranslations();
+        setTransform(scale, clamped.tx, clamped.ty, false);
+      });
+
+      // --- Сенсорное управление для детальной карты ---
+      let touchDist0 = 0, touchScale0 = 1, touchTX0 = 0, touchTY0 = 0, touchMidX = 0, touchMidY = 0;
+
+      zoomWrapper.addEventListener('touchstart', (e) => {
+        if (!detailOverlay.classList.contains('active')) return;
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          touchDist0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+          touchScale0 = scale;
+          touchTX0 = translateX;
+          touchTY0 = translateY;
+          touchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          touchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          isDragging = false;
+        } else if (e.touches.length === 1) {
+          isDragging = true;
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+          lastTX = translateX;
+          lastTY = translateY;
+          zoomWrapper.classList.add('grabbing');
+        }
+      }, { passive: false });
+
+      zoomWrapper.addEventListener('touchmove', (e) => {
+        if (!detailOverlay.classList.contains('active')) return;
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+          const newScale = touchScale0 * (dist / touchDist0);
+          const wrapperRect = zoomWrapper.getBoundingClientRect();
+          const px = touchMidX - wrapperRect.left - wrapperRect.width / 2;
+          const py = touchMidY - wrapperRect.top - wrapperRect.height / 2;
+          const ratio = newScale / scale;
+          setTransform(newScale, px - ratio * (px - touchTX0), py - ratio * (py - touchTY0), true);
+        } else if (e.touches.length === 1 && isDragging) {
+          e.preventDefault();
+          setTransform(scale, lastTX + e.touches[0].clientX - startX, lastTY + e.touches[0].clientY - startY, true);
+        }
+      }, { passive: false });
+
+      zoomWrapper.addEventListener('touchend', (e) => {
+        if (!detailOverlay.classList.contains('active')) return;
+        if (e.touches.length < 2) touchDist0 = 0;
+        if (e.touches.length === 0 && isDragging) {
+          isDragging = false;
+          zoomWrapper.classList.remove('grabbing');
+          const clamped = getClampedTranslations();
+          setTransform(scale, clamped.tx, clamped.ty, false);
+        }
+      });
+
+      // =====================================================================
+      // Загрузка / кэширование основной карты мира
+      // =====================================================================
+      (async () => {
+        const originalSrc = worldMapImg.dataset.src;
+        const cachedUrl = await getCachedImageURL(originalSrc);
+        if (cachedUrl !== worldMapImg.src) {
+          worldMapImg.src = cachedUrl;
+        }
+      })();
+
+      // Зоны нужно пересчитывать каждый раз, когда меняется реальный размер
+      // отрисованной картинки: при загрузке, ресайзе окна/виджета, повороте
+      // экрана телефона. Слушаем всё сразу — лишний вызов ничего не портит.
+      if (worldMapImg.complete && worldMapImg.naturalWidth) {
+        updateZoneLayout();
+      }
+      worldMapImg.addEventListener('load', updateZoneLayout);
+      window.addEventListener('resize', scheduleZoneLayoutUpdate);
+      window.addEventListener('orientationchange', scheduleZoneLayoutUpdate);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', scheduleZoneLayoutUpdate);
+      }
+      if ('ResizeObserver' in window) {
+        new ResizeObserver(scheduleZoneLayoutUpdate).observe(container);
+      }
+
+      // --- Фоновая предзагрузка и кэширование всех региональных карт ---
+      function prefetchAllZones() {
+        zones.forEach(z => warmCache(z.dataset.detail));
+      }
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(prefetchAllZones, { timeout: 4000 });
+      } else {
+        setTimeout(prefetchAllZones, 1200);
+      }
+
+      // --- Инициализация ---
+      resetWorldView(true);
+      hideDetail();
+    })();
+  </script>
+</body>
+</html>
