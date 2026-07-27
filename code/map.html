@@ -65,13 +65,50 @@
       z-index: 10;
       cursor: pointer;
       border-radius: 8px;
-      transition: background 0.15s ease, box-shadow 0.15s ease;
-      /* Координаты задаются в процентах от размера картинки */
+      /* Постоянная полупрозрачная заливка + тонкая рамка */
+      background: rgba(255, 215, 0, 0.10);
+      border: 1.5px solid rgba(255, 215, 0, 0.25);
+      box-shadow: 0 0 12px rgba(255, 200, 50, 0.08);
+      transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      /* Текст-подсказка для мобильных — всегда видна */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(240, 230, 197, 0.6);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+      pointer-events: auto;
+      user-select: none;
+      -webkit-user-drag: none;
+      /* Чтобы текст не вылезал за пределы */
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      padding: 0 3px;
     }
 
+    /* При наведении (десктоп) — ярче */
     .map-zone:hover {
-      background: rgba(255, 215, 0, 0.12);
-      box-shadow: 0 0 20px rgba(255, 200, 50, 0.5);
+      background: rgba(255, 215, 0, 0.22);
+      box-shadow: 0 0 28px rgba(255, 200, 50, 0.5);
+      border-color: rgba(255, 215, 0, 0.7);
+      color: rgba(255, 235, 200, 0.95);
+    }
+
+    /* Активная зона (открыт оверлей) — подсвечена сильнее */
+    .map-zone.active-zone {
+      background: rgba(255, 215, 0, 0.30);
+      box-shadow: 0 0 35px rgba(255, 200, 50, 0.6);
+      border-color: #f0d060;
+      color: #fff6d0;
+    }
+
+    /* Если зона слишком маленькая, текст не показываем — только рамка */
+    .map-zone.label-hidden {
+      font-size: 0;
+      padding: 0;
     }
 
     /* Полноэкранный оверлей */
@@ -296,15 +333,15 @@
       <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/valentis.jpg" data-label="Валентис" data-top="31" data-left="13.8" data-width="5" data-height="15"></div>
       <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/kordenia.jpg" data-label="Кордения" data-top="19" data-left="53" data-width="18" data-height="17"></div>
       <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/benares.jpg" data-label="Бенарес" data-top="64" data-left="53" data-width="20" data-height="18"></div>
-      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/khirdia.jpg" data-label="Хирдия" data-top="10" data-left="52" data-width="14" data-height="10"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/khirdia.jpg" data-label="Хирдия" data-top="8" data-left="52" data-width="14" data-height="12"></div>
       <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/sangar.jpg" data-label="Сангар" data-top="35" data-left="53" data-width="18" data-height="30"></div>
-      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/targay.jpg" data-label="Таргай" data-top="20" data-left="70" data-width="22" data-height="55"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/targay.jpg" data-label="Таргай" data-top="20" data-left="70" data-width="18" data-height="55"></div>
       <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/askania.jpg" data-label="Аскания" data-top="4" data-left="10" data-width="22" data-height="28"></div>
       <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/velos.jpg" data-label="Велос" data-top="48" data-left="28" data-width="20" data-height="38"></div>
-      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/w_araukana.jpg" data-label="Восточная Араукана" data-top="25" data-left="1" data-width="8" data-height="30"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/w_araukana.jpg" data-label="Восточная Араукана" data-top="25" data-left="0" data-width="6" data-height="30"></div>
       <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/s_araukana.jpg" data-label="Южная Араукана" data-top="65" data-left="10" data-width="15" data-height="18"></div>
       <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/n_araukana.jpg" data-label="Северная Араукана" data-top="45" data-left="8" data-width="10" data-height="18"></div>
-      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/kurugef.jpg" data-label="Куругеф" data-top="28" data-left="8" data-width="5" data-height="15"></div>
+      <div class="map-zone" data-detail="https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/regions/compressed/kurugef.jpg" data-label="Куругеф" data-top="26" data-left="6" data-width="8" data-height="18"></div>
     </div>
     
     <!-- Оверлей -->
