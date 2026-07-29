@@ -647,6 +647,11 @@
 						<option value="urchin">Беспризорник</option>
 						<option value="warder">Стражник</option>
 						<option value="investigator">Следователь</option>
+						<option value="farmer">Крестьянин</option>
+						<option value="chef">Повар</option>
+						<option value="amnesiac">Потерявший память</option>
+						<option value="courtesan">Секс-работник</option>
+						<option value="madman">Безумец</option>
                     </select>
                     <div class="tooltip-text" id="backgroundTooltip"></div>
                 </div>
@@ -838,17 +843,16 @@
     </div>
 
     <script>
-        // ==================== ДАННЫЕ ====================
         const allSkills = ['Атлетика', 'Акробатика', 'Ловкость рук', 'Скрытность', 'Анализ', 'История', 'Магия', 'Природа', 'Религия', 'Внимание', 'Выживание', 'Медицина', 'Проницательность', 'Уход за животными', 'Выступление', 'Запугивание', 'Обман', 'Убеждение'];
-        const allEquipment = ['Лёгкая броня', 'Средняя броня', 'Тяжелая броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки'];
-        // ПЛЕЙСХОЛДЕРЫ: заменить на финальный список инструментов
+        const allEquipment = ['Лёгкая броня', 'Средняя броня', 'Тяжелая броня', 'Щиты', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки'];
+
         const allTools = ['Воровские инструменты', 'Игровой набор', 'Инструменты алхимика',
 		'Инструменты гончара', 'Инструменты кузнеца', 'Инструменты каменщика',
 		'Инструменты кожевника', 'Инструменты навигатора', 'Инструменты плотника',
 		'Инструменты повара', 'Инструменты портного', 'Инструменты ремонтника',
 		'Инструменты стеклодува', 'Инструменты художника', 'Инструменты ювелира',
 		'Музыкальные инструменты', 'Набор для грима', 'Набор для фальсификации', 'Набор травника'];
-        // ПЛЕЙСХОЛДЕР: количество свободных выборов инструментов/языков (пока не привязано к расе/классу/предыстории)
+		
         const allLanguages = ['Бишальский', 'Керрасанский', 'Аргосский', 'Шамсарский', 'Асканийский', 'Арауканский', 'Таргайский', 'Хирдский', 'Уккарнитский', 'Бенареский', 'Эльфийский', 'Дварфский', 'Орочий', 'Инфернальный'];
 
         const backgroundSkillsMap = {
@@ -874,10 +878,14 @@
 			'deserter': ['Проницательность', 'Убеждение'],
 			'urchin': ['Скрытность', 'Ловкость рук'],
 			'warder': ['Атлетика', 'Проницательность'],
-			'investigator': ['Анализ', 'Проницательность']
+			'investigator': ['Анализ', 'Проницательность'],
+			'farmer': ['Уход за животными', 'Природа'],
+			'chef': ['Выживание', 'Природа'],
+			'courtesan': ['Проницательность', 'Убеждение'],
+			'amnesiac': [],
+			'madman': []
 		};
 
-        // *** НОВАЯ КАРТА ИНСТРУМЕНТОВ ПО ПРЕДЫСТОРИЯМ ***
         const backgroundToolsMap = {
             'artist': ['Музыкальные инструменты', 'Набор для грима'],
             'sailor': ['Инструменты навигатора'],
@@ -891,15 +899,16 @@
             'noble': ['Игровой набор'],
 			'warder': ['Игровой набор'],
             'investigator': ['Набор для грима', 'Воровские инструменты'],
-            'herbalist': ['Набор травника']
+            'herbalist': ['Набор травника'],
+			'chef': ['Инструменты повара'],
+			'courtesan': ['Набор для грима']
         };
 
-        // *** НОВАЯ КАРТА: количество свободных выборов инструментов от предыстории ***
         const backgroundToolChoicesMap = {
-            'craftsman': 1
+            'craftsman': 2,
+			'amnesiac': 1
         };
 
-        // *** НОВАЯ КАРТА: список инструментов, из которых предыстория даёт выбор (ограничение по категории) ***
         const excludedToolsForCraftsman = ['Воровские инструменты', 'Игровой набор', 'Инструменты навигатора', 'Инструменты художника', 'Музыкальные инструменты', 'Набор для грима', 'Набор для фальсификации', 'Набор травника'];
         const backgroundToolChoiceOptionsMap = {
             'craftsman': allTools.filter(t => !excludedToolsForCraftsman.includes(t))
@@ -1001,12 +1010,12 @@ const backgroundTooltips = {
     'miner': `<p>Работал под землёй.</p>
     <p><b>Владение навыками:</b> ${backgroundSkillsMap['miner'].join(', ')}</p>
     <p><b>Владение инструментами:</b> ${(backgroundToolsMap['miner'] || []).join(', ') || 'Нет'}</p>
-    <p><b>Особенность:</b> Определяет опасные участки (обвалы, пустоты) без проверки и легче ориентируется под землёй.</p>`,
+    <p><b>Особенность:</b> Вы имеете тёмное зрение. Преимущество на броски Мудрости (Выживание) для навигации под землёй.</p>`,
     
-    'slave': `<p>Жил в подчинении, изучил систему изнутри. Знает, как устроены охрана и контроль.</p>
+    'slave': `<p>Жил в подчинении, чтобы выжить. Ты научился отключать собственное «я» и становиться чистым сосудом для приказов.</p>
     <p><b>Владение навыками:</b> ${backgroundSkillsMap['slave'].join(', ')}</p>
     <p><b>Владение инструментами:</b> ${(backgroundToolsMap['slave'] || []).join(', ') || 'Нет'}</p>
-    <p><b>Особенность:</b> Понимает схемы рабства и умеет находить слабые места для побега.</p>`,
+    <p><b>Особенность:</b> Когда кто-то пытается прочитать твои мысли или контролировать твои эмоции, он делает это с помехой.</p>`,
     
     'deserter': `<p>Сбежал с войны. Не герой, но выжил.</p>
     <p><b>Владение навыками:</b> ${backgroundSkillsMap['deserter'].join(', ')}</p>
@@ -1027,27 +1036,59 @@ const backgroundTooltips = {
     <p><b>Владение навыками:</b> ${backgroundSkillsMap['investigator'].join(', ')}</p>
     <p><b>Владение инструментами:</b> ${(backgroundToolsMap['investigator'] || []).join(', ') || 'Нет'}</p>
 	<p><b>Знание языков:</b> +1 на выбор</p>
-    <p><b>Особенность:</b> Раз в сессию, расследуя конкретное дело, может спросить мастера, с чего начать поиски или куда двигаться дальше, и получить честную зацепку — не готовое решение, а направление.</p>`
+    <p><b>Особенность:</b> Раз в сессию, расследуя конкретное дело, может спросить мастера, с чего начать поиски или куда двигаться дальше, и получить честную зацепку — не готовое решение, а направление.</p>`,
+	
+	'farmer': `<p>Родился и вырос в деревне: пахал землю, ухаживал за скотом, знает цену тяжёлому труду и простой еде.</p>
+    <p><b>Владение навыками:</b> ${backgroundSkillsMap['farmer'].join(', ')}</p>
+    <p><b>Владение инструментами:</b> ${(backgroundToolsMap['farmer'] || []).join(', ') || 'Нет'}</p>
+    <p><b>Особенность:</b> Вы обладаете практическими знаниями в области астрологии и метеорологии и можете легко прогнозировать погоду в течение нескольких часов или дней, если вам повезет.</p>`,
+	
+	'chef': `<p>Знаток специй и мастер у котла: провёл годы у плиты, постигая искусство превращать простые продукты в сытные и вкусные блюда. Разбирается в травах, приправах и их сочетаниях.</p>
+    <p><b>Владение навыками:</b> ${backgroundSkillsMap['chef'].join(', ')}</p>
+    <p><b>Владение инструментами:</b> ${(backgroundToolsMap['chef'] || []).join(', ') || 'Нет'}</p>
+    <p><b>Особенность:</b> Вы можете найти пропитание в практически любой среде и приготовить из этого еду. К каждому броску, связанным с поиском еды или ингредиентов, добавьте 2d6 к броску, а все существа, что отведали ваши блюда получат дополнительно 1d4 временных хитов. У вас есть преимущество к спасброскам Телосложения от отравленных жидкостей и еды.</p>`,
+	// Надо чтобы Потерявший память мог выбрать 2 владения навыками
+	'amnesiac': `<p>Не помнит своего прошлого: ни имени, ни семьи, ни того, откуда он родом. Воспоминания обрываются где-то в недавнем прошлом, а всё, что было раньше — пустота.</p>
+    <p><b>Владение навыками:</b> +2 на выбор</p>
+	<p><b>Владение снаряжением:</b> +1 на выбор</p>
+    <p><b>Владение инструментами:</b> +1 на выбор</p>
+	<p><b>Знание языков:</b> +2 на выбор</p>
+    <p><b>Особенность:</b></p>`,
+	
+	'courtesan': `<p>Предлагал свои услуги за плату — в борделе, на большой дороге или на улицах города. Ты годами удовлетворял, утешал и отвлекал людей от их боли. Клиенты искали в тебе то, что хотели найти.</p>
+    <p><b>Владение навыками:</b> ${backgroundSkillsMap['courtesan'].join(', ')}</p>
+    <p><b>Владение инструментами:</b> ${(backgroundToolsMap['courtesan'] || []).join(', ') || 'Нет'}</p>
+	<p><b>Знание языков:</b> +1 на выбор</p>
+    <p><b>Особенность:</b> Можно касанием снять с товарища один уровень истощения или убрать эффект испуг (но не ужас) (перезарядка: долгий отдых). Существа не могут вспомнить твое лицо в деталях. Они помнят, что ты был красив, а разговор с тобой был приятен. Но не могут назвать особых примет, нарисовать портрет. Ты для него — как сон: был, но расплылся. Это работает, только если ты не совершил против этого существа явно негативных действий.</p>`,
+	// Надо чтобы Безумец мог выбрать 2 владения навыками, как Потерявший память
+	'madman': `<p>Твой разум сломался от того, что ты видел или пережил. Теперь ты существуешь за гранью нормального восприятия, но именно это делает тебя опасным для тех, кто пытается проникнуть в твою голову.</p>
+    <p><b>Владение навыками:</b> +2 на выбор</p>
+    <p><b>Владение инструментами:</b> ${(backgroundToolsMap['madman'] || []).join(', ') || 'Нет'}</p>
+    <p><b>Особенность:</b> Те кто пытается прочитать ваши мысли должны пройти спасбросок Мудрости со сложностью <b>10 + ваш модификатор Интеллекта</b>. При провале — заклинатель получает состояние краткосрочного безумия.</p>`
 };
-		// *** КАРТА ДОПОЛНИТЕЛЬНЫХ ОЧКОВ ЯЗЫКОВ ОТ ПРЕДЫСТОРИЙ ***
+
 const backgroundLanguageChoicesMap = {
-    'noble': 1,        // Обедневший аристократ
-    'sage': 2,         // Мудрец
-    'outlander': 1,    // Скиталец
-    'acolyte': 1,      // Прислужник
-    'clerk': 2,        // Писарь
-    'craftsman': 1,    // Ремесленник
-    'trader': 2        // Купец
+    'noble': 1,
+    'sage': 2,
+    'outlander': 1,
+    'acolyte': 1,
+    'clerk': 2,
+    'craftsman': 1,
+    'trader': 2,
+	'investigator': 1,
+	'amnesiac': 2,
+	'courtesan': 1
 };
 
-// *** КАРТА ДОПОЛНИТЕЛЬНЫХ ОЧКОВ ЯЗЫКОВ ОТ РАС ***
+const backgroundEquipmentMap = {
+	'amnesiac': 1
+};
+
 const raceLanguageChoicesMap = {
-    'human': 2,        // Люди
-    'half_elf': 1,     // Полуэльфы
-    // Остальные расы дают фиксированные языки (см. raceFixedLanguagesMap)
+    'human': 2,
+    'half_elf': 1,
 };
 
-// *** КАРТА ФИКСИРОВАННЫХ ЯЗЫКОВ ОТ РАС ***
 const raceFixedLanguagesMap = {
     'elf': ['Эльфийский'],
 	'half_elf': ['Эльфийский'],
@@ -1162,10 +1203,6 @@ const traitToolChoicesMap = {
 			
             { name: 'Бдительный', desc: `<p>К броску инициативы добавляется бонус мастерства.</p>
 			<p>Вас нельзя застать врасплох.</p>`,
-			statBonus: null, grantsArmor: null, requirements: null },
-			
-            { name: 'Боевой заклинатель', desc: `<p>Преимущество на спасброски Телосложения для концентрации.</p>
-			<p>Заклинание можно наложить как реакцию.</p>`,
 			statBonus: null, grantsArmor: null, requirements: null },
 			
             { name: 'Борец', desc: `<p>Ваши броски атаки по существу, которое держите в захвате с преимуществом.</p>
@@ -1356,17 +1393,17 @@ const traitToolChoicesMap = {
 			<p>Вы совершаете с преимуществом спасброски Телосложения для поддержания концентрации.</p>
 			<p>Когда существо покидает пределы вашей досягаемости, вместо совершения провоцированной атаки вы можете реакцией сотворить заклинание на это существо. Это заклинание должно нацеливаться только на это существо</p>
 			<p>Вы можете выполнять Соматический компонент заклинаний, даже если держите оружие или Щит в одной или обеих руках.</p>`,
-			statBonus: 'choice', choices: ['wishdom', 'charisma', 'intelligence'], grantsArmor: null, requirements: null },
+			statBonus: 'choice', choices: ['wisdom', 'charisma', 'intelligence'], grantsArmor: null, requirements: null },
 			
 			{ name: 'Пронзатель', desc: `<p>Сила или Ловкость +1 (с лимитом 20).</p>
 			<p>Один раз за ход, когда вы попадаете по существу атакой, наносящей колющий урон, вы можете перебросить одну из костей урона атаки и должны использовать новый результат.</p>
 			<p>Когда вы совершаете критическое попадание, наносящее колющий урон существу, вы можете бросить одну дополнительную кость урона при определении добавочного колющего урона, получаемого целью.</p>`,
-			statBonus: ['strength', 'dexterity'], grantsArmor: null, requirements: null },
+			statBonus: 'choice', choices: ['strength', 'dexterity'], grantsArmor: null, requirements: null },
 			
 			{ name: 'Рубака', desc: `<p>Сила или Ловкость +1 (с лимитом 20).</p>
 			<p>Один раз за ход, когда вы попадаете по существу атакой, наносящей рубящий урон, вы можете перебросить одну из костей урона атаки и должны использовать новый результат.</p>
 			<p>Когда вы совершаете критическое попадание, наносящее рубящий урон существу, вы можете бросить одну дополнительную кость урона при определении добавочного рубящего урона, получаемого целью.</p>`,
-			statBonus: ['strength', 'dexterity'], grantsArmor: null, requirements: null },
+			statBonus: 'choice', choices: ['strength', 'dexterity'], grantsArmor: null, requirements: null },
 			
 			{ name: 'Уличная справедливость', desc: `<p>Сила или Ловкость +1 (с лимитом 20).</p>
 			<p>Ваши союзники совершают с Преимуществом броски атаки по существу, схваченному вами.</p>
@@ -1376,10 +1413,111 @@ const traitToolChoicesMap = {
 			{ name: 'Мастеровой', desc: `Вы получаете владение тремя ремесленными инструментами.`,
 			statBonus: null, grantsArmor: null, requirements: null },
 			
-			{ name: 'Мазохист', desc: `<p>Увеличиваете любую характеристику на 2 (с лимитом 20).</p>
+			{ name: 'Мазохист', desc: `<p>Увеличиваете любую характеристику на 1 (с лимитом 20).</p>
 			<p>Немедленно после получения вами дробящего, колющего или рубящего урона вы можете реакцией получить сопротивление Дробящему, колющему и рубящему урону до начала вашего следующего хода.</p>
 			<p>Как только вы используете это преимущество, вы не можете сделать это снова, пока не завершите Короткий или Долгий отдых.</p>`,
-			statBonus: null, grantsArmor: null, requirements: null }
+			statBonus: 'choice', choices: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'], grantsArmor: null, requirements: null },
+			
+			{ name: 'Медведь', desc: `<p>Требование: Телосложение 15+.</p>
+			<p>Ваш вес увеличивается на 40 кг</p>
+			<p>Ваша кость хитов увеличивается на одну ступень (1d6 > 1d8 > 1d10 > 1d12). Если они уже были 1d12, ваши максимальные очки жизни увеличиваются на 1 за удар.</p>
+			<p>Пока вы не носите броню, ваш КД равен 10 + ваш модификатор Силы + ваш модификатор Телосложения. Если вы носите броню, вы можете использовать эту формулу, если КД вашей брони будет ниже.</p>
+			<p>У вас есть преимущество к спасброскам от толкания и притягивания</p>`,
+			statBonus: 'constitution', grantsArmor: null, requirements: { stat: 'constitution', minValue: 15 } },
+			
+			{ name: 'Точный удар', desc: `<p>Ловкость, Мудрость, Харизма или Интеллект +1 (с лимитом 20).</p>
+			<p>При преимуществе на дальнобойные атаки с использованием Ловкости, Мудрости, Харизмы или Интеллекта, бросаете 3 кубика вместо 2 и выбираете лучший результат.</p>
+			<p>Как только вы используете это преимущество, вы не можете сделать это снова, пока не завершите Короткий или Долгий отдых.</p>`,
+			statBonus: null, grantsArmor: null, requirements: null },
+			
+			//Нужно добавить skillbonus (по аналогии со statBonus, grantsArmor). Акробат даёт навык Акробатика
+			{ name: 'Акробат', desc: `<p>Требование: Ловкость 13+.</p>
+			<p>Владеете спасбросками от состояния схваченнный.</p>
+			<p>Вы получаете владение навыком Акробатика</p>`,
+			statBonus: null, grantsArmor: null, grantsSkill: 'Акробатика', requirements: { stat: 'dexterity', minValue: 13 } },
+			
+			{ name: 'Неудержимый', desc: `<p>Свободным действием можно получить Рывок без траты дополнительного действия (перезарядка: короткий или долгий отдых).</p>
+			<p>В этот ход, скорость увеличена на 3 клетки.</p>
+			<p>Как только вы используете это преимущество, вы не можете сделать это снова, пока не завершите Короткий или Долгий отдых.</p>`,
+			statBonus: null, grantsArmor: null, requirements: null },
+			
+			{ name: 'Защитник', desc: `<p>Требование: Владение щитами.</p>
+			<p>Когда вы или существо в пределах 1 клетки получают урон, пока вы носите щит, реакцией можно уменьшить этот урон на 2d10 (перезарядка: короткий или долгий отдых).</p>`,
+			statBonus: null, grantsArmor: null, requirements: { armor: 'Щиты' } },
+			
+			{ name: 'Проворный', desc: `<p>Требование: Ловкость 13+.</p>
+			<p>Пока вы не носите никаких доспехов, ваш КД равен <b>13 + ваш модификатор Ловкости</b>.</p>
+			<p>Рывок и Отступление можно совершить бонусным действием (перезарядка: короткий или долгий отдых).</p>`,
+			statBonus: null, grantsArmor: null, requirements: { stat: 'dexterity', minValue: 13 } },
+			
+			{ name: 'Уклонист', desc: `<p>Ловкость +1 (с лимитом 20).</p>
+			<p>Если цель имеет помеху на бросок атаки по вам, то цель бросает 3 кубика d20 и выбирает наихудший результат.</p>`,
+			statBonus: 'dexterity', grantsArmor: null, requirements: null },
+			
+			// Нужно сделать strength_or_dexterity, по аналогии с intelligence_or_wisdom. Нужно сделать grantsProficiency, чтобы дать владение топорами
+			{ name: 'Эксперт по топорам', desc: `<p>Требование: Сила или Ловкость 15+.</p>
+			<p>Вы получаете владение одноручными топорами, боевыми топорами и двуручными топорами.</p>
+			<p>Можно использовать модификатор Ловкости вместо модификатора Силы при атаке топором, если он не имеет свойство «тяжелое».</p>
+			<p>При крите, используя одноручный топор, боевой топор или двуручный топор, дополнительно наносится 1d6 рубящего урона.</p>`,
+			statBonus: 'strength', grantsArmor: null, grantsProficiency: ['Одноручные топоры', 'Боевые топоры', 'Двуручные топоры'], requirements: { stat: 'strength_or_dexterity', minValue: 15 } },
+			
+			// Нужно сделать strength_or_dexterity, по аналогии с intelligence_or_wisdom
+			{ name: 'Уничтожитель щитов', desc: `<p>Требование: Сила или Ловкость 15+.</p>
+			<p>Можете уничтожить немагический щит атакой топором, что бы он не давал бонус к КД. Цели нужно пройти спасбросок Ловкости, что-бы его щит не был уничтожен, со сложностью <b>8 + ваш бонус мастерства + ваш модификатор Ловкости или Силы на выбор</b>.</p>`,
+			statBonus: null, grantsArmor: null, requirements: { stat: 'strength_or_dexterity', minValue: 15 } },
+			
+			{ name: 'Метатель топоров', desc: `<p>Требование: Сила 13+.</p>
+			<p>Дистанция метания одноручных топоров удваивается.</b>.</p>
+			<p>Двуручными топорами и боевыми топорами, которыми вы владеете, можно метаться с минимальной дистанцией в 4 клетки и с максимальной дистанцией в 8 клеток для двуручных топоров и в 10 клеток для боевых топоров.</p>`,
+			statBonus: null, grantsArmor: null, requirements: { stat: 'strength', minValue: 13 } },
+			
+			{ name: 'Обезоруживатель', desc: `<p>Требование: Ловкость 13+.</p>
+			<p>Когда вы делаете безоружную атаку, при успешном броске атаки вы бонусным действием можете попытаться обезоружить противника, украв его оружие. Цель должна сделать спасбросок Ловкости или Силы на их выбор, со сложностью <b>13 + ваш модификатор Ловкости + ваш бонус мастерства</b>.</p>
+			<p>Рывок и Отступление можно совершить бонусным действием (перезарядка: короткий или долгий отдых).</p>`,
+			statBonus: null, grantsArmor: null, requirements: { stat: 'dexterity', minValue: 13 } },
+			
+			{ name: 'Крепкое тело', desc: `<p>Телосложение +1 (с лимитом 20).</p>
+			<p>Вы владеете спасбросками телосложения и спасбросками от смерти.</p>
+			<p>При получении урона вы можете уменьшить урон на d12 + бонус мастерства. Вы можете использовать эту способность количество раз, равное вашему бонусу мастерства (перезарядка: долгий отдых).</p>`,
+			statBonus: 'constitution', grantsArmor: null, requirements: null },
+			
+			// Нужно сделать strength_or_dexterity, по аналогии с intelligence_or_wisdom
+			{ name: 'Костолом', desc: `<p>Требование: Сила или Ловкость 15+.</p>
+			<p>Безоружные удары наносят критический удар при 19 и 20 на кубике d20.</b>.</p>
+			<p>При крите невооружённым ударом, цель должна пройти спасбросок Телосложения сложностью <b>8 + ваш модификатор Силы или Ловкости + ваш бонус мастерства</b>. При неудаче цель получает помеху на атаки до конца их следующего хода или цель становится опрокинутой на ваш выбор.</p>`,
+			statBonus: null, grantsArmor: null, requirements: { stat: 'strength_or_dexterity', minValue: 15 } },
+			
+			{ name: 'Мастер луков', desc: `<p>Требование: Ловкость 15+.</p>
+			<p>Вы получаете бонус +1 к броскам атаки и броскам урона длинными или короткими луками.</p>
+			<p>Бонусным действием можно атаковать луком, если до этого вы атаковали луком основным действием.</p>
+			<p>Нахождение вражеского существа в пределах 1 клетки от вас не даёт помеху дальнобойной атаке.</p>`,
+			statBonus: null, grantsArmor: null, requirements: { stat: 'dexterity', minValue: 15 } },
+			
+			{ name: 'Мясник', desc: `<p>Критический удар при 19 и 20 на кубике d20.</p>
+			<p>При крите рубящим уроном, цель должна сделать спасбросок Телосложения сложностью <b>8 + ваш бонус мастерства + ваш модификатор Силы или Ловкости на выбор</b>. При неудаче цель получает кровотечение и начнёт получать урон 1d4 каждый свой ход. Цель может потратить основное действие, совершив проверку Мудрости (Медицина) со сложностью <b>8 + ваш бонус мастерства + ваш модификатор Силы или Ловкости на выбор</b>, что-бы избавиться от кровотечения.</p>`,
+			statBonus: null, grantsArmor: null, requirements: null },
+			
+			{ name: 'Задира', desc: `<p>Требование: Харизма 13+.</p>
+			<p>Вы можете подстрекать своих противников сражаться с вами, покрыв их отборным матом. Цель должна пройти спасбросок Мудрости со сложностью <b>8 + ваш модификатор Харизмы</b>. При провале спасброска, цель будет стараться сражаться с вами и при атаке по другим целям получит помеху к броску атаки до начала вашего следующего хода.</p>`,
+			statBonus: null, grantsArmor: null, requirements: { stat: 'charisma', minValue: 13 } },
+			
+			{ name: 'Командир', desc: `<p>Требование: Харизма 13+.</p>
+			<p>Вы можете дать бонус к инициативе всем своим товарищам в количестве равном <b>вашему модификатору Харизмы</b>.</p>`,
+			statBonus: null, grantsArmor: null, requirements: { stat: 'charisma', minValue: 13 } },
+			
+			{ name: 'Швырятель', desc: `<p>Требование: Сила 13+.</p>
+			<p>Вы можете совершить захват существа бонусным действием.</p>
+			<p>Вы можете основным действием швырнуть существо вашего размера на дистанцию равное <b>3 + ваш модификатор Силы</b> клеток.</p>
+			<p>После швыряния, существо будет в лежачем состоянии.</p>
+			<p>Если существо швырнули в объект: будь-то мебель или стена, то оно должно совершить спасбросок Телосложения сложностью <b>8 + ваш бонус мастерства + ваш модификатор Силы</b>. При провале цель получит <b>1d6 + ваш модификатор Силы</b> дробящего урона, плюс 1d6 дробящего урона за каждые 2 клетки, которые он пролетел. При успешном спасброске урон делится пополам в меньшую сторону.</p>
+			<p>Если существо швырнули в другое существо, оно должно пройти спасбросок Ловкости сложностью <b>8 + ваш бонус мастерства + ваш модификатор Силы</b>, иначе оно упадёт и получит дробящий урон равный <b>1d6 + ваш модификатор Силы</b></p>
+			<p>Можно швыряться существами вашего размера так, что-бы они не получили урона. Полезно, когда нужно забросить куда-то своего товарища.</p>`,
+			statBonus: null, grantsArmor: null, requirements: { stat: 'strength', minValue: 13 } },
+			
+			{ name: 'Контратакующий', desc: `<p>Требование: Ловкость 13+.</p>
+			<p>Когда существо попадает по вам рукопашной атакой, вы можете реакцией атаковать его в ответ (перезарядка: короткий или долгий отдых).</p>
+			<p>Когда существо выбрасывает 1 на попадание, вы получаете преимущество на одну следующую атаку против этого существа.</p>`,
+			statBonus: null, grantsArmor: null, requirements: { stat: 'dexterity', minValue: 13 } }
         ];
         
         const raceBonuses = {
@@ -1409,20 +1547,23 @@ const traitToolChoicesMap = {
             'barbarian': ['Лёгкая броня', 'Средняя броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки'],
             'rogue': ['Лёгкая броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Короткие мечи', 'Длинные мечи', 'Рапиры', 'Одноручные арбалеты'],
             'wizard': ['Боевые посохи', 'Копья', 'Лёгкие арбалеты'],
-            'cleric': ['Лёгкая броня', 'Средняя броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки'],
+            'cleric': ['Лёгкая броня', 'Средняя броня', 'Щиты', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки'],
             'ranger': ['Лёгкая броня', 'Средняя броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки'],
             'sorcerer': ['Боевые посохи', 'Копья', 'Лёгкие арбалеты'],
             'warlock': ['Лёгкая броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки'],
             'monk': ['Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Короткие мечи'],
             'bard': ['Лёгкая броня', 'Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки', 'Короткие мечи', 'Длинные мечи', 'Рапиры'],
             'paladin': allEquipment,
-            'druid': ['Лёгкая броня', 'Средняя броня', 'Боевые посохи', 'Булавы', 'Дубинки', 'Копья', 'Короткие мечи']
+            'druid': ['Лёгкая броня', 'Средняя броня', 'Щиты', 'Боевые посохи', 'Булавы', 'Дубинки', 'Копья', 'Короткие мечи']
         };
 
-        // ==================== СОСТОЯНИЕ ====================
+		let traitGrantedSkills = [];
+		let traitGrantedProficiencies = [];
+		let window_madmanBonusSkills = 0;
+		let window_amnesiacBonusSkills = 0;
 		let currentRaceSkillChoice = null;
 		let currentRaceLanguages = [];
-		let baseLanguageChoices = 1; // База: 1 очко знания языков
+		let baseLanguageChoices = 1;
 		let currentRaceTools = [];
 		let pendingStatIncrease2 = 0;
 		let pendingStatIncrease1 = 0;
@@ -1435,33 +1576,26 @@ const traitToolChoicesMap = {
         let selectedLanguages = [];
         let freeSkillChoices = 0;
         let freeEquipmentChoices = 0;
-        // *** ИЗМЕНЕНО: свободные выборы инструментов теперь зависят от предыстории ***
         let freeToolChoices = 0;
-        // *** НОВОЕ: список доступных для выбора инструментов (ограничение по категории предыстории) ***
-        let toolChoiceAllowedList = null; // null = ограничений нет (все инструменты доступны)
+        let toolChoiceAllowedList = null;
         let freeLanguageChoices = 0;
         let currentAvailableSkills = [];
-        
         let currentBackgroundSkills = [];
-        let currentBackgroundTools = []; // *** НОВОЕ: для хранения инструментов от предыстории ***
+        let currentBackgroundTools = [];
         let currentRaceSkills = [];
         let currentRaceEquipment = [];
         let currentClassEquipment = [];
         let currentClassSkills = { choices: 0, options: [] };
-        
         let currentTrait = null;
         let currentTraitArmor = null;
         let currentTraitChoice = null;
-        
         let halfElfStat1 = null;
         let halfElfStat2 = null;
-        
         let currentMode = 'points';
         let statValues = { strength: 8, dexterity: 8, constitution: 8, intelligence: 8, wisdom: 8, charisma: 8 };
         let statExtras = { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
         let statDice = { strength: 8, dexterity: 8, constitution: 8, intelligence: 8, wisdom: 8, charisma: 8 };
-        
-        // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+
         function getModifier(value) {
 			if (value <= 1) return -5;
 			if (value <= 3) return -4;
@@ -1534,10 +1668,10 @@ const traitToolChoicesMap = {
         }
         
         function getAllFixedEquipment() {
-            let fixed = [...currentRaceEquipment, ...currentClassEquipment];
-            if (currentTraitArmor) fixed.push(currentTraitArmor);
-            return [...new Set(fixed)];
-        }
+    let fixed = [...currentRaceEquipment, ...currentClassEquipment, ...traitGrantedProficiencies];
+    if (currentTraitArmor) fixed.push(currentTraitArmor);
+    return [...new Set(fixed)];
+}
         
 		function getAllFixedTools() {
 			let fixed = [...currentBackgroundTools, ...currentRaceTools];
@@ -1624,6 +1758,14 @@ const traitToolChoicesMap = {
                 wisValue += getRaceBonus('wisdom') + (statExtras.wisdom || 0);
                 if (intValue < req.minValue && wisValue < req.minValue) return false;
             }
+			
+			if (req.stat === 'strength_or_dexterity') {
+    let strValue = currentMode === 'points' ? statValues.strength : statDice.strength;
+    let dexValue = currentMode === 'points' ? statValues.dexterity : statDice.dexterity;
+    strValue += getRaceBonus('strength') + (statExtras.strength || 0);
+    dexValue += getRaceBonus('dexterity') + (statExtras.dexterity || 0);
+    if (strValue < req.minValue && dexValue < req.minValue) return false;
+}
             
             return true;
         }
@@ -1894,81 +2036,133 @@ const traitToolChoicesMap = {
         }
         
         function applyTrait(traitName, chosenStat = null) {
-            const trait = humanTraits.find(t => t.name === traitName);
-            
-            // Сброс дополнительных выборов
-            extraSkillChoicesFromTraits = 0;
-            
-            if (trait && trait.name === 'Одарённый') {
-                extraSkillChoicesFromTraits = 3;
-            }
-            
-            if (trait && trait.name === 'Мастер оружия') {
-                // Не сбрасываем selectedEquipment при выборе черты
-                extraEquipmentChoicesFromTraits = 4;
-            }
-            
-            if (trait && trait.statBonus === 'choice' && chosenStat) {
-                currentTraitChoice = chosenStat;
-            } else {
-                currentTraitChoice = null;
-            }
-            
-            if (trait && trait.grantsArmor) {
-                currentTraitArmor = trait.grantsArmor;
-            } else {
-                currentTraitArmor = null;
-            }
-            
-            // Обновляем свободные выборы навыков
-            let total = currentClassSkills.choices || 0;
-            if (document.getElementById('race').value === 'human') total++;
-            if (document.getElementById('race').value === 'half_elf') total++;
-            total += extraSkillChoicesFromTraits;
-            freeSkillChoices = total;
-            
-            if (selectedSkills.length > freeSkillChoices) {
-                selectedSkills = selectedSkills.slice(0, freeSkillChoices);
-            }
-            
-            renderSkills();
-            renderEquipment();
-			renderLanguages();
-			renderTools();
-            updateTraitDropdown();
-            updateStatSums();
-            updateSkillCounter();
+    const trait = humanTraits.find(t => t.name === traitName);
+    
+    // Сохраняем текущий список навыков от черт перед очисткой
+    const oldGrantedSkills = [...traitGrantedSkills];
+    const oldGrantedProficiencies = [...traitGrantedProficiencies];
+    
+    // Удаляем старые навыки от черт
+    oldGrantedSkills.forEach(skill => {
+        const idx = selectedSkills.indexOf(skill);
+        if (idx > -1) selectedSkills.splice(idx, 1);
+    });
+    oldGrantedProficiencies.forEach(item => {
+        const idx = selectedEquipment.indexOf(item);
+        if (idx > -1) selectedEquipment.splice(idx, 1);
+    });
+    
+    // Очищаем списки
+    traitGrantedSkills = [];
+    traitGrantedProficiencies = [];
+    
+    extraSkillChoicesFromTraits = 0;
+    extraEquipmentChoicesFromTraits = 0;
+    
+    if (trait && trait.name === 'Одарённый') {
+        extraSkillChoicesFromTraits = 3;
+    }
+    
+    if (trait && trait.name === 'Мастер оружия') {
+        extraEquipmentChoicesFromTraits = 4;
+    }
+    
+    // ОБРАБОТКА grantsSkill
+    if (trait && trait.grantsSkill) {
+        const skill = trait.grantsSkill;
+        if (!selectedSkills.includes(skill)) {
+            traitGrantedSkills.push(skill);
         }
+    }
+    
+    // ОБРАБОТКА grantsProficiency
+    if (trait && trait.grantsProficiency) {
+        trait.grantsProficiency.forEach(item => {
+            if (!selectedEquipment.includes(item)) {
+                traitGrantedProficiencies.push(item);
+            }
+        });
+    }
+    
+    if (trait && trait.statBonus === 'choice' && chosenStat) {
+        currentTraitChoice = chosenStat;
+    } else {
+        currentTraitChoice = null;
+    }
+    
+    if (trait && trait.grantsArmor) {
+        currentTraitArmor = trait.grantsArmor;
+    } else {
+        currentTraitArmor = null;
+    }
+    
+    // Обновляем freeSkillChoices
+    let total = currentClassSkills.choices || 0;
+    if (document.getElementById('race').value === 'human') total += 2;
+    if (document.getElementById('race').value === 'half_elf') total += 1;
+    total += extraSkillChoicesFromTraits;
+    if (window_madmanBonusSkills) total += window_madmanBonusSkills;
+    if (window_amnesiacBonusSkills) total += window_amnesiacBonusSkills;
+    
+    freeSkillChoices = total;
+    
+    if (selectedSkills.length > freeSkillChoices) {
+        selectedSkills = selectedSkills.slice(0, freeSkillChoices);
+    }
+    
+    renderSkills();
+    renderEquipment();
+    renderLanguages();
+    renderTools();
+    updateTraitDropdown();
+    updateStatSums();
+    updateSkillCounter();
+    updateEquipmentCounter();
+}
 
         
         function clearTrait() {
-            currentTrait = null;
-            currentTraitArmor = null;
-            currentTraitChoice = null;
-            pendingStatIncrease = null;
-            
-            extraSkillChoicesFromTraits = 0;
-            extraEquipmentChoicesFromTraits = 0;
-            
-            // Не очищаем выбранное снаряжение при снятии черты
-        
-            let total = currentClassSkills.choices || 0;
-            if (document.getElementById('race').value === 'human') total++;
-            if (document.getElementById('race').value === 'half_elf') total++;
-            freeSkillChoices = total;
-            
-            if (selectedSkills.length > freeSkillChoices) {
-                selectedSkills = selectedSkills.slice(0, freeSkillChoices);
-            }
-            
-            renderSkills();
-            renderEquipment();
-			renderLanguages();
-			renderTools();
-            updateTraitDropdown();
-            updateStatSums();
-            updateSkillCounter();
-        }
+    currentTrait = null;
+    currentTraitArmor = null;
+    currentTraitChoice = null;
+    pendingStatIncrease = null;
+    
+    // Очищаем ранее добавленные навыки от черт
+    if (traitGrantedSkills) {                         // было window_traitGrantedSkills
+        traitGrantedSkills.forEach(skill => {
+            const idx = selectedSkills.indexOf(skill);
+            if (idx > -1) selectedSkills.splice(idx, 1);
+        });
+        traitGrantedSkills = [];                       // было window_traitGrantedSkills = []
+    }
+    if (traitGrantedProficiencies) {                  // было window_traitGrantedProficiencies
+        traitGrantedProficiencies.forEach(item => {
+            const idx = selectedEquipment.indexOf(item);
+            if (idx > -1) selectedEquipment.splice(idx, 1);
+        });
+        traitGrantedProficiencies = [];                // было window_traitGrantedProficiencies = []
+    }
+    
+    extraSkillChoicesFromTraits = 0;
+    extraEquipmentChoicesFromTraits = 0;
+
+    let total = currentClassSkills.choices || 0;
+    if (document.getElementById('race').value === 'human') total += 2;
+    if (document.getElementById('race').value === 'half_elf') total++;
+    freeSkillChoices = total;
+    
+    if (selectedSkills.length > freeSkillChoices) {
+        selectedSkills = selectedSkills.slice(0, freeSkillChoices);
+    }
+    
+    renderSkills();
+    renderEquipment();
+    renderLanguages();
+    renderTools();
+    updateTraitDropdown();
+    updateStatSums();
+    updateSkillCounter();
+}
         
         function updateTraitChoiceUI() {
             const trait = humanTraits.find(t => t.name === currentTrait);
@@ -2007,8 +2201,7 @@ const traitToolChoicesMap = {
                 
                 select1.disabled = false;
                 select2.disabled = false;
-                
-                // Восстанавливаем предыдущие значения, если они были
+
                 if (pendingStatIncrease1) select1.value = pendingStatIncrease1;
                 if (pendingStatIncrease2) select2.value = pendingStatIncrease2;
                 
@@ -2055,8 +2248,7 @@ const traitToolChoicesMap = {
                 };
             }
         }
-        
-        // ==================== ПОЛУЭЛЬФ: ВЫБОР ДВУХ ХАРАКТЕРИСТИК ====================
+
         function updateHalfElfStatChoice() {
             const race = document.getElementById('race').value;
             const group = document.getElementById('halfElfStatGroup');
@@ -2096,7 +2288,6 @@ const traitToolChoicesMap = {
             select1.onchange = function() {
                 halfElfStat1 = this.value || null;
                 if (halfElfStat1 && halfElfStat1 === halfElfStat2) {
-                    // На всякий случай не даём выбрать одну и ту же характеристику дважды
                     halfElfStat2 = null;
                 }
                 updateHalfElfStatChoice();
@@ -2111,41 +2302,47 @@ const traitToolChoicesMap = {
                 updateStatSums();
             };
         }
-        
-        // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
-    function createCustomCheckbox(checked, disabled, onChange, itemName, isEquipment = false) {
+
+    function createCustomCheckbox(checked, disabled, onChange, itemName, type = 'skill') {
     const span = document.createElement('span');
     span.className = 'custom-checkbox';
     if (checked) span.classList.add('checked');
     span.addEventListener('click', function(e) {
         e.stopPropagation();
         if (disabled) return;
-        
-        // Подсчитываем текущее количество выбранных (только нефиксированных)
-        let currentSelectedCount;
-        if (isEquipment) {
+
+        let currentSelectedCount, maxAllowed, counterUpdater;
+        if (type === 'equipment') {
             currentSelectedCount = selectedEquipment.length;
-        } else {
+            maxAllowed = freeEquipmentChoices;
+            counterUpdater = () => { updateEquipmentCounter(); updateTraitDropdown(); };
+        } else if (type === 'tool') {
+            currentSelectedCount = selectedTools.length;
+            maxAllowed = freeToolChoices;
+            counterUpdater = updateToolsCounter;
+        } else if (type === 'language') {
+            currentSelectedCount = selectedLanguages.length;
+            maxAllowed = freeLanguageChoices;
+            counterUpdater = updateLanguagesCounter;
+        } else { // skill
             currentSelectedCount = selectedSkills.length;
+            maxAllowed = freeSkillChoices;
+            counterUpdater = updateSkillCounter;
         }
-        const maxAllowed = isEquipment ? freeEquipmentChoices : freeSkillChoices;
-        
+
         if (span.classList.contains('checked')) {
             span.classList.remove('checked');
             onChange(false, itemName);
-            if (!isEquipment) updateSkillCounter();
-            else updateEquipmentCounter();
-            if (isEquipment) updateTraitDropdown();
+            counterUpdater();
         } else {
             if (currentSelectedCount >= maxAllowed) {
-                alert(`Можно выбрать только ${maxAllowed} ${isEquipment ? 'предметов снаряжения' : 'навыков'}!`);
+                const names = { skill: 'навыков', equipment: 'предметов снаряжения', tool: 'инструментов', language: 'языков' };
+                alert(`Можно выбрать только ${maxAllowed} ${names[type]}!`);
                 return;
             }
             if (onChange(true, itemName)) {
                 span.classList.add('checked');
-                if (!isEquipment) updateSkillCounter();
-                else updateEquipmentCounter();
-                if (isEquipment) updateTraitDropdown();
+                counterUpdater();
             }
         }
     });
@@ -2174,9 +2371,8 @@ const traitToolChoicesMap = {
         const row = col.querySelector('.skill-row');
         skills.forEach(skill => {
             const label = document.createElement('label'); label.className = 'skill-item';
-            const isFixed = currentBackgroundSkills.includes(skill) || currentRaceSkills.includes(skill);
-            
-            // Если черта Одарённый активна - доступны ВСЕ навыки
+            const isFixed = currentBackgroundSkills.includes(skill) || currentRaceSkills.includes(skill) || traitGrantedSkills.includes(skill);
+
             const isAvailable = isGifted || classSkills.includes(skill) || isBard;
             const isDisabled = !isFixed && !isAvailable;
             
@@ -2193,7 +2389,7 @@ const traitToolChoicesMap = {
                     if (idx > -1) selectedSkills.splice(idx, 1);
                     return true;
                 }
-            }, skill, false);
+            }, skill, 'skill');
             label.appendChild(checkboxSpan);
             label.appendChild(document.createTextNode(' ' + skill));
             row.appendChild(label);
@@ -2210,34 +2406,36 @@ const traitToolChoicesMap = {
             
             const isWeaponMaster = currentTrait === 'Мастер оружия';
             const isHuman = document.getElementById('race').value === 'human';
-            
-            // Рассчитываем очки
+
             let humanPoints = 0;
-            let weaponMasterPoints = 0;
-            
-            if (isHuman) {
-                humanPoints = 1;
-            }
-            
-            if (isWeaponMaster) {
-                weaponMasterPoints = 4;
-            }
-            
-            // Обновляем глобальную переменную
-            freeEquipmentChoices = humanPoints + weaponMasterPoints;
-            
-            // Собираем уже выбранные предметы (кроме фиксированных)
+let weaponMasterPoints = 0;
+let amnesiacPoints = 0;
+
+if (isHuman) {
+    humanPoints = 2;
+}
+
+if (isWeaponMaster) {
+    weaponMasterPoints = 4;
+}
+
+const bg = document.getElementById('background').value;
+if (backgroundEquipmentMap[bg]) {
+    amnesiacPoints = backgroundEquipmentMap[bg];
+}
+
+freeEquipmentChoices = humanPoints + weaponMasterPoints + amnesiacPoints;
+
             let selectedNonFixed = selectedEquipment.filter(item => !fixedEquipment.includes(item));
-            
-            // Ограничиваем количество выбранных, если черта была снята
+
             if (selectedNonFixed.length > freeEquipmentChoices) {
                 selectedNonFixed = selectedNonFixed.slice(0, freeEquipmentChoices);
                 selectedEquipment = [...fixedEquipment, ...selectedNonFixed];
             }
-            
-            // Считаем, сколько очков какого типа потрачено
+
             let usedHumanPoints = 0;
             let usedWeaponMasterPoints = 0;
+			let usedAmnesiacPoints = 0;
             
             selectedNonFixed.forEach(item => {
                 const isArmor = ['Лёгкая броня', 'Средняя броня', 'Тяжелая броня'].includes(item);
@@ -2258,7 +2456,7 @@ const traitToolChoicesMap = {
             const remainingWeaponMasterPoints = weaponMasterPoints - usedWeaponMasterPoints;
             
             const equipGroups = {
-                'Броня': ['Лёгкая броня', 'Средняя броня', 'Тяжелая броня'],
+                'Броня': ['Лёгкая броня', 'Средняя броня', 'Тяжелая броня', 'Щиты'],
                 'Простое оружие': ['Дубинки', 'Одноручные топоры', 'Лёгкие молоты', 'Серпы', 'Булавы', 'Боевые посохи', 'Копья', 'Двуручные дубины', 'Лёгкие арбалеты', 'Короткие луки'],
                 'Воинское оружие': ['Скимитары', 'Короткие мечи', 'Цепы', 'Моргенштерны', 'Рапиры', 'Клевцы', 'Боевые топоры', 'Длинные мечи', 'Трезубцы', 'Боевые молоты', 'Глефы', 'Двуручные топоры', 'Двуручные мечи', 'Алебарды', 'Двуручные молоты', 'Пики', 'Одноручные арбалеты', 'Тяжелые арбалеты', 'Длинные луки']
             };
@@ -2285,19 +2483,20 @@ const traitToolChoicesMap = {
                     const isSelected = selectedNonFixed.includes(item);
                     
                     let canSelect = false;
-                    let disabledReason = '';
-                    
-                    if (isArmor) {
-                        if (remainingHumanPoints > 0) {
-                            canSelect = true;
-                        }
-                    } else {
-                        if (remainingWeaponMasterPoints > 0) {
-                            canSelect = true;
-                        } else if (remainingHumanPoints > 0) {
-                            canSelect = true;
-                        }
-                    }
+let disabledReason = '';
+
+// Считаем, сколько всего осталось очков на выбор
+const totalRemainingPoints = remainingHumanPoints + remainingWeaponMasterPoints + amnesiacPoints;
+
+if (isArmor) {
+    if (remainingHumanPoints > 0 || amnesiacPoints > 0) {
+        canSelect = true;
+    }
+} else {
+    if (totalRemainingPoints > 0) {
+        canSelect = true;
+    }
+}
                     
                     if (!canSelect && !isSelected) {
                         label.classList.add('disabled');
@@ -2309,46 +2508,60 @@ const traitToolChoicesMap = {
                         if (!canSelect && !isSelected) return false;
                         
                         if (newState) {
-                            if (isArmor) {
-                                if (usedHumanPoints >= humanPoints) {
-                                    alert(`Нельзя выбрать больше ${humanPoints} предмета брони!`);
-                                    return false;
-                                }
-                                usedHumanPoints++;
-                            } else {
-                                if (remainingWeaponMasterPoints <= 0 && remainingHumanPoints <= 0) {
-                                    alert(`Нет свободных очков для выбора оружия!`);
-                                    return false;
-                                }
-                                if (remainingWeaponMasterPoints > 0) {
-                                    usedWeaponMasterPoints++;
-                                } else {
-                                    usedHumanPoints++;
-                                }
-                            }
-                            selectedEquipment.push(equipName);
-                            renderEquipment();
-                            updateTraitDropdown();
-                            return true;
-                        } else {
-                            const idx = selectedEquipment.indexOf(equipName);
-                            if (idx > -1) {
-                                if (isArmor) {
-                                    usedHumanPoints--;
-                                } else {
-                                    if (usedWeaponMasterPoints > 0) {
-                                        usedWeaponMasterPoints--;
-                                    } else {
-                                        usedHumanPoints--;
-                                    }
-                                }
-                                selectedEquipment.splice(idx, 1);
-                                renderEquipment();
-                                updateTraitDropdown();
-                            }
-                            return true;
-                        }
-                    }, item, true);
+    if (isArmor) {
+        const armorRemaining = humanPoints - usedHumanPoints + amnesiacPoints - usedAmnesiacPoints;
+        if (armorRemaining <= 0) {
+            alert(`Нет свободных очков для выбора брони!`);
+            return false;
+        }
+        if (usedHumanPoints < humanPoints) {
+            usedHumanPoints++;
+        } else {
+            usedAmnesiacPoints++;
+        }
+    } else {
+        const totalRemaining = (humanPoints - usedHumanPoints) + (weaponMasterPoints - usedWeaponMasterPoints) + (amnesiacPoints - usedAmnesiacPoints);
+        if (totalRemaining <= 0) {
+            alert(`Нет свободных очков для выбора оружия!`);
+            return false;
+        }
+        if (usedWeaponMasterPoints < weaponMasterPoints) {
+            usedWeaponMasterPoints++;
+        } else if (usedHumanPoints < humanPoints) {
+            usedHumanPoints++;
+        } else {
+            usedAmnesiacPoints++;
+        }
+    }
+    selectedEquipment.push(equipName);
+    renderEquipment();
+    updateTraitDropdown();
+    return true;
+} else {
+    const idx = selectedEquipment.indexOf(equipName);
+    if (idx > -1) {
+        if (isArmor) {
+            if (usedAmnesiacPoints > 0 && usedHumanPoints >= humanPoints) {
+                usedAmnesiacPoints--;
+            } else {
+                usedHumanPoints--;
+            }
+        } else {
+            if (usedAmnesiacPoints > 0 && usedHumanPoints >= humanPoints && usedWeaponMasterPoints >= weaponMasterPoints) {
+                usedAmnesiacPoints--;
+            } else if (usedWeaponMasterPoints > 0) {
+                usedWeaponMasterPoints--;
+            } else {
+                usedHumanPoints--;
+            }
+        }
+        selectedEquipment.splice(idx, 1);
+        renderEquipment();
+        updateTraitDropdown();
+    }
+    return true;
+}
+                    }, item, 'equipment');
                     label.appendChild(checkboxSpan);
                     label.appendChild(document.createTextNode(' ' + item + disabledReason));
                     row.appendChild(label);
@@ -2356,20 +2569,23 @@ const traitToolChoicesMap = {
                 container.appendChild(col);
             }
             
-            const totalRemaining = remainingHumanPoints + remainingWeaponMasterPoints;
-            const counterEl = document.getElementById('equipmentCounter');
-            if (totalRemaining > 0 || isWeaponMaster || isHuman) {
-                if (totalRemaining === 1) {
-                    counterEl.innerHTML = `Можно выбрать ещё <span>${totalRemaining}</span> предмет снаряжения`;
-                } else if (totalRemaining > 1) {
-                    counterEl.innerHTML = `Можно выбрать ещё <span>${totalRemaining}</span> предметов снаряжения`;
-                } else {
-                    counterEl.innerHTML = `Можно выбрать ещё <span>${totalRemaining}</span> предметов снаряжения`;
-                }
-                counterEl.style.color = totalRemaining === 0 ? '#f0e0b0' : '#c9a87b';
-            } else {
-                counterEl.innerHTML = '';
-            }
+            const totalRemaining = remainingHumanPoints + remainingWeaponMasterPoints + (amnesiacPoints - usedAmnesiacPoints);
+const counterEl = document.getElementById('equipmentCounter');
+const showCounter = freeEquipmentChoices > 0;
+if (showCounter) {
+    const selectedNonFixedCount = selectedEquipment.filter(item => !fixedEquipment.includes(item)).length;
+    const actualRemaining = freeEquipmentChoices - selectedNonFixedCount;
+    if (actualRemaining === 1) {
+        counterEl.innerHTML = `Можно выбрать ещё <span>${actualRemaining}</span> предмет снаряжения`;
+    } else if (actualRemaining > 1) {
+        counterEl.innerHTML = `Можно выбрать ещё <span>${actualRemaining}</span> предметов снаряжения`;
+    } else {
+        counterEl.innerHTML = `Можно выбрать ещё <span>${actualRemaining}</span> предметов снаряжения`;
+    }
+    counterEl.style.color = actualRemaining === 0 ? '#f0e0b0' : '#c9a87b';
+} else {
+    counterEl.innerHTML = '';
+}
         }
         
         function updateSkillCounter() {
@@ -2401,75 +2617,63 @@ const traitToolChoicesMap = {
     col.className = 'skill-column';
     col.innerHTML = `<div class="tools-row"></div>`;
     const row = col.querySelector('.tools-row');
-    
-    // Получаем все фиксированные инструменты (предыстория + раса)
+
+    // фиксированные инструменты – не влияют на лимит
     const fixedTools = [...currentBackgroundTools, ...currentRaceTools];
-    
-    // Получаем бонусы от предыстории и черты
+
     const bg = document.getElementById('background').value;
     const bgBonus = backgroundToolChoicesMap[bg] || 0;
     const traitBonus = traitToolChoicesMap[currentTrait] || 0;
-    
-    // Обновляем глобальную переменную
+
     freeToolChoices = bgBonus + traitBonus;
-    
-    // Определяем список доступных инструментов
-    // Если есть ограничение от черты "Мастеровой" - используем его
+
     if (currentTrait === 'Мастеровой') {
         toolChoiceAllowedList = traitToolChoiceOptionsMap['Мастеровой'];
     } else if (bg === 'craftsman') {
         toolChoiceAllowedList = backgroundToolChoiceOptionsMap['craftsman'];
     } else {
-        toolChoiceAllowedList = null; // Все инструменты доступны
+        toolChoiceAllowedList = null;
     }
-    
-    // Обрезаем выбранные инструменты, если лимит изменился
-    let nonFixedTools = selectedTools.filter(t => !fixedTools.includes(t));
-    nonFixedTools = nonFixedTools.filter(t => !toolChoiceAllowedList || toolChoiceAllowedList.includes(t));
-    if (nonFixedTools.length > freeToolChoices) {
-        nonFixedTools = nonFixedTools.slice(0, freeToolChoices);
-        selectedTools = [...fixedTools, ...nonFixedTools];
-    }
-    
-    // Сортировка инструментов для удобства
+
+    // selectedTools содержит ТОЛЬКО свободно выбранные инструменты
     const sortedTools = [...allTools].sort();
     
     sortedTools.forEach(tool => {
         const label = document.createElement('label'); 
         label.className = 'skill-item';
         const isFixed = fixedTools.includes(tool);
-        const isSelected = selectedTools.includes(tool);
-        
+        const isSelected = selectedTools.includes(tool);  // true только если пользователь выбрал
+
         if (isFixed) {
             label.classList.add('fixed');
+            // для фиксированных всегда показываем как отмеченные и блокируем
         }
-        
-        // Рассчитываем, доступен ли выбор
+
         const isInAllowedList = !toolChoiceAllowedList || toolChoiceAllowedList.includes(tool);
-        const selectedNonFixedCount = selectedTools.filter(t => !fixedTools.includes(t)).length;
+        const selectedNonFixedCount = selectedTools.length; // уже только свободные
         const canSelect = !isFixed && isInAllowedList && (selectedNonFixedCount < freeToolChoices);
-        const isDisabled = !isFixed && !canSelect && !isSelected;
-        
-        if (isDisabled) {
+        const isDisabled = isFixed || (!canSelect && !isSelected);
+
+        if (isDisabled && !isFixed && !isSelected) {
             label.classList.add('disabled');
         }
-        
+
         const checkboxSpan = createCustomCheckbox(
-            isFixed || isSelected, 
-            isFixed || isDisabled, 
+            isFixed || isSelected,   // отмечен, если фиксированный или выбранный пользователем
+            isDisabled,              // неактивен, если фиксированный или лимит исчерпан
             (newState, toolName) => {
+                if (isFixed) return false;
                 if (newState) {
                     if (!isInAllowedList) return false;
-                    const currentCount = selectedTools.filter(t => !fixedTools.includes(t)).length;
-                    if (currentCount >= freeToolChoices) return false;
+                    if (selectedTools.length >= freeToolChoices) return false;
                     selectedTools.push(toolName);
                     renderTools();
                     updateToolsCounter();
                     return true;
                 } else {
-                    if (!isFixed) {
-                        const idx = selectedTools.indexOf(toolName);
-                        if (idx > -1) selectedTools.splice(idx, 1);
+                    const idx = selectedTools.indexOf(toolName);
+                    if (idx > -1) {
+                        selectedTools.splice(idx, 1);
                         renderTools();
                         updateToolsCounter();
                     }
@@ -2477,7 +2681,7 @@ const traitToolChoicesMap = {
                 }
             }, 
             tool, 
-            false
+            'tool'
         );
         
         label.appendChild(checkboxSpan);
@@ -2491,86 +2695,61 @@ const traitToolChoicesMap = {
 		function renderLanguages() {
     const container = document.getElementById('languagesSection');
     container.innerHTML = '';
-    
-    // Получаем фиксированные языки от расы
+
     const race = document.getElementById('race').value;
     const fixedLanguages = raceFixedLanguagesMap[race] || [];
-    
-    // Получаем бонусы от предыстории, расы и черты
+
     const bg = document.getElementById('background').value;
     const bgBonus = backgroundLanguageChoicesMap[bg] || 0;
     const raceBonus = raceLanguageChoicesMap[race] || 0;
     const traitBonus = traitLanguageChoicesMap[currentTrait] || 0;
-    
-    // Обновляем глобальную переменную
+
     freeLanguageChoices = baseLanguageChoices + bgBonus + raceBonus + traitBonus;
-    
-    // Синхронизируем фиксированные языки
-    fixedLanguages.forEach(lang => {
-        if (!selectedLanguages.includes(lang)) {
-            selectedLanguages.push(lang);
-        }
-    });
-    currentRaceLanguages = fixedLanguages;
-    
-    // Убираем фиксированные языки из выбранных, если они не должны быть там
-    // (на случай, если раса изменилась)
-    const allFixed = [...currentRaceLanguages];
-    selectedLanguages = selectedLanguages.filter(lang => {
-        if (allFixed.includes(lang) && !fixedLanguages.includes(lang)) {
-            return false; // Убираем языки, которые больше не фиксированы
-        }
-        return true;
-    });
-    
-    // Ограничиваем количество выбранных языков
-    let nonFixedSelected = selectedLanguages.filter(lang => !allFixed.includes(lang));
-    if (nonFixedSelected.length > freeLanguageChoices) {
-        nonFixedSelected = nonFixedSelected.slice(0, freeLanguageChoices);
-        selectedLanguages = [...allFixed, ...nonFixedSelected];
-    }
+
+    // selectedLanguages содержит ТОЛЬКО языки, выбранные пользователем
+    // Удаляем из него любые фиксированные языки, если они туда случайно попали
+    selectedLanguages = selectedLanguages.filter(lang => !fixedLanguages.includes(lang));
+
+    const allFixed = [...fixedLanguages];
     
     const col = document.createElement('div'); 
     col.className = 'skill-column';
     col.innerHTML = `<div class="languages-row"></div>`;
     const row = col.querySelector('.languages-row');
-    
-    // Сортировка языков для удобства
+
     const sortedLanguages = [...allLanguages].sort();
     
     sortedLanguages.forEach(lang => {
         const label = document.createElement('label'); 
         label.className = 'skill-item';
         const isFixed = allFixed.includes(lang);
-        const isSelected = selectedLanguages.includes(lang);
-        
+        const isSelected = selectedLanguages.includes(lang);  // только свободный выбор
+
         if (isFixed) {
             label.classList.add('fixed');
         }
-        
-        // Рассчитываем, доступен ли выбор
-        const canSelect = !isFixed && (selectedLanguages.filter(l => !allFixed.includes(l)).length < freeLanguageChoices);
-        const isDisabled = !isFixed && !canSelect && !isSelected;
-        
-        if (isDisabled) {
+
+        const canSelect = !isFixed && (selectedLanguages.length < freeLanguageChoices);
+        const isDisabled = isFixed || (!canSelect && !isSelected);
+
+        if (isDisabled && !isFixed) {
             label.classList.add('disabled');
         }
-        
+
         const checkboxSpan = createCustomCheckbox(
-            isSelected, 
-            isDisabled || isFixed, 
+            isFixed || isSelected,  // отмечен, если фиксированный или выбранный
+            isDisabled,
             (newState, langName) => {
                 if (isFixed) return false;
                 if (newState) {
-                    const currentNonFixed = selectedLanguages.filter(l => !allFixed.includes(l));
-                    if (currentNonFixed.length >= freeLanguageChoices) return false;
+                    if (selectedLanguages.length >= freeLanguageChoices) return false;
                     selectedLanguages.push(langName);
                     renderLanguages();
                     updateLanguagesCounter();
                     return true;
                 } else {
                     const idx = selectedLanguages.indexOf(langName);
-                    if (idx > -1 && !allFixed.includes(langName)) {
+                    if (idx > -1) {
                         selectedLanguages.splice(idx, 1);
                         renderLanguages();
                         updateLanguagesCounter();
@@ -2579,7 +2758,7 @@ const traitToolChoicesMap = {
                 }
             }, 
             lang, 
-            false
+            'language'
         );
         
         label.appendChild(checkboxSpan);
@@ -2592,25 +2771,12 @@ const traitToolChoicesMap = {
         
         function updateToolsCounter() {
     const fixedTools = [...currentBackgroundTools, ...currentRaceTools];
-    const nonFixedCount = selectedTools.filter(tool => !fixedTools.includes(tool)).length;
+    const nonFixedCount = selectedTools.length; // теперь это только свободные
     const remaining = freeToolChoices - nonFixedCount;
     const counterEl = document.getElementById('toolsCounter');
     
     if (freeToolChoices > 0) {
-        let bonusInfo = '';
-        const bg = document.getElementById('background').value;
-        const bgBonus = backgroundToolChoicesMap[bg] || 0;
-        const traitBonus = traitToolChoicesMap[currentTrait] || 0;
-        
-        const bonuses = [];
-        if (bgBonus > 0) bonuses.push(`+${bgBonus} от предыстории`);
-        if (traitBonus > 0) bonuses.push(`+${traitBonus} от черты «${currentTrait}»`);
-        
-        if (bonuses.length > 0) {
-            bonusInfo = ` (${bonuses.join(', ')})`;
-        }
-        
-        counterEl.innerHTML = `Можно выбрать ещё <span>${remaining}</span> из <span>${freeToolChoices}</span> инструментов${bonusInfo}`;
+        counterEl.innerHTML = `Можно выбрать ещё <span>${remaining}</span> из <span>${freeToolChoices}</span> инструментов`;
         counterEl.style.color = remaining === 0 ? '#f0e0b0' : '#c9a87b';
     } else {
         counterEl.innerHTML = '';
@@ -2618,31 +2784,14 @@ const traitToolChoicesMap = {
 }
         
         function updateLanguagesCounter() {
-    const fixedLanguages = [...currentRaceLanguages];
-    const nonFixedCount = selectedLanguages.filter(lang => !fixedLanguages.includes(lang)).length;
+    const race = document.getElementById('race').value;
+    const fixedLanguages = raceFixedLanguagesMap[race] || [];
+    const nonFixedCount = selectedLanguages.length; // только свободные
     const remaining = freeLanguageChoices - nonFixedCount;
     const counterEl = document.getElementById('languagesCounter');
     
     if (freeLanguageChoices > 0) {
-        let bonusInfo = '';
-        const bg = document.getElementById('background').value;
-        const race = document.getElementById('race').value;
-        const bgBonus = backgroundLanguageChoicesMap[bg] || 0;
-        const raceBonus = raceLanguageChoicesMap[race] || 0;
-        const traitBonus = traitLanguageChoicesMap[currentTrait] || 0;
-        
-        const bonuses = [];
-        if (bgBonus > 0) bonuses.push(`+${bgBonus} от предыстории`);
-        if (raceBonus > 0) bonuses.push(`+${raceBonus} от расы`);
-        if (traitBonus > 0) bonuses.push(`+${traitBonus} от черты «${currentTrait}»`);
-        
-        if (bonuses.length > 0) {
-            bonusInfo = ` (база 1, ${bonuses.join(', ')})`;
-        } else {
-            bonusInfo = ' (база 1)';
-        }
-        
-        counterEl.innerHTML = `Можно выбрать ещё <span>${remaining}</span> из <span>${freeLanguageChoices}</span> языков${bonusInfo}`;
+        counterEl.innerHTML = `Можно выбрать ещё <span>${remaining}</span> из <span>${freeLanguageChoices}</span> языков`;
         counterEl.style.color = remaining === 0 ? '#f0e0b0' : '#c9a87b';
     } else {
         counterEl.innerHTML = '';
@@ -2659,18 +2808,14 @@ const traitToolChoicesMap = {
 
     if (availableChoices.length > 0) {
         group.style.display = 'block';
-        // Заполняем селект
         select.innerHTML = `<option value="">Выберите...</option>` + 
             availableChoices.map(skill => `<option value="${skill}">${skill}</option>`).join('');
-        // Устанавливаем текущее выбранное значение
         if (currentRaceSkillChoice && availableChoices.includes(currentRaceSkillChoice)) {
             select.value = currentRaceSkillChoice;
         } else {
-            // Если выбор не сделан, автоматически выбираем первый вариант
             currentRaceSkillChoice = availableChoices[0];
             select.value = availableChoices[0];
         }
-        // Обновляем тултип
         tooltip.innerHTML = `<p>Выберите один навык для вашей расы.</p><p><b>Доступно:</b> ${availableChoices.join(', ')}</p>`;
     } else {
         group.style.display = 'none';
@@ -2678,10 +2823,8 @@ const traitToolChoicesMap = {
     }
 }
 
-// Добавьте переменную для хранения выбора
 let currentRaceToolChoice = null;
 
-// Функция для обновления UI выбора инструментов
 function updateRaceToolChoice() {
     const race = document.getElementById('race').value;
     const group = document.getElementById('raceToolChoiceGroup');
@@ -2707,7 +2850,6 @@ function updateRaceToolChoice() {
         currentRaceToolChoice = null;
     }
 
-    // Обновляем currentRaceTools на основе выбора
     if (currentRaceToolChoice) {
         currentRaceTools = [currentRaceToolChoice];
     } else {
@@ -2715,7 +2857,6 @@ function updateRaceToolChoice() {
     }
 }
 
-// Обработчик для изменения выбора
 document.getElementById('raceToolChoice').addEventListener('change', function() {
     const val = this.value;
     if (val) {
@@ -2734,77 +2875,73 @@ document.getElementById('raceToolChoice').addEventListener('change', function() 
 });
 		
             function updateAll() {
-    // Синхронизируем фиксированные инструменты расы
     const race = document.getElementById('race').value;
     currentRaceTools = raceToolsMap[race] || [];
-    currentRaceTools.forEach(tool => {
-        if (!selectedTools.includes(tool)) {
-            selectedTools.push(tool);
-        }
-    });
-    
-    // Синхронизируем фиксированные языки расы
+
     currentRaceLanguages = raceFixedLanguagesMap[race] || [];
     currentRaceLanguages.forEach(lang => {
         if (!selectedLanguages.includes(lang)) {
             selectedLanguages.push(lang);
         }
     });
-	
-	// --- ДОБАВИТЬ НОВУЮ ЛОГИКУ ДЛЯ ВЫБОРА НАВЫКОВ РАСЫ ---
+
     const availableChoices = raceChoicesMap[race] || [];
     if (availableChoices.length > 0) {
-        // Проверяем, что выбранный навык все еще доступен, иначе сбрасываем его
         if (currentRaceSkillChoice && !availableChoices.includes(currentRaceSkillChoice)) {
             currentRaceSkillChoice = null;
         }
-        // Если выбор еще не сделан, выбираем первый доступный вариант
         if (!currentRaceSkillChoice && availableChoices.length > 0) {
             currentRaceSkillChoice = availableChoices[0];
         }
     } else {
-        // Если у расы нет выбора, сбрасываем значение
         currentRaceSkillChoice = null;
     }
-	
-	 updateRaceSkillChoice();
-	 updateRaceToolChoice();
+    
+    updateRaceSkillChoice();
+    updateRaceToolChoice();
 
-    // ВАЖНО: Теперь навыки от расы - это либо фиксированный массив, либо один выбранный навык
     let raceSkillsToAdd = [];
     if (availableChoices.length > 0 && currentRaceSkillChoice) {
         raceSkillsToAdd = [currentRaceSkillChoice];
     } else {
         raceSkillsToAdd = raceSkillsMap[race] || [];
     }
-    // Обновляем currentRaceSkills для использования в других функциях (например, renderSkills)
     currentRaceSkills = raceSkillsToAdd;
-    // --- КОНЕЦ НОВОЙ ЛОГИКИ ---
     
     renderSkills();
     renderEquipment();
     renderTools();
     renderLanguages();
-            
-            let total = currentClassSkills.choices || 0;
-            if (document.getElementById('race').value === 'human') total += 2;
-            if (document.getElementById('race').value === 'half_elf') total++;
-            total += extraSkillChoicesFromTraits;
-            freeSkillChoices = total;
-            
-            // Обрезаем выбранные навыки до нового лимита
-            if (selectedSkills.length > freeSkillChoices) {
-                selectedSkills = selectedSkills.slice(0, freeSkillChoices);
-            }
-            
-            updateSkillCounter();
-            updateTraitDropdown();
-            updateStatSums();
-            if (currentMode === 'points') {
-                updatePointsCounter();
-                updateStatButtons();
-            }
-        }
+    
+    let total = currentClassSkills.choices || 0;
+    if (document.getElementById('race').value === 'human') total += 2;
+    if (document.getElementById('race').value === 'half_elf') total++;
+    total += extraSkillChoicesFromTraits;
+    
+    // ДОБАВЛЯЕМ БОНУС ДЛЯ БЕЗУМЦА
+    if (window_madmanBonusSkills) {
+        total += window_madmanBonusSkills;
+    }
+	
+	// ДОБАВЛЯЕМ БОНУС ДЛЯ БЕЗУМЦА
+    if (window_amnesiacBonusSkills) {
+        total += window_amnesiacBonusSkills;
+    }
+    
+    freeSkillChoices = total;
+
+    if (selectedSkills.length > freeSkillChoices) {
+        selectedSkills = selectedSkills.slice(0, freeSkillChoices);
+    }
+    
+    updateSkillCounter();
+    updateTraitDropdown();
+    updateStatSums();
+    if (currentMode === 'points') {
+        updatePointsCounter();
+        updateStatButtons();
+    }
+}
         
         function updateRacialFeature() {
             const race = document.getElementById('race').value;
@@ -2904,24 +3041,30 @@ document.getElementById('raceToolChoice').addEventListener('change', function() 
             }
             return true;
         }
-        
-        // ==================== СЛУШАТЕЛИ ====================
+		
         document.getElementById('background').addEventListener('change', function() {
     currentBackgroundSkills = backgroundSkillsMap[this.value] || [];
     currentBackgroundTools = backgroundToolsMap[this.value] || [];
-    
-    // Добавляем фиксированные инструменты
-    currentBackgroundTools.forEach(tool => {
-        if (!selectedTools.includes(tool)) {
-            selectedTools.push(tool);
-        }
-    });
-    
-    // Обновляем свободные выборы инструментов
+
+// ДОБАВЛЯЕМ ДЛЯ БЕЗУМЦА - даём 2 свободных выбора навыков
+    if (this.value === 'madman') {
+        // Находим и сохраняем, сколько навыков уже выбрано из-за этого
+        // Просто увеличиваем freeSkillChoices на 2 при рендере
+        window_madmanBonusSkills = 2;
+    } else {
+        window_madmanBonusSkills = 0;
+    }
+	
+	// ДОБАВЛЯЕМ ДЛЯ АМНЕЗИАКА - даём 2 свободных выбора навыков
+    if (this.value === 'amnesiac') {
+        window_amnesiacBonusSkills = 2;
+    } else {
+        window_amnesiacBonusSkills = 0;
+    }
+
     freeToolChoices = backgroundToolChoicesMap[this.value] || 0;
     toolChoiceAllowedList = backgroundToolChoiceOptionsMap[this.value] || null;
-    
-    // Обрезаем выбранные инструменты
+
     let nonFixedTools = selectedTools.filter(t => !currentBackgroundTools.includes(t));
     nonFixedTools = nonFixedTools.filter(t => !toolChoiceAllowedList || toolChoiceAllowedList.includes(t));
     if (nonFixedTools.length > freeToolChoices) {
@@ -2955,38 +3098,22 @@ document.getElementById('raceToolChoice').addEventListener('change', function() 
     currentRaceTools = raceToolsMap[val] || [];
     currentRaceLanguages = raceFixedLanguagesMap[val] || [];
     
-    // Добавляем фиксированные инструменты расы
-    currentRaceTools.forEach(tool => {
-        if (!selectedTools.includes(tool)) {
-            selectedTools.push(tool);
-        }
-    });
-    
-    // Добавляем фиксированные языки расы
-    currentRaceLanguages.forEach(lang => {
-        if (!selectedLanguages.includes(lang)) {
-            selectedLanguages.push(lang);
-        }
-    });
-    
     document.getElementById('raceTooltip').innerHTML = raceTooltips[val] || '';
     updateRacialFeature();
     updateHalfElfStatChoice();
     updateAll();
 });
-        
-		// Обработчик для выбора навыка расы
+
 document.getElementById('raceSkillChoice').addEventListener('change', function() {
     const val = this.value;
     if (val) {
         currentRaceSkillChoice = val;
     } else {
-        // Если пользователь выбрал пустое значение, устанавливаем первый доступный навык
         const race = document.getElementById('race').value;
         const available = raceChoicesMap[race] || [];
         if (available.length > 0) {
             currentRaceSkillChoice = available[0];
-            this.value = available[0]; // Синхронизируем селект
+            this.value = available[0];
         } else {
             currentRaceSkillChoice = null;
         }
@@ -3012,8 +3139,7 @@ document.getElementById('raceSkillChoice').addEventListener('change', function()
                 switchMode(this.getAttribute('data-mode'));
             });
         });
-        
-        // ==================== ОТПРАВКА ====================
+
         const form = document.getElementById('dndForm');
         const successMsg = document.getElementById('successMessage');
         const errorMsg = document.getElementById('errorMessage');
@@ -3029,9 +3155,8 @@ document.getElementById('raceSkillChoice').addEventListener('change', function()
 			const appearance = document.getElementById('appearance').value;
 			const backstory = document.getElementById('backstory').value;
             
-            const skills = [...currentBackgroundSkills, ...currentRaceSkills, ...selectedSkills];
+            const skills = [...currentBackgroundSkills, ...currentRaceSkills, ...traitGrantedSkills, ...selectedSkills];
             const equipment = [...getAllFixedEquipment(), ...selectedEquipment];
-            // *** ИЗМЕНЕНО: Отправка всех инструментов, включая фиксированные ***
             const tools = [...new Set([...currentBackgroundTools, ...selectedTools])];
             
             const stats = {
