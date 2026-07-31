@@ -1,0 +1,50 @@
+[
+	# Заговоры
+	{ 
+		name: Крутой Заговор
+		level: 0
+		school: Школа1
+		casttime: 1 основное действие
+		distance: 10 клеток
+		components: ВСМ
+		duration: мгновенная
+		class: колдун, волшебник
+		desc: Это заговор1
+	}
+	{ 
+		name: Ещё один Заговор
+		level: 0
+		school: Школа2
+		casttime: 2 основных действия
+		distance: 20 клеток
+		components: ВС
+		duration: 4 хода
+		class: волшебник, друид
+		desc: Это заговор2
+	}
+	# Заклинания первого круга
+	{ 
+		name: Заклинание первого круга
+		level: 1
+		school: Школа2
+		casttime: 2 основных действия
+		distance: 20 клеток
+		components: М
+		duration: 4 хода
+		class: черодей
+		desc: Это заклинание1
+	}
+	# Заклинания второго круга
+	{ 
+		name: Заклинание второго круга
+		level: 2
+		school: Школа3
+		# комментарий внутри
+		casttime: 3 основных действия
+		distance: 30 клеток
+		components: С
+		duration: 4 хода
+		class: колдун, волшебник, друид, чародей
+		desc: Это заклинание2
+	}
+]

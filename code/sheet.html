@@ -842,7 +842,7 @@
     </div>
 
     <script>
-        // Конфигурация
+// Конфигурация
 const STAT_NAMES = {
     strength: 'Сила', dexterity: 'Ловкость', constitution: 'Телосложение',
     intelligence: 'Интеллект', wisdom: 'Мудрость', charisma: 'Харизма'
@@ -1755,8 +1755,7 @@ function renderTools() {
             label.className = 'skill-item';
             const isFixed = state.fixedTools.includes(tool);
             const isSelected = state.selectedTools.includes(tool);
-            
-            // Доступен для ВЫБОРА, если разрешён (или ограничения нет) и не фиксирован
+
             const isSelectable = !state.toolChoiceAllowed || state.toolChoiceAllowed.includes(tool);
             const canSelect = !isFixed && isSelectable && (state.selectedTools.length < state.choicePoints.tools);
             const disabled = isFixed || (!canSelect && !isSelected);
@@ -1804,7 +1803,7 @@ function renderLanguages() {
     };
 
     for (const [groupName, langs] of Object.entries(languageGroups)) {
-        if (langs.length === 0) continue; // скрываем пустые категории
+        if (langs.length === 0) continue;
         const col = document.createElement('div');
         col.className = 'skill-column';
         col.innerHTML = `<div class="skill-title">${groupName}</div>`;
@@ -1916,10 +1915,9 @@ function renderEquipment() {
         const has = (name) => state.fixedEquipment.includes(name) || state.selectedEquipment.includes(name);
         if (item === 'Средняя броня') return has('Лёгкая броня');
         if (item === 'Тяжелая броня') return has('Средняя броня');
-        return true; // оружие
+        return true;
     }
 
-    // Текущие траты очков (пересчитываем перед циклом)
     let spent = state.selectedEquipment.reduce((sum, item) => sum + (armorCost[item] || 1), 0);
 
     for (const [groupName, items] of Object.entries(equipGroups)) {
@@ -1931,7 +1929,7 @@ function renderEquipment() {
         col.appendChild(row);
 
         items.forEach(item => {
-            const cost = armorCost[item] || 1;   // всё остальное по 1 очку
+            const cost = armorCost[item] || 1;
             const label = document.createElement('label');
             label.className = 'equipment-item';
             const isFixed = state.fixedEquipment.includes(item);
@@ -1961,7 +1959,6 @@ function renderEquipment() {
         container.appendChild(col);
     }
 
-    // Обновляем счётчик очков
     const totalSpent = state.selectedEquipment.reduce((sum, item) => sum + (armorCost[item] || 1), 0);
     const remaining = state.choicePoints.equipment - totalSpent;
     const el = document.getElementById('equipmentCounter');
