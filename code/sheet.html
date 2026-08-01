@@ -602,8 +602,293 @@
         .mod-negative {
             color: #c9a87b;
         }
-		
+
+        /* ===== Блок выбора заклинаний (Посвящённый в магию и подобные черты) ===== */
+        .magic-initiate-block {
+            margin-top: 14px;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #8b7355;
+        }
+
+        .spell-picker-wrap {
+            margin-top: 16px;
+        }
+
+        .spell-picker-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .spell-picker-filters .spell-picker-search {
+            margin-bottom: 0;
+        }
+
+        .spell-picker-school-filter {
+            flex: 0 0 200px;
+            cursor: pointer;
+        }
+
+        .spell-picker-search {
+            width: 100%;
+            padding: 9px 14px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #8b7355;
+            color: #d4c4a8;
+            font-size: 13px;
+            margin-bottom: 14px;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .spell-picker-search:focus {
+            outline: none;
+            border-color: #c9a87b;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 10px rgba(201, 168, 123, 0.3);
+        }
+
+        .spell-picker-search::placeholder {
+            color: rgba(180, 160, 120, 0.5);
+        }
+
+        .spell-picker-group-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #c9a87b;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            border-left: 3px solid #8b7355;
+            padding-left: 10px;
+            margin: 16px 0 10px;
+        }
+
+        .spell-picker-group-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .spell-picker-counter {
+            font-size: 11px;
+            color: #a89076;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-transform: none;
+        }
+
+        .spell-picker-counter.full {
+            color: #c9a87b;
+            text-shadow: 0 0 4px rgba(201, 168, 123, 0.5);
+        }
+
+        .spell-picker-list {
+            max-height: 520px;
+            overflow-y: auto;
+            border: 1px solid #8b7355;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 10px;
+            align-content: start;
+        }
+
+        .spell-picker-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .spell-picker-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .spell-picker-list::-webkit-scrollbar-thumb {
+            background: #8b7355;
+            border: 1px solid #6b5a45;
+        }
+
+        .spell-picker-list::-webkit-scrollbar-thumb:hover {
+            background: #c9a87b;
+        }
+
+        .spell-picker-empty {
+            color: #a89076;
+            font-size: 12px;
+            text-align: center;
+            padding: 14px 6px;
+            font-style: italic;
+        }
+
+        .spell-pick-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 14px 14px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #6b5a45;
+            background: rgba(0, 0, 0, 0.35);
+            --sc: #c9a87b;
+            text-transform: none;
+        }
+
+        .spell-pick-item:hover:not(.disabled) {
+            background: rgba(139, 115, 85, 0.2);
+            border-color: #c9a87b;
+        }
+
+        .spell-pick-item.selected {
+            border-color: var(--sc, #c9a87b);
+            background: rgba(139, 115, 85, 0.25);
+            box-shadow: 0 0 8px rgba(201, 168, 123, 0.25);
+        }
+
+        .spell-pick-item .custom-checkbox {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            margin-top: 0;
+        }
+
+        .spell-pick-info {
+            min-width: 0;
+        }
+
+        .spell-pick-sigil {
+            position: absolute;
+            top: 10px;
+            right: 38px;
+            width: 24px;
+            height: 24px;
+            opacity: 0.9;
+        }
+
+        .spell-pick-level {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 24px;
+            color: var(--sc, #a89076);
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            padding-right: 66px;
+            border-bottom: 1px solid rgba(139, 115, 85, 0.5);
+        }
+
+        .spell-pick-level .dots {
+            display: inline-flex;
+            gap: 3px;
+        }
+
+        .spell-pick-level .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(139, 115, 85, 0.5);
+        }
+
+        .spell-pick-level .dot.filled {
+            background: var(--sc, #c9a87b);
+        }
+
+        .spell-pick-name {
+            color: #d4c4a8;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            padding-right: 26px;
+            line-height: 1.3;
+        }
+
+        .spell-pick-item:hover:not(.disabled) .spell-pick-name,
+        .spell-pick-item.selected .spell-pick-name {
+            color: #f0e0b0;
+            text-shadow: 0 0 3px rgba(201, 168, 123, 0.5);
+        }
+
+        .spell-pick-school {
+            color: var(--sc, #a89076);
+            font-size: 11px;
+            font-style: italic;
+            margin: 2px 0 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(139, 115, 85, 0.5);
+        }
+
+        .spell-pick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 10px;
+            font-size: 10.5px;
+            color: #b8a688;
+            border-bottom: 1px solid rgba(139, 115, 85, 0.5);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .spell-pick-stats .stat b {
+            display: block;
+            color: #a89076;
+            font-weight: 600;
+            font-size: 9px;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+        }
+
+        .spell-pick-desc {
+            color: #b8a688;
+            font-size: 11.5px;
+            line-height: 1.55;
+            white-space: pre-line;
+        }
+
+        .spell-pick-item.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            filter: grayscale(0.6);
+        }
+
+        .spell-picker-status {
+            color: #a89076;
+            font-size: 12px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .spell-picker-status.error {
+            color: #c98b7b;
+        }
     </style>
+<script>
+/*!
+ * Hjson v3.2.1
+ * https://hjson.github.io
+ *
+ * Copyright 2014-2017 Christian Zangl, MIT license
+ * Details and documentation:
+ * https://github.com/hjson/hjson-js
+ *
+ * This code is based on the the JSON version by Douglas Crockford:
+ * https://github.com/douglascrockford/JSON-js (json_parse.js, json2.js)
+ */
+!function(n){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=n();else if("function"==typeof define&&define.amd)define([],n);else{var r;r="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,r.Hjson=n()}}(function(){return function(){function n(r,e,t){function o(a,s){if(!e[a]){if(!r[a]){var u="function"==typeof require&&require;if(!s&&u)return u(a,!0);if(i)return i(a,!0);var f=new Error("Cannot find module '"+a+"'");throw f.code="MODULE_NOT_FOUND",f}var c=e[a]={exports:{}};r[a][0].call(c.exports,function(n){return o(r[a][1][n]||n)},c,c.exports,n,r,e,t)}return e[a].exports}for(var i="function"==typeof require&&require,a=0;a<t.length;a++)o(t[a]);return o}return n}()({1:[function(n,r,e){"use strict";function t(n,r,e){var t;return n&&(t={b:n}),r&&((t=t||{}).a=r),e&&((t=t||{}).x=e),t}function o(n,r){if(null!==n&&"object"==typeof n){var e=h.getComment(n);e&&h.removeComment(n);var i,a,u,f;if("[object Array]"===Object.prototype.toString.apply(n)){for(f={a:{}},i=0,a=n.length;i<a;i++)s(f.a,i,e.a[i],o(n[i]))&&(u=!0);!u&&e.e&&(f.e=t(e.e[0],e.e[1]),u=!0)}else{f={s:{}};var c,l=Object.keys(n);for(e&&e.o?(c=[],e.o.concat(l).forEach(function(r){Object.prototype.hasOwnProperty.call(n,r)&&c.indexOf(r)<0&&c.push(r)})):c=l,f.o=c,i=0,a=c.length;i<a;i++){var p=c[i];s(f.s,p,e.c[p],o(n[p]))&&(u=!0)}!u&&e.e&&(f.e=t(e.e[0],e.e[1]),u=!0)}return r&&e&&e.r&&(f.r=t(e.r[0],e.r[1])),u?f:void 0}}function i(){var n="";return[].forEach.call(arguments,function(r){r&&""!==r.trim()&&(n&&(n+="; "),n+=r.trim())}),n}function a(n,r){var e=[];if(c(n,r,e,[]),e.length>0){var t=l(r,null,1);t+="\n# Orphaned comments:\n",e.forEach(function(n){t+=("# "+n.path.join("/")+": "+i(n.b,n.a,n.e)).replace("\n","\\n ")+"\n"}),l(r,t,1)}}function s(n,r,e,o){var i=t(e?e[0]:void 0,e?e[1]:void 0,o);return i&&(n[r]=i),i}function u(n,r){var e=t(r.b,r.a);return e.path=n,e}function f(n,r,e){if(n){var t,o;if(n.a)for(t=0,o=n.a.length;t<o;t++){var i=e.slice().concat([t]),a=n.a[t];a&&(r.push(u(i,a)),f(a.x,r,i))}else n.o&&n.o.forEach(function(t){var o=e.slice().concat([t]),i=n.s[t];i&&(r.push(u(o,i)),f(i.x,r,o))});n.e&&r.push(u(e,n.e))}}function c(n,r,e,t){if(n){if(null===r||"object"!=typeof r)return void f(n,e,t);var o,i=h.createComment(r);if(0===t.length&&n.r&&(i.r=[n.r.b,n.r.a]),"[object Array]"===Object.prototype.toString.apply(r)){i.a=[];var a=n.a||{};for(var s in a)if(a.hasOwnProperty(s)){o=parseInt(s);var l=n.a[s];if(l){var p=t.slice().concat([o]);o<r.length?(i.a[o]=[l.b,l.a],c(l.x,r[o],e,p)):(e.push(u(p,l)),f(l.x,e,p))}}0===o&&n.e&&(i.e=[n.e.b,n.e.a])}else i.c={},i.o=[],(n.o||[]).forEach(function(o){var a=t.slice().concat([o]),s=n.s[o];Object.prototype.hasOwnProperty.call(r,o)?(i.o.push(o),s&&(i.c[o]=[s.b,s.a],c(s.x,r[o],e,a))):s&&(e.push(u(a,s)),f(s.x,e,a))}),n.e&&(i.e=[n.e.b,n.e.a])}}function l(n,r,e){var t=h.createComment(n,h.getComment(n));return t.r||(t.r=["",""]),(r||""===r)&&(t.r[e]=h.forceComment(r)),t.r[e]||""}var h=n("./hjson-common");r.exports={extract:function(n){return o(n,!0)},merge:a,header:function(n,r){return l(n,r,0)},footer:function(n,r){return l(n,r,1)}}},{"./hjson-common":2}],2:[function(n,r,e){"use strict";function t(n,r){function e(){return o=n.charAt(u),u++,o}var t,o,i="",a=0,s=!0,u=0;for(e(),"-"===o&&(i="-",e());o>="0"&&o<="9";)s&&("0"==o?a++:s=!1),i+=o,e();if(s&&a--,"."===o)for(i+=".";e()&&o>="0"&&o<="9";)i+=o;if("e"===o||"E"===o)for(i+=o,e(),"-"!==o&&"+"!==o||(i+=o,e());o>="0"&&o<="9";)i+=o,e();for(;o&&o<=" ";)e();return r&&(","!==o&&"}"!==o&&"]"!==o&&"#"!==o&&("/"!==o||"/"!==n[u]&&"*"!==n[u])||(o=0)),t=+i,o||a||!isFinite(t)?void 0:t}function o(n,r){return Object.defineProperty&&Object.defineProperty(n,"__COMMENTS__",{enumerable:!1,writable:!0}),n.__COMMENTS__=r||{}}function i(n){Object.defineProperty(n,"__COMMENTS__",{value:void 0})}function a(n){return n.__COMMENTS__}function s(n){if(!n)return"";var r,e,t,o,i=n.split("\n");for(t=0;t<i.length;t++)for(r=i[t],o=r.length,e=0;e<o;e++){var a=r[e];if("#"===a)break;if("/"===a&&("/"===r[e+1]||"*"===r[e+1])){"*"===r[e+1]&&(t=i.length);break}if(a>" "){i[t]="# "+r;break}}return i.join("\n")}var u=n("os");r.exports={EOL:u.EOL||"\n",tryParseNumber:t,createComment:o,removeComment:i,getComment:a,forceComment:s}},{os:8}],3:[function(n,r,e){"use strict";function t(n,r){function e(n){return"[object Function]"==={}.toString.call(n)}if("[object Array]"!==Object.prototype.toString.apply(n)){if(n)throw new Error("dsf option must contain an array!");return i}if(0===n.length)return i;var t=[];return n.forEach(function(n){if(!n.name||!e(n.parse)||!e(n.stringify))throw new Error("extension does not match the DSF interface");t.push(function(){try{if("parse"==r)return n.parse.apply(null,arguments);if("stringify"==r){var e=n.stringify.apply(null,arguments);if(void 0!==e&&("string"!=typeof e||0===e.length||'"'===e[0]||[].some.call(e,function(n){return a(n)})))throw new Error("value may not be empty, start with a quote or contain a punctuator character except colon: "+e);return e}throw new Error("Invalid type")}catch(r){throw new Error("DSF-"+n.name+" failed; "+r.message)}})}),o.bind(null,t)}function o(n,r){if(n)for(var e=0;e<n.length;e++){var t=n[e](r);if(void 0!==t)return t}}function i(){}function a(n){return"{"===n||"}"===n||"["===n||"]"===n||","===n}function s(){return{name:"math",parse:function(n){switch(n){case"+inf":case"inf":case"+Inf":case"Inf":return 1/0;case"-inf":case"-Inf":return-1/0;case"nan":case"NaN":return NaN}},stringify:function(n){if("number"==typeof n)return 1/n==-1/0?"-0":n===1/0?"Inf":n===-1/0?"-Inf":isNaN(n)?"NaN":void 0}}}function u(n){var r=n&&n.out;return{name:"hex",parse:function(n){if(/^0x[0-9A-Fa-f]+$/.test(n))return parseInt(n,16)},stringify:function(n){if(r&&Number.isInteger(n))return"0x"+n.toString(16)}}}function f(){return{name:"date",parse:function(n){if(/^\d{4}-\d{2}-\d{2}$/.test(n)||/^\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}(?:.\d+)(?:Z|[+-]\d{2}:\d{2})$/.test(n)){var r=Date.parse(n);if(!isNaN(r))return new Date(r)}},stringify:function(n){if("[object Date]"===Object.prototype.toString.call(n)){var r=n.toISOString();return-1!==r.indexOf("T00:00:00.000Z",r.length-14)?r.substr(0,10):r}}}}s.description="support for Inf/inf, -Inf/-inf, Nan/naN and -0",u.description="parse hexadecimal numbers prefixed with 0x",f.description="support ISO dates",r.exports={loadDsf:t,std:{math:s,hex:u,date:f}}},{}],4:[function(n,r,e){"use strict";r.exports=function(r,e){function t(){j=0,w=" "}function o(n){return"{"===n||"}"===n||"["===n||"]"===n||","===n||":"===n}function i(n){var r,e=0,t=1;for(r=j-1;r>0&&"\n"!==b[r];r--,e++);for(;r>0;r--)"\n"===b[r]&&t++;throw new Error(n+" at line "+t+","+e+" >>>"+b.substr(j-e,20)+" ...")}function a(){return w=b.charAt(j),j++,w}function s(n){return b.charAt(j+n)}function u(n){for(var r="",e=w;a();){if(w===e)return a(),n&&"'"===e&&"'"===w&&0===r.length?(a(),f()):r;if("\\"===w)if(a(),"u"===w){for(var t=0,o=0;o<4;o++){a();var s,u=w.charCodeAt(0);w>="0"&&w<="9"?s=u-48:w>="a"&&w<="f"?s=u-97+10:w>="A"&&w<="F"?s=u-65+10:i("Bad \\u char "+w),t=16*t+s}r+=String.fromCharCode(t)}else{if("string"!=typeof C[w])break;r+=C[w]}else"\n"===w||"\r"===w?i("Bad string containing newline"):r+=w}i("Bad string")}function f(){function n(){for(var n=t;w&&w<=" "&&"\n"!==w&&n-- >0;)a()}for(var r="",e=0,t=0;;){var o=s(-t-5);if(!o||"\n"===o)break;t++}for(;w&&w<=" "&&"\n"!==w;)a();for("\n"===w&&(a(),n());;){if(w){if("'"===w){if(e++,a(),3===e)return"\n"===r.slice(-1)&&(r=r.slice(0,-1)),r;continue}for(;e>0;)r+="'",e--}else i("Bad multiline string");"\n"===w?(r+="\n",a(),n()):("\r"!==w&&(r+=w),a())}}function c(){if('"'===w||"'"===w)return u(!1);for(var n="",r=j,e=-1;;){if(":"===w)return n?e>=0&&e!==n.length&&(j=r+e,i("Found whitespace in your key name (use quotes to include)")):i("Found ':' but no key name (for an empty key name use quotes)"),n;w<=" "?w?e<0&&(e=n.length):i("Found EOF while looking for a key name (check your syntax)"):o(w)?i("Found '"+w+"' where a key name was expected (check your syntax or use quotes if the key name includes {}[],: or whitespace)"):n+=w,a()}}function l(){for(;w;){for(;w&&w<=" ";)a();if("#"===w||"/"===w&&"/"===s(0))for(;w&&"\n"!==w;)a();else{if("/"!==w||"*"!==s(0))break;for(a(),a();w&&("*"!==w||"/"!==s(0));)a();w&&(a(),a())}}}function h(){var n=w;for(o(w)&&i("Found a punctuator character '"+w+"' when expecting a quoteless string (check your syntax)");;){a();var r="\r"===w||"\n"===w||""===w;if(r||","===w||"}"===w||"]"===w||"#"===w||"/"===w&&("/"===s(0)||"*"===s(0))){var e=n[0];switch(e){case"f":if("false"===n.trim())return!1;break;case"n":if("null"===n.trim())return null;break;case"t":if("true"===n.trim())return!0;break;default:if("-"===e||e>="0"&&e<="9"){var t=k.tryParseNumber(n);if(void 0!==t)return t}}if(r){n=n.trim();var u=O(n);return void 0!==u?u:n}}n+=w}}function p(n,r){var e;for(n--,e=j-2;e>n&&b[e]<=" "&&"\n"!==b[e];e--);"\n"===b[e]&&e--,"\r"===b[e]&&e--;var t=b.substr(n,e-n+1);for(e=0;e<t.length;e++)if(t[e]>" "){var o=t.indexOf("\n");if(o>=0){var i=[t.substr(0,o),t.substr(o+1)];return r&&0===i[0].trim().length&&i.shift(),i}return[t]}return[]}function m(n){function r(n,e){var t,o,i,a;switch(typeof n){case"string":n.indexOf(e)>=0&&(a=n);break;case"object":if("[object Array]"===Object.prototype.toString.apply(n))for(t=0,i=n.length;t<i;t++)a=r(n[t],e)||a;else for(o in n)Object.prototype.hasOwnProperty.call(n,o)&&(a=r(n[o],e)||a)}return a}function e(e){var t=r(n,e);return t?"found '"+e+"' in a string value, your mistake could be with:\n  > "+t+"\n  (unquoted strings contain everything up to the next line!)":""}return e("}")||e("]")}function d(){var n,r,e,t=[];try{if(x&&(n=k.createComment(t,{a:[]})),a(),r=j,l(),n&&(e=p(r,!0).join("\n")),"]"===w)return a(),n&&(n.e=[e]),t;for(;w;){if(t.push(v()),r=j,l(),","===w&&(a(),r=j,l()),n){var o=p(r);n.a.push([e||"",o[0]||""]),e=o[1]}if("]"===w)return a(),n&&(n.a[n.a.length-1][1]+=e||""),t;l()}i("End of input while parsing an array (missing ']')")}catch(n){throw n.hint=n.hint||m(t),n}}function g(n){var r,e,t,o="",s={};try{if(x&&(r=k.createComment(s,{c:{},o:[]})),n?e=1:(a(),e=j),l(),r&&(t=p(e,!0).join("\n")),"}"===w&&!n)return r&&(r.e=[t]),a(),s;for(;w;){if(o=c(),l(),":"!==w&&i("Expected ':' instead of '"+w+"'"),a(),s[o]=v(),e=j,l(),","===w&&(a(),e=j,l()),r){var u=p(e);r.c[o]=[t||"",u[0]||""],t=u[1],r.o.push(o)}if("}"===w&&!n)return a(),r&&(r.c[o][1]+=t||""),s;l()}if(n)return s;i("End of input while parsing an object (missing '}')")}catch(n){throw n.hint=n.hint||m(s),n}}function v(){switch(l(),w){case"{":return g();case"[":return d();case"'":case'"':return u(!0);default:return h()}}function y(n,r){var e=j;if(l(),w&&i("Syntax error, found trailing characters"),x){var t=r.join("\n"),o=p(e).join("\n");if(o||t){k.createComment(n,k.getComment(n)).r=[t,o]}}return n}var b,j,w,x,O,k=n("./hjson-common"),E=n("./hjson-dsf"),C={'"':'"',"'":"'","\\":"\\","/":"/",b:"\b",f:"\f",n:"\n",r:"\r",t:"\t"};if("string"!=typeof r)throw new Error("source is not a string");var q=null,S=!0;return e&&"object"==typeof e&&(x=e.keepWsc,q=e.dsf,S=!1!==e.legacyRoot),O=E.loadDsf(q,"parse"),b=r,t(),S?function(){l();var n=x?p(1):null;switch(w){case"{":return y(g(),n);case"[":return y(d(),n)}try{return y(g(!0),n)}catch(r){t();try{return y(v(),n)}catch(n){throw r}}}():function(){l();var n=x?p(1):null;switch(w){case"{":return y(g(),n);case"[":return y(d(),n);default:return y(v(),n)}}()}},{"./hjson-common":2,"./hjson-dsf":3}],5:[function(n,r,e){"use strict";r.exports=function(r,e){function t(n,r){return L+=n[0].length+n[1].length-n[2]-n[3],n[0]+r+n[1]}function o(n){return n.replace(N,function(n){var r=A[n];return"string"==typeof r?t(O.esc,r):t(O.uni,("0000"+n.charCodeAt(0).toString(16)).slice(-4))})}function i(n,r,e,i){return n?(I.lastIndex=0,F.lastIndex=0,v||e||I.test(n)||void 0!==f.tryParseNumber(n,!0)||F.test(n)?(N.lastIndex=0,_.lastIndex=0,N.test(n)?_.test(n)||i||!b?t(O.qstr,o(n)):a(n,r):t(O.qstr,n)):t(O.str,n)):t(O.qstr,"")}function a(n,r){var e,o=n.replace(/\r/g,"").split("\n");if(r+=p,1===o.length)return t(O.mstr,o[0]);var i=h+r+O.mstr[0];for(e=0;e<o.length;e++)i+=h,o[e]&&(i+=r+o[e]);return i+h+r+O.mstr[1]}function s(n){return n?g||P.test(n)?(N.lastIndex=0,t(O.qkey,N.test(n)?o(n):n)):t(O.key,n):'""'}function u(n,r,e,o){function a(n){return n&&"\n"===n["\r"===n[0]?1:0]}function c(n){return n&&!a(n)}function l(n,r,e){if(!n)return"";n=f.forceComment(n);var o,i=n.length;for(o=0;o<i&&n[o]<=" ";o++);return e&&o>0&&(n=n.substr(o)),o<i?r+t(O.rem,n):n}var g=q(n);if(void 0!==g)return t(O.dsf,g);switch(typeof n){case"string":return i(n,D,r,o);case"number":return isFinite(n)?t(O.num,String(n)):t(O.lit,"null");case"boolean":return t(O.lit,String(n));case"object":if(!n)return t(O.lit,"null");var w;m&&(w=f.getComment(n));var k="[object Array]"===Object.prototype.toString.apply(n),E=D;D+=p;var C,S,N,I,_,F,A,P,M,T,$=h+E,R=h+D,B=e||d?"":$,W=[],U=y?[]:null,Z=v,H=b,z=j?"":O.com[0],G=0;if(k){for(S=0,N=n.length;S<N;S++){if(C=S<N-1,w?(A=w.a[S]||[],P=c(A[1]),W.push(l(A[0],"\n")+R),U&&(A[0]||A[1]||P)&&(U=null)):W.push(R),L=0,_=n[S],W.push(u(_,!!w&&P,!0)+(C?j:"")),U){switch(typeof _){case"string":L=0,v=!0,b=0,U.push(u(_,!1,!0)+(C?O.com[0]:"")),v=Z,b=H;break;case"object":if(_){U=null;break}default:U.push(W[W.length-1]+(C?z:""))}C&&(L+=O.com[0].length-O.com[2]),G+=L}w&&A[1]&&W.push(l(A[1],P?" ":"\n",P))}0===N?w&&w.e&&W.push(l(w.e[0],"\n")+$):W.push($),0===W.length?M=t(O.arr,""):(M=B+t(O.arr,W.join("")),U&&(T=U.join(" "),T.length-G<=y&&(M=t(O.arr,T))))}else{var J=w?w.o.slice():[],K=[];for(I in n)Object.prototype.hasOwnProperty.call(n,I)&&J.indexOf(I)<0&&K.push(I);x&&K.sort();var Q=J.concat(K);for(S=0,N=Q.length;S<N;S++)if(C=S<N-1,I=Q[S],w?(A=w.c[I]||[],P=c(A[1]),W.push(l(A[0],"\n")+R),U&&(A[0]||A[1]||P)&&(U=null)):W.push(R),L=0,_=n[I],F=u(_,w&&P),W.push(s(I)+O.col[0]+(a(F)?"":" ")+F+(C?j:"")),w&&A[1]&&W.push(l(A[1],P?" ":"\n",P)),U){switch(typeof _){case"string":L=0,v=!0,b=0,F=u(_,!1),v=Z,b=H,U.push(s(I)+O.col[0]+" "+F+(C?O.com[0]:""));break;case"object":if(_){U=null;break}default:U.push(W[W.length-1]+(C?z:""))}L+=O.col[0].length-O.col[2],C&&(L+=O.com[0].length-O.com[2]),G+=L}0===N?w&&w.e&&W.push(l(w.e[0],"\n")+$):W.push($),0===W.length?M=t(O.obj,""):(M=B+t(O.obj,W.join("")),U&&(T=U.join(" "),T.length-G<=y&&(M=t(O.obj,T))))}return D=E,M}}var f=n("./hjson-common"),c=n("./hjson-dsf"),l={obj:["{","}"],arr:["[","]"],key:["",""],qkey:['"','"'],col:[":",""],com:[",",""],str:["",""],qstr:['"','"'],mstr:["'''","'''"],num:["",""],lit:["",""],dsf:["",""],esc:["\\",""],uni:["\\u",""],rem:["",""]},h=f.EOL,p="  ",m=!1,d=!1,g=!1,v=!1,y=0,b=1,j="",w=null,x=!1,O=l;if(e&&"object"==typeof e){e.quotes="always"===e.quotes?"strings":e.quotes,"\n"!==e.eol&&"\r\n"!==e.eol||(h=e.eol),m=e.keepWsc,y=e.condense||0,d=e.bracesSameLine,g="all"===e.quotes||"keys"===e.quotes,v="all"===e.quotes||"strings"===e.quotes||!0===e.separator,b=v||"off"==e.multiline?0:"no-tabs"==e.multiline?2:1,j=!0===e.separator?O.com[0]:"",w=e.dsf,x=e.sortProps,"number"==typeof e.space?p=new Array(e.space+1).join(" "):"string"==typeof e.space&&(p=e.space),!0===e.colors&&(O={obj:["[37m{[0m","[37m}[0m"],arr:["[37m[[0m","[37m][0m"],key:["[33m","[0m"],qkey:['[33m"','"[0m'],col:["[37m:[0m",""],com:["[37m,[0m",""],str:["[37;1m","[0m"],qstr:['[37;1m"','"[0m'],mstr:["[37;1m'''","'''[0m"],num:["[36;1m","[0m"],lit:["[36m","[0m"],dsf:["[37m","[0m"],esc:["[31m\\","[0m"],uni:["[31m\\u","[0m"],rem:["[35m","[0m"]});var k,E=Object.keys(l);for(k=E.length-1;k>=0;k--){var C=E[k];O[C].push(l[C][0].length,l[C][1].length)}}var q,S="-­؀-؄܏឴឵‌-‏\u2028- ⁠-⁯\ufeff￰-￿",N=new RegExp('[\\\\\\"\0-'+S+"]","g"),I=new RegExp("^\\s|^\"|^'|^#|^\\/\\*|^\\/\\/|^\\{|^\\}|^\\[|^\\]|^:|^,|\\s$|[\0-"+S+"]","g"),_=new RegExp("'''|^[\\s]+$|[\0-"+(2===b?"\t":"\b")+"\v\f-"+S+"]","g"),F=new RegExp("^(true|false|null)\\s*((,|\\]|\\}|#|//|/\\*).*)?$"),A={"\b":"b","\t":"t","\n":"n","\f":"f","\r":"r",'"':'"',"\\":"\\"},P=/[,\{\[\}\]\s:#"']|\/\/|\/\*/,D="",L=0;q=c.loadDsf(w,"stringify");var M="",T=m?T=(f.getComment(r)||{}).r:null;return T&&T[0]&&(M=T[0]+"\n"),M+=u(r,null,!0,!0),T&&(M+=T[1]||""),M}},{"./hjson-common":2,"./hjson-dsf":3}],6:[function(n,r,e){r.exports="3.2.1"},{}],7:[function(n,r,e){/*!
+ * Hjson v3.2.1
+ * https://hjson.github.io
+ *
+ * Copyright 2014-2017 Christian Zangl, MIT license
+ * Details and documentation:
+ * https://github.com/hjson/hjson-js
+ *
+ * This code is based on the the JSON version by Douglas Crockford:
+ * https://github.com/douglascrockford/JSON-js (json_parse.js, json2.js)
+ */
+"use strict";var t=n("./hjson-common"),o=n("./hjson-version"),i=n("./hjson-parse"),a=n("./hjson-stringify"),s=n("./hjson-comments"),u=n("./hjson-dsf");r.exports={parse:i,stringify:a,endOfLine:function(){return t.EOL},setEndOfLine:function(n){"\n"!==n&&"\r\n"!==n||(t.EOL=n)},version:o,rt:{parse:function(n,r){return(r=r||{}).keepWsc=!0,i(n,r)},stringify:function(n,r){return(r=r||{}).keepWsc=!0,a(n,r)}},comments:s,dsf:u.std}},{"./hjson-comments":1,"./hjson-common":2,"./hjson-dsf":3,"./hjson-parse":4,"./hjson-stringify":5,"./hjson-version":6}],8:[function(n,r,e){},{}]},{},[7])(7)});
+
+</script>
+
 </head>
 <body>
     <div class="form-container">
@@ -708,6 +993,45 @@
                 <div class="trait-choice" id="traitChoice">
                     <label>Выберите характеристику: </label>
                     <select id="traitStatChoice"></select>
+                </div>
+
+                <div class="magic-initiate-block" id="magicInitiateBlock" style="display:none;">
+                    <div id="magicInitiateClassPicker">
+                        <label>Класс заклинаний</label>
+                        <div class="tooltip-container">
+                            <select id="magicInitiateClass">
+                                <option value="">Выберите класс...</option>
+                                <option value="бард">Бард</option>
+                                <option value="волшебник">Волшебник</option>
+                                <option value="друид">Друид</option>
+                                <option value="жрец">Жрец</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="magicInitiateAutoClassNote" class="spell-picker-status" style="display:none;"></div>
+
+                    <div class="spell-picker-wrap" id="magicInitiateSpellsWrap" style="display:none;">
+                        <div class="spell-picker-filters">
+                            <input type="text" class="spell-picker-search" id="magicInitiateSearch" placeholder="Поиск по названию...">
+                            <select class="spell-picker-search spell-picker-school-filter" id="magicInitiateSchoolFilter">
+                                <option value="">Школа: любая</option>
+                            </select>
+                        </div>
+
+                        <div id="magicInitiateStatus" class="spell-picker-status" style="display:none;"></div>
+
+                        <div class="spell-picker-group-title" id="magicCantripGroupTitle">
+                            <span id="magicCantripGroupLabel">Заговоры (выберите 2)</span>
+                            <span class="spell-picker-counter" id="magicCantripCounter">0/2</span>
+                        </div>
+                        <div class="spell-picker-list" id="magicCantripList"></div>
+
+                        <div class="spell-picker-group-title" id="magicSpellGroupTitle">
+                            <span id="magicSpellGroupLabel">Заклинание 1-го круга (выберите 1)</span>
+                            <span class="spell-picker-counter" id="magicSpellCounter">0/1</span>
+                        </div>
+                        <div class="spell-picker-list" id="magicSpellList"></div>
+                    </div>
                 </div>
             </div>
 			
@@ -831,6 +1155,9 @@
             <input type="hidden" name="tools" id="toolsInput">
             <input type="hidden" name="languages" id="languagesInput">
             <input type="hidden" name="trait" id="traitHidden">
+            <input type="hidden" name="magic_initiate_class" id="magicInitiateClassInput">
+            <input type="hidden" name="magic_initiate_cantrips" id="magicInitiateCantripsInput">
+            <input type="hidden" name="magic_initiate_spell" id="magicInitiateSpellInput">
             <input type="hidden" name="stats" id="statsInput">
             <input type="hidden" name="redirect" value="false">
             
@@ -1227,7 +1554,7 @@ const humanTraits = [
 	<p>После атаки по существу и отходе от неё, вы не провоцируете атаки от этого существа.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: null },
 	
-    { name: 'Посвящённый в магию', desc: `<p>Узнаёте два любых заговора и одно заклинание 1 круга, главная характеристика которых определяется вашим классом (например, если ваша главная характеристика это Харизма, то характеристика заклинания полученная этой чертой, будет Харизма).</p>
+    { name: 'Посвящённый в магию', desc: `<p>Выберите один из списков заклинаний: Бард, Волшебник, Друид или Жрец. Благодаря этому вы узнаёте два заговора и одно заклинание 1-го круга из выбранного списка. Вашей базовой характеристикой для этих заклинаний становится та, что используется вашим основным классом.</p>
 	<p>После использования заклинания из черты, нужен долгий отдых.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: null },
 	
@@ -1517,6 +1844,9 @@ const state = {
     halfElfStat2: null,
     raceSkillChoice: null,
     raceToolChoice: null,
+    magicInitiateClass: null,
+    magicInitiateCantrips: [],
+    magicInitiateSpell: [],
     choicePoints: { skills:0, equipment:0, tools:0, languages:0 },
     selectedSkills: [],
     selectedEquipment: [],
@@ -2009,6 +2339,7 @@ function updateAllStatDisplay() {
     validateCurrentTrait();
     updateTraitDropdown();
     updateTraitChoiceUI();
+    updateMagicInitiateUI();
 }
 
 function updatePointsCounter() {
@@ -2137,6 +2468,483 @@ function applyTrait(traitName) {
     renderAllSections();
 }
 
+// ===================== Черты, дающие заклинания (Посвящённый в магию и т.п.) =====================
+
+// Сопоставление значения выбора класса персонажа (блок "Класс") с названием
+// списка заклинаний, как оно записано в spells.hjson. null - класс не заклинатель.
+const CLASS_ID_TO_SPELL_LIST = {
+    fighter: null,
+    barbarian: null,
+    rogue: null,
+    wizard: 'волшебник',
+    cleric: 'жрец',
+    ranger: null,
+    sorcerer: 'чародей',
+    warlock: 'колдун',
+    monk: null,
+    bard: 'бард',
+    paladin: null,
+    druid: 'друид'
+};
+
+// Настройка того, сколько заговоров/заклинаний даёт та или иная черта.
+// Чтобы подключить ещё одну "магическую" черту - достаточно добавить сюда запись с её именем.
+//   cantripCount / spellCount - сколько заговоров/заклинаний можно выбрать
+//   spellLevel - круг заклинаний из второй группы
+//   classMode: 'select' (по умолчанию) - показывать выбор списка заклинаний вручную;
+//              'auto' - список заклинаний берётся из класса персонажа (блок "Класс")
+//   ritualOnly - показывать только заклинания с пометкой "Ритуал" во времени накладывания
+//   cantripLabel / spellLabel - заголовок группы (если не задан - формируется автоматически)
+const MAGIC_TRAITS = {
+    'Посвящённый в магию': { cantripCount: 2, spellCount: 1, spellLevel: 1, classMode: 'select' },
+    'Ритуальный заклинатель': {
+        cantripCount: 0, spellCount: 2, spellLevel: 1, classMode: 'select', ritualOnly: true,
+        spellLabel: 'Ритуальные заклинания 1-го круга (выберите 2)'
+    },
+    'Меткие заклинания': {
+        cantripCount: 1, spellCount: 0, spellLevel: 0, classMode: 'auto',
+        cantripLabel: 'Заговор (выберите 1)'
+    }
+};
+
+// Ссылка на тот же файл заклинаний, что используется в отдельном гримуаре
+const SPELLS_URL = "https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/code/spells.hjson";
+
+let spellsCache = null;
+let spellsLoadingPromise = null;
+
+function loadSpellsData() {
+    if (spellsCache) return Promise.resolve(spellsCache);
+    if (spellsLoadingPromise) return spellsLoadingPromise;
+    spellsLoadingPromise = fetch(SPELLS_URL, { cache: 'no-store' })
+        .then(res => {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.text();
+        })
+        .then(text => {
+            const data = Hjson.parse(text);
+            if (!Array.isArray(data)) throw new Error('Неверный формат данных в файле заклинаний');
+            spellsCache = data;
+            return spellsCache;
+        })
+        .catch(err => {
+            spellsLoadingPromise = null;
+            throw err;
+        });
+    return spellsLoadingPromise;
+}
+
+function magicInitiateResetSelections() {
+    state.magicInitiateClass = null;
+    state.magicInitiateCantrips = [];
+    state.magicInitiateSpell = [];
+}
+
+// Показывает/скрывает и обновляет блок выбора класса и заклинаний под чертой
+function updateMagicInitiateUI() {
+    const block = document.getElementById('magicInitiateBlock');
+    const classPicker = document.getElementById('magicInitiateClassPicker');
+    const classSel = document.getElementById('magicInitiateClass');
+    const autoNote = document.getElementById('magicInitiateAutoClassNote');
+    const wrap = document.getElementById('magicInitiateSpellsWrap');
+    if (!block || !classPicker || !classSel || !autoNote || !wrap) return;
+
+    const cfg = MAGIC_TRAITS[state.trait];
+
+    if (!cfg) {
+        block.style.display = 'none';
+        wrap.style.display = 'none';
+        classPicker.style.display = '';
+        autoNote.style.display = 'none';
+        classSel.value = '';
+        magicInitiateResetSelections();
+        return;
+    }
+
+    block.style.display = 'block';
+
+    if (cfg.classMode === 'auto') {
+        classPicker.style.display = 'none';
+        const spellList = CLASS_ID_TO_SPELL_LIST[state.class] || null;
+        state.magicInitiateClass = spellList;
+
+        if (!spellList) {
+            autoNote.style.display = 'block';
+            autoNote.classList.remove('error');
+            autoNote.textContent = 'Выберите класс персонажа со списком заклинаний в разделе "Класс", чтобы увидеть доступные заговоры.';
+            wrap.style.display = 'none';
+            return;
+        }
+
+        autoNote.style.display = 'none';
+        wrap.style.display = 'block';
+        renderMagicSpellPickers(cfg);
+        return;
+    }
+
+    classPicker.style.display = '';
+    autoNote.style.display = 'none';
+    if (classSel.value !== (state.magicInitiateClass || '')) {
+        classSel.value = state.magicInitiateClass || '';
+    }
+
+    if (state.magicInitiateClass) {
+        wrap.style.display = 'block';
+        renderMagicSpellPickers(cfg);
+    } else {
+        wrap.style.display = 'none';
+    }
+}
+
+function updateMagicCounters(cfg) {
+    const cantripTitle = document.getElementById('magicCantripGroupTitle');
+    const cantripLabelEl = document.getElementById('magicCantripGroupLabel');
+    const cantripListEl = document.getElementById('magicCantripList');
+    const cantripCounter = document.getElementById('magicCantripCounter');
+
+    const spellTitle = document.getElementById('magicSpellGroupTitle');
+    const spellLabelEl = document.getElementById('magicSpellGroupLabel');
+    const spellListEl = document.getElementById('magicSpellList');
+    const spellCounter = document.getElementById('magicSpellCounter');
+
+    const showCantrips = cfg.cantripCount > 0;
+    if (cantripTitle) cantripTitle.style.display = showCantrips ? 'flex' : 'none';
+    if (cantripListEl) cantripListEl.style.display = showCantrips ? '' : 'none';
+    if (showCantrips) {
+        if (cantripLabelEl) cantripLabelEl.textContent = cfg.cantripLabel || `Заговоры (выберите ${cfg.cantripCount})`;
+        if (cantripCounter) {
+            cantripCounter.textContent = `${state.magicInitiateCantrips.length}/${cfg.cantripCount}`;
+            cantripCounter.classList.toggle('full', state.magicInitiateCantrips.length >= cfg.cantripCount);
+        }
+    }
+
+    const showSpells = cfg.spellCount > 0;
+    if (spellTitle) spellTitle.style.display = showSpells ? 'flex' : 'none';
+    if (spellListEl) spellListEl.style.display = showSpells ? '' : 'none';
+    if (showSpells) {
+        if (spellLabelEl) spellLabelEl.textContent = cfg.spellLabel || `Заклинание ${cfg.spellLevel}-го круга (выберите ${cfg.spellCount})`;
+        if (spellCounter) {
+            const spellSelectedCount = state.magicInitiateSpell.length;
+            spellCounter.textContent = `${spellSelectedCount}/${cfg.spellCount}`;
+            spellCounter.classList.toggle('full', spellSelectedCount >= cfg.spellCount);
+        }
+    }
+}
+
+function renderMagicSpellPickers(cfg) {
+    const statusEl = document.getElementById('magicInitiateStatus');
+    const cantripListEl = document.getElementById('magicCantripList');
+    const spellListEl = document.getElementById('magicSpellList');
+    if (!statusEl || !cantripListEl || !spellListEl) return;
+
+    updateMagicCounters(cfg);
+    statusEl.style.display = 'block';
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Загрузка списка заклинаний...';
+    cantripListEl.innerHTML = '';
+    spellListEl.innerHTML = '';
+
+    loadSpellsData().then(spells => {
+        statusEl.style.display = 'none';
+        populateSpellSchoolFilter(spells);
+
+        if (cfg.cantripCount > 0) {
+            renderSpellPickerList(cantripListEl, spells, 0, cfg.cantripCount, state.magicInitiateCantrips, (name, add) => {
+                const arr = state.magicInitiateCantrips;
+                const idx = arr.indexOf(name);
+                if (add) {
+                    if (idx === -1 && arr.length < cfg.cantripCount) arr.push(name);
+                } else if (idx > -1) {
+                    arr.splice(idx, 1);
+                }
+                updateMagicInitiateUI();
+            }, { ritualOnly: cfg.ritualOnly });
+        }
+
+        if (cfg.spellCount > 0) {
+            renderSpellPickerList(spellListEl, spells, cfg.spellLevel, cfg.spellCount, state.magicInitiateSpell, (name, add) => {
+                const arr = state.magicInitiateSpell;
+                const idx = arr.indexOf(name);
+                if (add) {
+                    if (idx === -1 && arr.length < cfg.spellCount) arr.push(name);
+                } else if (idx > -1) {
+                    arr.splice(idx, 1);
+                }
+                updateMagicInitiateUI();
+            }, { ritualOnly: cfg.ritualOnly });
+        }
+    }).catch(err => {
+        statusEl.style.display = 'block';
+        statusEl.classList.add('error');
+        statusEl.textContent = 'Не удалось загрузить список заклинаний: ' + err.message;
+    });
+}
+
+// Заполняет выпадающий список школ уникальными значениями из доступных заклинаний,
+// сохраняя текущий выбор пользователя, если он всё ещё актуален.
+function populateSpellSchoolFilter(spells) {
+    const select = document.getElementById('magicInitiateSchoolFilter');
+    if (!select) return;
+    const cls = state.magicInitiateClass;
+
+    const schools = new Set();
+    spells.forEach(sp => {
+        const classes = String(sp.class || '').split(',').map(c => c.trim().toLowerCase());
+        if (cls && !classes.includes(cls)) return;
+        if (sp.school) schools.add(String(sp.school).trim());
+    });
+    const sorted = Array.from(schools).sort((a, b) => a.localeCompare(b, 'ru'));
+
+    const previousValue = select.value;
+    select.innerHTML = '<option value="">Школа: любая</option>';
+    sorted.forEach(school => {
+        const opt = document.createElement('option');
+        opt.value = school;
+        opt.textContent = school;
+        select.appendChild(opt);
+    });
+    if (sorted.includes(previousValue)) {
+        select.value = previousValue;
+    }
+}
+
+// Соответствие школ магии их цветам (перенесено из отдельного гримуара spells.html,
+// но с фиксированной палитрой вместо случайной по хэшу)
+const SPELL_SCHOOL_COLOR_MAP = {
+    'воплощение': '#d6564a',
+    'иллюзия': '#a45ad4',
+    'некромантия': '#4fae5f',
+    'ограждение': '#4fa8d6',
+    'очарование': '#d4629e',
+    'преобразование': '#d68a3a',
+    'призыв': '#d6c23a',
+    'прорицание': '#bfe6f2'
+};
+const SPELL_SCHOOL_FALLBACK_COLOR = '#c9a87b';
+
+function spellSchoolColor(name) {
+    const key = String(name || '').trim().toLowerCase();
+    return SPELL_SCHOOL_COLOR_MAP[key] || SPELL_SCHOOL_FALLBACK_COLOR;
+}
+
+function makeSpellSigil(seed, color) {
+    let h = 0;
+    const str = String(seed || 'x');
+    for (let i = 0; i < str.length; i++) h = (h * 131 + str.charCodeAt(i)) >>> 0;
+    const rand = (n) => (h = (h * 9301 + 49297) % 233280, (h / 233280) * n);
+    const points = 3 + Math.floor(rand(4));
+    let path = '';
+    const cx = 17, cy = 17, r = 13;
+    for (let i = 0; i < points; i++) {
+        const angle = (Math.PI * 2 / points) * i - Math.PI / 2;
+        const x = cx + r * Math.cos(angle);
+        const y = cy + r * Math.sin(angle);
+        path += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    }
+    path += 'Z';
+    const svgNs = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNs, 'svg');
+    svg.setAttribute('viewBox', '0 0 34 34');
+    svg.setAttribute('class', 'spell-pick-sigil');
+    svg.innerHTML = `
+        <circle cx="17" cy="17" r="15.5" fill="none" stroke="${color}" stroke-width="1" opacity="0.5"/>
+        <path d="${path}" fill="none" stroke="${color}" stroke-width="1.2" opacity="0.85"/>
+        <circle cx="17" cy="17" r="2" fill="${color}"/>`;
+    return svg;
+}
+
+function spellLevelDots(level, color) {
+    const wrap = document.createElement('span');
+    wrap.className = 'dots';
+    const max = 9;
+    const filled = Number(level) === 0 ? 0 : Number(level);
+    for (let i = 1; i <= max; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'dot' + (i <= filled ? ' filled' : '');
+        wrap.appendChild(dot);
+    }
+    return wrap;
+}
+
+// Подсветка ключевых слов внутри отдельных характеристик заклинания
+// (время накладывания, компоненты, длительность), без затрагивания текста в скобках.
+const CYRILLIC_RANGE = 'а-яёА-ЯЁ';
+
+const CASTTIME_KEYWORD_RULES = [
+    { pattern: 'бонусное\\s+действие', color: '#e08a3a' },
+    { pattern: 'реакция', color: '#a45ad4' },
+    { pattern: 'действие', color: '#5ab77e' },
+    { pattern: 'ритуал', color: '#4fa8d6' }
+];
+
+const COMPONENT_KEYWORD_RULES = [
+    { pattern: '[ВB]', color: '#bfe6f2' },
+    { pattern: '[СC]', color: '#d6564a' },
+    { pattern: '[МM]', color: '#d6c23a' }
+];
+
+const DURATION_KEYWORD_RULES = [
+    { pattern: 'концентрация', color: '#a45ad4' }
+];
+
+function buildKeywordRegex(rules) {
+    const parts = rules.map(r => {
+        if (r.boundary) {
+            return `(?<![${CYRILLIC_RANGE}])(${r.pattern})(?![${CYRILLIC_RANGE}])`;
+        }
+        return `(${r.pattern})`;
+    });
+    return new RegExp(parts.join('|'), 'gi');
+}
+
+// Раскрашивает ключевые слова в тексте, не трогая фрагменты в круглых скобках.
+function renderHighlightedStat(text, rules) {
+    const frag = document.createDocumentFragment();
+    const str = String(text || '');
+    if (!str) {
+        frag.appendChild(document.createTextNode('—'));
+        return frag;
+    }
+
+    const parenSplit = str.split(/(\([^)]*\))/g);
+    const regex = buildKeywordRegex(rules);
+
+    parenSplit.forEach(part => {
+        if (/^\([^)]*\)$/.test(part)) {
+            frag.appendChild(document.createTextNode(part));
+            return;
+        }
+        regex.lastIndex = 0;
+        let lastIndex = 0;
+        let m;
+        while ((m = regex.exec(part)) !== null) {
+            if (m.index > lastIndex) {
+                frag.appendChild(document.createTextNode(part.slice(lastIndex, m.index)));
+            }
+            let color = null;
+            for (let i = 0; i < rules.length; i++) {
+                if (m[i + 1] !== undefined) { color = rules[i].color; break; }
+            }
+            const span = document.createElement('span');
+            span.style.color = color;
+            span.textContent = m[0];
+            frag.appendChild(span);
+            lastIndex = regex.lastIndex;
+            if (m[0] === '') regex.lastIndex++;
+        }
+        if (lastIndex < part.length) {
+            frag.appendChild(document.createTextNode(part.slice(lastIndex)));
+        }
+    });
+
+    return frag;
+}
+
+// Рендерит прокручиваемый список заклинаний одного круга с поиском по названию
+// и блокировкой недоступных вариантов после достижения лимита выбора.
+function renderSpellPickerList(container, allSpells, level, max, selectedList, onToggle, options = {}) {
+    container.innerHTML = '';
+    const cls = state.magicInitiateClass;
+    const searchInput = document.getElementById('magicInitiateSearch');
+    const term = (searchInput?.value || '').trim().toLowerCase();
+    const schoolFilter = document.getElementById('magicInitiateSchoolFilter');
+    const schoolTerm = (schoolFilter?.value || '').trim().toLowerCase();
+
+    let list = allSpells.filter(sp => {
+        if (Number(sp.level) !== level) return false;
+        const classes = String(sp.class || '').split(',').map(c => c.trim().toLowerCase());
+        if (cls && !classes.includes(cls)) return false;
+        if (options.ritualOnly && !/ритуал/i.test(String(sp.casttime || ''))) return false;
+        if (schoolTerm && String(sp.school || '').trim().toLowerCase() !== schoolTerm) return false;
+        if (term && !String(sp.name || '').toLowerCase().includes(term)) return false;
+        return true;
+    });
+    list.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ru'));
+
+    if (list.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'spell-picker-empty';
+        empty.textContent = 'Ничего не найдено';
+        container.appendChild(empty);
+        return;
+    }
+
+    const atLimit = selectedList.length >= max;
+
+    list.forEach(sp => {
+        const name = sp.name || '';
+        const isSelected = selectedList.includes(name);
+        const disabled = !isSelected && atLimit;
+
+        const item = document.createElement('label');
+        item.className = 'spell-pick-item' + (disabled ? ' disabled' : '') + (isSelected ? ' selected' : '');
+        const color = spellSchoolColor(sp.school || '');
+        item.style.setProperty('--sc', color);
+
+        item.appendChild(makeSpellSigil(name, color));
+
+        const info = document.createElement('span');
+        info.className = 'spell-pick-info';
+
+        const levelEl = document.createElement('span');
+        levelEl.className = 'spell-pick-level';
+        const levelText = document.createElement('span');
+        levelText.textContent = Number(sp.level) === 0 ? 'Заговор' : `Круг ${sp.level}`;
+        levelEl.appendChild(levelText);
+        levelEl.appendChild(spellLevelDots(sp.level, color));
+        info.appendChild(levelEl);
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'spell-pick-name';
+        nameEl.textContent = name || 'Без названия';
+        info.appendChild(nameEl);
+
+        const schoolEl = document.createElement('div');
+        schoolEl.className = 'spell-pick-school';
+        schoolEl.textContent = sp.school || '—';
+        info.appendChild(schoolEl);
+
+        const statsEl = document.createElement('div');
+        statsEl.className = 'spell-pick-stats';
+        const statPairs = [
+            ['Время накладывания', sp.casttime, CASTTIME_KEYWORD_RULES],
+            ['Дистанция', sp.distance, null],
+            ['Компоненты', sp.components, COMPONENT_KEYWORD_RULES],
+            ['Длительность', sp.duration, DURATION_KEYWORD_RULES]
+        ];
+        statPairs.forEach(([label, value, rules]) => {
+            const statEl = document.createElement('div');
+            statEl.className = 'stat';
+            const b = document.createElement('b');
+            b.textContent = label;
+            statEl.appendChild(b);
+            if (rules) {
+                statEl.appendChild(renderHighlightedStat(value, rules));
+            } else {
+                statEl.appendChild(document.createTextNode(value || '—'));
+            }
+            statsEl.appendChild(statEl);
+        });
+        info.appendChild(statsEl);
+
+        if (sp.desc) {
+            const descEl = document.createElement('div');
+            descEl.className = 'spell-pick-desc';
+            descEl.textContent = String(sp.desc).trim();
+            info.appendChild(descEl);
+        }
+
+        const checkbox = createCustomCheckbox(isSelected, disabled, (add) => {
+            onToggle(name, add);
+            return true;
+        });
+
+        item.appendChild(checkbox);
+        item.appendChild(info);
+        container.appendChild(item);
+    });
+}
+
 // Обработчики событий
 document.getElementById('race').addEventListener('change', function() {
     state.race = this.value;
@@ -2177,6 +2985,12 @@ document.getElementById('class').addEventListener('change', function() {
     } else {
         tip.innerHTML = '';
     }
+    const magicCfg = MAGIC_TRAITS[state.trait];
+    if (magicCfg && magicCfg.classMode === 'auto') {
+        state.magicInitiateCantrips = [];
+        state.magicInitiateSpell = [];
+        updateMagicInitiateUI();
+    }
     recomputeBonuses();
     renderAllSections();
 });
@@ -2197,6 +3011,25 @@ document.getElementById('racialFeature').addEventListener('change', function() {
         recomputeBonuses();
         renderAllSections();
     }
+});
+
+document.getElementById('magicInitiateClass')?.addEventListener('change', function() {
+    state.magicInitiateClass = this.value || null;
+    state.magicInitiateCantrips = [];
+    state.magicInitiateSpell = [];
+    updateMagicInitiateUI();
+});
+
+document.getElementById('magicInitiateSearch')?.addEventListener('input', function() {
+    const cfg = MAGIC_TRAITS[state.trait];
+    if (!cfg || !state.magicInitiateClass) return;
+    renderMagicSpellPickers(cfg);
+});
+
+document.getElementById('magicInitiateSchoolFilter')?.addEventListener('change', function() {
+    const cfg = MAGIC_TRAITS[state.trait];
+    if (!cfg || !state.magicInitiateClass) return;
+    renderMagicSpellPickers(cfg);
 });
 
 document.getElementById('raceSkillChoice')?.addEventListener('change', function() {
@@ -2381,6 +3214,9 @@ document.getElementById('dndForm').addEventListener('submit', async function(e) 
     document.getElementById('toolsInput').value = [...new Set([...state.fixedTools, ...state.selectedTools])].join(', ');
     document.getElementById('languagesInput').value = [...new Set([...state.fixedLanguages, ...state.selectedLanguages])].join(', ');
     document.getElementById('traitHidden').value = state.trait || '';
+    document.getElementById('magicInitiateClassInput').value = state.magicInitiateClass || '';
+    document.getElementById('magicInitiateCantripsInput').value = state.magicInitiateCantrips.join(', ');
+    document.getElementById('magicInitiateSpellInput').value = (state.magicInitiateSpell || []).join(', ');
     const eff = getEffectiveStats();
     let statsText = '';
     for (let s of Object.keys(STAT_NAMES)) {
@@ -2404,6 +3240,7 @@ document.getElementById('dndForm').addEventListener('submit', async function(e) 
             Object.assign(state, {
                 race:'', background:'', class:'', trait:null, traitChoice:null,
                 halfElfStat1:null, halfElfStat2:null, raceSkillChoice:null, raceToolChoice:null,
+                magicInitiateClass:null, magicInitiateCantrips:[], magicInitiateSpell:[],
                 selectedSkills:[], selectedEquipment:[], selectedTools:[], selectedLanguages:[],
                 baseStats:{strength:8,dexterity:8,constitution:8,intelligence:8,wisdom:8,charisma:8},
                 extras:{strength:0,dexterity:0,constitution:0,intelligence:0,wisdom:0,charisma:0},
