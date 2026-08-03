@@ -962,6 +962,46 @@
                     </select>
                     <div class="tooltip-text" id="classTooltip"></div>
                 </div>
+
+                <div class="magic-initiate-block" id="classFeaturesBlock" style="display:none;">
+                    <div class="spell-picker-wrap" id="classDivineRoleWrap" style="display:none;">
+                        <div class="spell-picker-group-title">
+                            <span>Священная роль (выберите 1)</span>
+                            <span class="spell-picker-counter" id="classDivineRoleCounter">0/1</span>
+                        </div>
+                        <div class="spell-picker-list" id="classDivineRoleList"></div>
+                    </div>
+                    <div class="spell-picker-wrap" id="classSpellsWrap" style="display:none;">
+                        <div class="spell-picker-filters">
+                            <input type="text" class="spell-picker-search" id="classSpellSearch" placeholder="Поиск по названию...">
+                            <select class="spell-picker-search spell-picker-school-filter" id="classSpellSchoolFilter">
+                                <option value="">Школа: любая</option>
+                            </select>
+                        </div>
+
+                        <div id="classSpellStatus" class="spell-picker-status" style="display:none;"></div>
+
+                        <div class="spell-picker-group-title" id="classCantripGroupTitle">
+                            <span id="classCantripGroupLabel">Заговоры</span>
+                            <span class="spell-picker-counter" id="classCantripCounter">0/0</span>
+                        </div>
+                        <div class="spell-picker-list" id="classCantripList"></div>
+
+                        <div class="spell-picker-group-title" id="classSpellGroupTitle">
+                            <span id="classSpellGroupLabel">Заклинания</span>
+                            <span class="spell-picker-counter" id="classSpellCounter">0/0</span>
+                        </div>
+                        <div class="spell-picker-list" id="classSpellList"></div>
+                    </div>
+
+                    <div class="spell-picker-wrap" id="classFightingStyleWrap" style="display:none;">
+                        <div class="spell-picker-group-title">
+                            <span>Боевой стиль (выберите 1)</span>
+                            <span class="spell-picker-counter" id="classFightingStyleCounter">0/1</span>
+                        </div>
+                        <div class="spell-picker-list" id="classFightingStyleList"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -1159,6 +1199,10 @@
             <input type="hidden" name="magic_initiate_class" id="magicInitiateClassInput">
             <input type="hidden" name="magic_initiate_cantrips" id="magicInitiateCantripsInput">
             <input type="hidden" name="magic_initiate_spell" id="magicInitiateSpellInput">
+            <input type="hidden" name="class_cantrips" id="classCantripsInput">
+            <input type="hidden" name="class_spells" id="classSpellsInput">
+            <input type="hidden" name="class_fighting_style" id="classFightingStyleInput">
+            <input type="hidden" name="class_divine_role" id="classDivineRoleInput">
             <input type="hidden" name="stats" id="statsInput">
             <input type="hidden" name="redirect" value="false">
             
@@ -1824,7 +1868,7 @@ const CLASS_INFO = {
 		<p>Количество применений Ярости зависит от вашего уровня варвара. На 1-м уровне вы можете впадать в ярость 2 раза. Вы восстанавливаете одно потраченное использование, когда завершаете короткий отдых, и вы восстанавливаете все потраченные использования, когда завершаете долгий отдых.</p>
 		<p>Пока ваша Ярость действует, применяются следующие бонусы:</p>
 		<p>Сопротивление урону. У вас есть Сопротивление Дробящему, Колющему и Рубящему урону.</p>
-		<p>Урон ярости. Когда вы совершаете атаку, используя Силу и наносите урон цели, этот урон получается на число, которое увеличивается по мере получения вами уровней Варвара.</p>
+		<p>Урон ярости. Когда вы совершаете атаку, используя Силу и наносите урон цели, этот урон увеличивается на число, которое растёт по мере получения вами уровней Варвара.</p>
 		<p>Преимущество в силе. Вы совершаете с Преимуществом проверки и спасброски Силы.</p>
 		<p>Без заклинаний и концентрации. Вы не можете поддерживать Концентрацию и сотворять заклинания.</p>
 		<p>Ярость длится до конца вашего следующего хода и заканчивается раньше, если вы надели Тяжёлый доспех или получили состояние Недееспособный. Если в ваш следующий ход Ярость ещё действует, вы можете продлить её ещё на раунд, выполнив любое из следующих условий:</p>
@@ -1848,11 +1892,11 @@ const CLASS_INFO = {
         primaryStat: 'Интеллект',
         saves: 'Интеллект, Мудрость',
         desc: `<p>Учёный заклинатель, изучающий магию через книги и годы практики.</p>
-		<p>Вы знаете три заговора на ваш выбор из списка заклинаний Волшебника. Вы можете заменить один из заговоров, полученных от этого умения, другим заговором Волшебника на ваш выбор.</p>
+		<p>Вы знаете три заговора на ваш выбор из списка заклинаний Волшебника. После долгого отдыха вы можете заменить один из заговоров, полученных от этого умения, другим заговором Волшебника на ваш выбор.</p>
 		<p>Книга заклинаний. За время обучения магическому ремеслу вы создали собственную уникальную книгу заклинаний. Это Крошечный объект, весящий 3 фунта. В книге 100 страниц, и прочитать её можете только вы или кто-либо, сотворивший заклинание Опознание. Вы сами определяете внешний вид книги и из чего она сделана. Например, она может выглядеть как позолоченный гримуар — или как пачка сшитых бечёвкой листов восковой бумаги.</p>
 		<p>В начале в книге заклинаний находится шесть заклинаний Волшебника 1-го уровня по вашему выбору.</p>
-		<p>Подготовленные заклинания. Вы подготавливаете список заклинаний. которые вы можете сотворять с помощью этого умения. Для начала выберите четыре заклинания из вашей книги заклинаний. Каждое выбираемое заклинание может быть только такого уровня, для которого у вас есть ячейка заклинаний.</p>
-		<p>Всякий раз, когда вы завершаете долгий отдых, вы можете изменить ваш список подготовленных заклинаний, заменив любое из них количество другими заклинаниями из вашей книги заклинаний.</p>
+		<p>Подготовленные заклинания. Вы подготавливаете список заклинаний, которые вы можете сотворять с помощью этого умения. Для начала выберите четыре заклинания из вашей книги заклинаний. Каждое выбираемое заклинание может быть только такого уровня, для которого у вас есть ячейка заклинаний.</p>
+		<p>Всякий раз, когда вы завершаете долгий отдых, вы можете изменить ваш список подготовленных заклинаний, заменив любое их количество другими заклинаниями из вашей книги заклинаний.</p>
 		<p>Вы можете использовать в качестве Заклинательной фокусировки такие предметы как волшебная палочка, жезл, кристалл, посох (в том числе боевой посох) или хрустальная сфера.</p>
 		<p>Вы можете сотворить как Ритуал любое ритуальное заклинание, которое записано в вашей книге, даже если заклинание не подготовлено вами. Но для его сотворения нужно читать его из книги заклинаний.</p>
 		<p>Когда вы завершаете короткий отдых, можете выбрать потраченные ячейки заклинаний, которые хотите восстановить. Суммарный уровень восстанавливаемых ячеек не должен превышать значение, равное половине вашего уровня Волшебника (округляя вверх), и ни одна из этих ячеек не может быть выше 5-го уровня. Например, если вы Волшебник 4-го уровня, вы можете восстановить ячейки заклинаний, сумма уровней которых не должна быть больше 2: либо одну ячейку 2-го уровня, либо две ячейки 1-го уровня. Как только вы используете это умение, вы не сможете сделать это снова, пока не завершите долгий отдых.</p>`,
@@ -1866,9 +1910,7 @@ const CLASS_INFO = {
 		<p>Вы знаете три заговора из списка заклинаний Жреца. Каждый раз, когда вы получаете уровень Жреца, вы можете заменить один из заговоров, полученных от этого умения, другим заговором Жреца на ваш выбор.</p>
 		<p>Вы знаете четыре заклинания 1-го круга из списка заклинаний Жреца. Каждый раз, когда вы завершаете Долгий отдых, вы можете изменить свой список подготовленных заклинаний, заменив любое из них количество другими заклинаниями Жреца, для которых у вас есть ячейки заклинаний.</p>
 		<p>Вы можете использовать Священный символ в качестве Заклинательной фокусировки для ваших заклинаний Жреца.</p>
-		<p>Вы посвятили себя одной из следующих священных ролей на ваш выбор.</p>
-		<li>Защитник. Получите 4 очка владения снаряжением.</li>
-		<li>Чудотворец. Изучите ещё один заговор из списка заклинаний Жреца. Кроме того, ваша мистическая связь с божественным даёт вам бонус к вашим проверкам Интеллекта (Магия или Религия). Бонус равен вашему модификатору Мудрости (минимум +1).</li>`,
+		<p>Вы посвятили себя одной из следующих священных ролей на ваш выбор.</p>`,
         link: 'https://www.google.com'
     },
     ranger: {
@@ -1876,7 +1918,7 @@ const CLASS_INFO = {
         primaryStat: 'Ловкость и Мудрость',
         saves: 'Сила, Ловкость',
         desc: `<p>Следопыт и охотник на грани дикой природы и цивилизации. Сочетает боевые навыки с ограниченной магией природы, выживанием и выслеживанием врагов.</p>
-		<p>Вы знаете два заклинания 1-го круга из списка заклинаний Следопыта. Каждый раз, когда вы завершаете долгий отдых, вы можете заменить одно заклинание из своего списка другим заклинанием Следопыта, для которого у вас есть ячейка заклинаний.</p>
+		<p>Вы знаете два заклинания 1-го круга из списка заклинаний Следопыта. Каждый раз, когда вы завершаете долгий отдых, вы можете заменить одно подготовленное заклинание другим заклинанием Следопыта, для которого у вас есть ячейка заклинаний.</p>
 		<p>Вы можете использовать в качестве Заклинательной фокусировки такие предметы как веточка омелы, деревянный посох (в том числе боевой посох) или тисовая палочка.</p>
 		<p>У вас всегда подготовлено заклинание Метка охотника. Вы можете дважды сотворить его, не тратя ячеек заклинаний, и вы восстанавливаете все потраченные использования этого умения, когда завершаете долгий отдых.</p>`,
         link: 'https://www.google.com'
@@ -1890,7 +1932,7 @@ const CLASS_INFO = {
 		<p>Вы знаете два заклинания 1-го уровня из списка заклинаний Чародея. Каждый раз, когда вы получаете уровень Чародея, вы можете заменить одно заклинание в вашем списке другим заклинанием Чародея, для которого у вас есть ячейка заклинаний.</p>
 		<p>Вы можете использовать в качестве Заклинательной фокусировки такие предметы как волшебная палочка, жезл, кристалл, посох (в том числе боевой посох) или хрустальная сфера.</p>
 		<p>Некое событие в вашем прошлом оставило на вас неизгладимую метку, наполнив вас кипящей магией. Бонусным действием вы можете высвободить эту магию на 1 минуту, в течение которой вы получаете следующие преимущества:</p>
-		<li>Сл спасброска заклинаний для ваших заклинаний Чародея увеличивается на 1.</li>
+		<li>Сложность спасброска заклинаний для ваших заклинаний Чародея увеличивается на 1.</li>
 		<li>• Вы совершаете с Преимуществом броски атаки сотворяемыми вами заклинаниями Чародея.</li>
 		<p>Вы можете использовать это умение дважды, восстанавливая потраченные использования по завершению Долгого отдыха.</p>`,
         link: 'https://www.google.com'
@@ -1917,7 +1959,7 @@ const CLASS_INFO = {
 		<p>Пока вы не носите ни доспехов, ни Щита, и безоружны или вооружены только Монашеским оружием, вы получаете следующие преимущества:</p>
 		<li>Бонусный безоружный удар. Бонусным действием вы можете совершить один Безоружный удар.</li>
 		<li>Кость боевых искусств. Вы можете использовать d6 вместо обычного урона ваших Безоружных ударов и атак Монашеским оружием. Эта кость растёт с вашим уровнем Монаха</li>
-		<li>Ловкие атаки. Вы можете использовать Ловкость вместо Силы при совершении бросков атаки и урона Безоружных ударов и атак Монашеским оружием. Кроме того, при использовании вариантов Захват и Толчок Безоружного удара вы можете для расчёта Сл использовать ваш модификатор Ловкости, а не Силы.</li>
+		<li>Ловкие атаки. Вы можете использовать Ловкость вместо Силы при совершении бросков атаки и урона Безоружных ударов и атак Монашеским оружием. Когда вы пытаетесь совершить захват или толчок, вы можете использовать Ловкость для расчёта Сложности</li>
 		<p>Пока вы не носите ни доспехов, ни Щита, ваш базовый Класс Защиты равен 10 + ваши модификаторы Ловкости и Мудрости.</p>`,
         link: 'https://www.google.com'
     },
@@ -1938,7 +1980,7 @@ const CLASS_INFO = {
         primaryStat: 'Сила и Харизма',
         saves: 'Мудрость, Харизма',
         desc: `<p>Воин, связанный священной клятвой.</p>
-		<p>Ваше благословенное касание может лечить раны. У вас есть резерв целительной силы, восстанавливающийся, когда вы завершаете Долгий отдых. С помощью этого резерва вы можете восстанавливать Хиты; количество Хитов в этом резерве равно вашему уровню Паладина, умноженному на 5.</p>
+		<p>Ваше благословенное касание может лечить раны. У вас есть резерв целительной силы, восстанавливающийся, когда вы завершаете долгий отдых. С помощью этого резерва вы можете восстанавливать Хиты; количество Хитов в этом резерве равно вашему уровню Паладина, умноженному на 5.</p>
 		<p>Бонусным действием вы можете прикоснуться к существу (включая себя) и зачерпнуть силу из резерва, восстанавливая этому существу Хиты. Их количество не должно превышать число, оставшееся в резерве.</p>
 		<p>Вы также можете потратить 5 Хитов из резерва, чтобы снять с существа состояние Отравленный; эти потраченные Хиты не исцеляют существо.</p>
 		<p>Вы знаете два заклинания 1-го круга из списка заклинаний Паладина. Каждый раз, когда вы завершаете долгий отдых, вы можете заменить одно заклинание из своего списка другим заклинанием Паладина, для которого у вас есть ячейка заклинаний.</p>
@@ -1949,12 +1991,12 @@ const CLASS_INFO = {
         hitDie: 'd8',
         primaryStat: 'Мудрость',
         saves: 'Интеллект, Мудрость',
-        desc: `</>Хранитель равновесия природы, черпающий магию из земли, стихий и животного мира.</p>
+        desc: `<p>Хранитель равновесия природы, черпающий магию из земли, стихий и животного мира.</p>
 		<p>Вы знаете три заговора на ваш выбор из списка заклинаний Друида. Каждый раз, когда вы получаете уровень Друида, вы можете заменить один из заговоров, полученных от этого умения, другим заговором Друида на ваш выбор.</p>
 		<p>Вы знаете четыре заклинания на ваш выбор из списка заклинаний Друида. Каждый раз, когда вы завершаете долгий отдых, вы можете изменить ваш список подготовленных заклинаний, заменив любое из них количество другими заклинаниями Друида, для которых у вас есть ячейки заклинаний.</p>
 		<p>Вы можете использовать в качестве Заклинательной фокусировки такие предметы как веточка омелы, деревянный посох (в том числе боевой посох) или тисовая палочка.</p>
 		<p>Вы знаете Друидический, тайный язык друидов. У вас всегда подготовлено заклинание Разговор с животными. </p>
-		<p>Вы можете использовать Друидический язык, чтобы оставлять тайные послания. Вы и все, кто знает этот язык, автоматически замечаете такие послания. Другие замечают его только преуспев в проверке Интеллекта (Анализ) Сл 15 и не могут расшифровать его без помощи магии.</p>
+		<p>Вы можете использовать Друидический язык, чтобы оставлять тайные послания. Вы и все, кто знает этот язык, автоматически замечаете такие послания. Другие замечают его только преуспев в проверке Интеллекта (Анализ) Сложностью 15 и не могут расшифровать его без помощи магии.</p>
 		<p>Ваша мистическая связь с природой даёт вам бонус к проверкам Интеллекта (Природа или Тайная магия). Бонус равен вашему модификатору Мудрости (минимум +1).</p>`,
         link: 'https://www.google.com'
     },
@@ -1963,10 +2005,10 @@ const CLASS_INFO = {
         primaryStat: 'Интеллект',
         saves: 'Телосложение, Интеллект',
         desc: `<p>Изобретатель, вплетающий магию в устройства и снаряжение.</p>
-		<p>Получите владение интрументами: воровские инструменты, инструменты ремонтника и один вид ремесленных инструментами.</p>
-		<p>Вы сотворяете заклинания Артефактора через инструменты. Вы используете в качестве Заклинательной фокусировки воровские инструменты, инструменты ремонтника или другие ремесленные инструменты, которыми вы владеете. Заклинания Артефактора всегда требует Материальный компонент (инструмент).</p>
+		<p>Получите владение инструментами: воровские инструменты, инструменты ремонтника и один вид ремесленных инструментами.</p>
+		<p>Вы сотворяете заклинания Артефактора через инструменты. Вы используете в качестве Заклинательной фокусировки воровские инструменты, инструменты ремонтника или другие ремесленные инструменты, которыми вы владеете. Заклинания Артефактора всегда требуют Материальный компонент (инструмент).</p>
 		<p>Вы знаете два заговора и заклинания 1-го круга на ваш выбор из списка заклинаний Артефактора. Каждый раз, когда вы получаете уровень Артефактора, вы можете заменить один из заговоров, полученных от этого умения, другим заговором Артефактора на ваш выбор.</p>
-		<p>Вы знаете заговор Починка, что не учитывается в списке заклинаний.</p>
+		<p>Вы знаете заговор Починка, который не учитывается в общем количестве известных заговоров.</p>
 		<p>Пока вы держите в руках инструменты ремонтника, действием вы можете создать в незанятом пространстве в пределах 1 клетки от вас один предмет из списка:</p>
 		<table style="border-collapse: collapse;">
 			<tr><td> • Бумага  </td><td> • Кошель  </td><td> • Лопата  </td><td> • Свеча  </td></tr>
@@ -2004,7 +2046,7 @@ const classSkillsMap = {
 const classEquipmentPoints = {
 	artificer: 8,
     fighter: 12,
-    barbarian: 9,
+    barbarian: 6,
     rogue: 6,
     monk: 4,
     bard: 6,
@@ -2031,6 +2073,10 @@ const state = {
     magicInitiateClass: null,
     magicInitiateCantrips: [],
     magicInitiateSpell: [],
+    classCantrips: [],
+    classSpells: [],
+    classFightingStyle: null,
+    classDivineRole: null,
     choicePoints: { skills:0, equipment:0, tools:0, languages:0 },
     selectedSkills: [],
     selectedEquipment: [],
@@ -2191,6 +2237,20 @@ function recomputeBonuses() {
 	const clsCfg = classSkillsMap[state.class];
 	if (clsCfg) state.choicePoints.skills += clsCfg.choices || 0;
 	state.choicePoints.equipment += classEquipmentPoints[state.class] || 0;
+
+    const classToolCfg = CLASS_TOOL_BONUSES[state.class] || {};
+    state.choicePoints.tools += classToolCfg.tools || 0;
+    state.fixedTools.push(...(classToolCfg.fixedTools || []));
+    if (classToolCfg.toolChoiceAllowed) {
+        state.toolChoiceAllowed = state.toolChoiceAllowed
+            ? state.toolChoiceAllowed.filter(t => classToolCfg.toolChoiceAllowed.includes(t))
+            : classToolCfg.toolChoiceAllowed;
+    }
+
+    // Священная роль Жреца: Защитник даёт дополнительные очки снаряжения
+    if (state.class === 'cleric' && state.classDivineRole === 'protector') {
+        state.choicePoints.equipment += 2;
+    }
 
     // Расовые выборы навыка/инструмента
     if (raceCfg.skillChoices && raceCfg.skillChoices.length > 0 && state.raceSkillChoice) {
@@ -2867,10 +2927,10 @@ function renderMagicSpellPickers(cfg) {
 
 // Заполняет выпадающий список школ уникальными значениями из доступных заклинаний,
 // сохраняя текущий выбор пользователя, если он всё ещё актуален.
-function populateSpellSchoolFilter(spells) {
-    const select = document.getElementById('magicInitiateSchoolFilter');
+function populateSpellSchoolFilter(spells, selectId = 'magicInitiateSchoolFilter', classFilter) {
+    const select = document.getElementById(selectId);
     if (!select) return;
-    const cls = state.magicInitiateClass;
+    const cls = classFilter !== undefined ? classFilter : state.magicInitiateClass;
 
     const schools = new Set();
     spells.forEach(sp => {
@@ -3029,10 +3089,10 @@ function renderHighlightedStat(text, rules) {
 // и блокировкой недоступных вариантов после достижения лимита выбора.
 function renderSpellPickerList(container, allSpells, level, max, selectedList, onToggle, options = {}) {
     container.innerHTML = '';
-    const cls = state.magicInitiateClass;
-    const searchInput = document.getElementById('magicInitiateSearch');
+    const cls = options.classFilter !== undefined ? options.classFilter : state.magicInitiateClass;
+    const searchInput = document.getElementById(options.searchInputId || 'magicInitiateSearch');
     const term = (searchInput?.value || '').trim().toLowerCase();
-    const schoolFilter = document.getElementById('magicInitiateSchoolFilter');
+    const schoolFilter = document.getElementById(options.schoolFilterId || 'magicInitiateSchoolFilter');
     const schoolTerm = (schoolFilter?.value || '').trim().toLowerCase();
 
     let list = allSpells.filter(sp => {
@@ -3130,6 +3190,286 @@ function renderSpellPickerList(container, allSpells, level, max, selectedList, o
     });
 }
 
+// ===================== Умения классов на 1-м уровне (заклинания, боевой стиль, инструменты) =====================
+
+// Ремесленные инструменты на выбор Артефактором и владения от предыстории "Ремесленник" -
+// один и тот же список (без Инструментов ремонтника - они у Артефактора уже есть по умолчанию)
+const ARTISAN_TOOLS = ALL_TOOLS.filter(t => !['Воровские инструменты', 'Игровой набор', 'Инструменты навигатора',
+    'Инструменты художника', 'Музыкальные инструменты', 'Набор для грима', 'Набор для фальсификации',
+    'Набор травника', 'Инструменты ремонтника'].includes(t));
+
+const FIGHTING_STYLES = [
+    { name: 'Стрельба', desc: 'Вы получаете +2 к броскам атаки, которые совершаете с Дальнобойным оружием.' },
+    { name: 'Оборона', desc: 'Пока вы носите доспехи, вы получаете +1 к КД.' },
+    { name: 'Дуэлянт', desc: 'Когда вы вооружены Рукопашным оружием, которым владеете в одной руке, и никаким другим оружием, вы получаете +2 к броскам урона этим оружием.' },
+    { name: 'Оружие в двух руках', desc: 'Когда вы совершаете атаку Рукопашным оружием, которое держите двумя руками, урон от кости этого оружия увеличивается: 1, если выпадает 1 или 2 на кость урона оружия, вы можете перебросить эту кость один раз за атаку.' },
+    { name: 'Защита', desc: 'Если существо, находящееся в пределах 1,5 метра от вас, атаковано, вы можете реакцией наложить Помеху на этот бросок атаки, если вооружены Щитом.' },
+    { name: 'Бой двумя оружиями', desc: 'Когда вы совершаете действие Атака и наносите урон дополнительным оружием во Вторую атаку бонусным действием, вы можете добавить модификатор характеристики к этому урону.' }
+];
+
+// Священная роль Жреца - влияет либо на очки владения снаряжением, либо на число заговоров (см. CLASS_FEATURES.cleric)
+const CLERIC_DIVINE_ROLES = [
+    { key: 'protector', name: 'Защитник', desc: 'Получите 2 очка владения снаряжением.' },
+    { key: 'miracle', name: 'Чудотворец', desc: 'Изучите ещё один заговор из списка заклинаний Жреца (учтено ниже). Кроме того, ваша мистическая связь с божественным даёт вам бонус к проверкам Интеллекта (Магия или Религия), равный вашему модификатору Мудрости (минимум +1).' }
+];
+
+// Настройка умений, которые даёт класс на 1-м уровне.
+// spellList - название списка заклинаний класса, как оно записано в поле class в spells.hjson.
+// toolChoice - количество очков владения инструментами и разрешённый пул (учитывается в общем разделе "Инструменты").
+const CLASS_FEATURES = {
+    fighter: { fightingStyle: true },
+    wizard: { cantripCount: 3, spellCount: 6, spellLevel: 1, spellList: 'волшебник' },
+    cleric: { cantripCount: 3, spellCount: 4, spellLevel: 1, spellList: 'жрец', divineRole: true },
+    sorcerer: { cantripCount: 4, spellCount: 2, spellLevel: 1, spellList: 'чародей' },
+    warlock: { cantripCount: 2, spellCount: 2, spellLevel: 1, spellList: 'колдун' },
+    bard: { cantripCount: 2, spellCount: 4, spellLevel: 1, spellList: 'бард' },
+    druid: { cantripCount: 3, spellCount: 4, spellLevel: 1, spellList: 'друид' },
+    paladin: { spellCount: 2, spellLevel: 1, spellList: 'паладин' },
+    ranger: { spellCount: 2, spellLevel: 1, spellList: 'следопыт' },
+    artificer: { cantripCount: 2, spellCount: 2, spellLevel: 1, spellList: 'артефактор' }
+};
+
+// Владения (инструменты), которые даёт класс на 1-м уровне - работают точно так же,
+// как владения от предыстории "Ремесленник": фиксированные + очки на выбор из ограниченного пула.
+const CLASS_TOOL_BONUSES = {
+    artificer: { tools: 1, fixedTools: ['Воровские инструменты', 'Инструменты ремонтника'], toolChoiceAllowed: ARTISAN_TOOLS },
+    bard: { fixedTools: ['Музыкальные инструменты'] }
+};
+
+function classFeaturesReset() {
+    state.classCantrips = [];
+    state.classSpells = [];
+    state.classFightingStyle = null;
+    state.classDivineRole = null;
+}
+
+// Число заговоров с учётом дополнительных условий (например, роль Чудотворца у Жреца)
+function resolvedCantripCount(cfg) {
+    let count = cfg.cantripCount || 0;
+    if (cfg.divineRole && state.classDivineRole === 'miracle') count += 1;
+    return count;
+}
+
+// Показывает/скрывает и заполняет блок умений класса под выбором класса персонажа
+function updateClassFeaturesUI() {
+    const block = document.getElementById('classFeaturesBlock');
+    const spellsWrap = document.getElementById('classSpellsWrap');
+    const styleWrap = document.getElementById('classFightingStyleWrap');
+    const roleWrap = document.getElementById('classDivineRoleWrap');
+    if (!block || !spellsWrap || !styleWrap || !roleWrap) return;
+
+    const cfg = CLASS_FEATURES[state.class];
+    if (!cfg) {
+        block.style.display = 'none';
+        spellsWrap.style.display = 'none';
+        styleWrap.style.display = 'none';
+        roleWrap.style.display = 'none';
+        return;
+    }
+
+    block.style.display = 'block';
+
+    if (cfg.divineRole) {
+        roleWrap.style.display = 'block';
+        renderClassDivineRoleList(cfg);
+    } else {
+        roleWrap.style.display = 'none';
+    }
+
+    if (cfg.spellList) {
+        spellsWrap.style.display = 'block';
+        renderClassSpellPickers(cfg);
+    } else {
+        spellsWrap.style.display = 'none';
+    }
+
+    if (cfg.fightingStyle) {
+        styleWrap.style.display = 'block';
+        renderFightingStyleList();
+    } else {
+        styleWrap.style.display = 'none';
+    }
+}
+
+// Выбор священной роли Жреца - одиночный выбор, влияющий на очки снаряжения или число заговоров
+function renderClassDivineRoleList(cfg) {
+    const container = document.getElementById('classDivineRoleList');
+    const counter = document.getElementById('classDivineRoleCounter');
+    if (!container) return;
+    container.innerHTML = '';
+    counter.textContent = state.classDivineRole ? '1/1' : '0/1';
+    counter.classList.toggle('full', !!state.classDivineRole);
+
+    CLERIC_DIVINE_ROLES.forEach(role => {
+        const isSelected = state.classDivineRole === role.key;
+
+        const item = document.createElement('label');
+        item.className = 'spell-pick-item' + (isSelected ? ' selected' : '');
+        item.style.setProperty('--sc', '#c9a87b');
+
+        const info = document.createElement('span');
+        info.className = 'spell-pick-info';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'spell-pick-name';
+        nameEl.textContent = role.name;
+        info.appendChild(nameEl);
+
+        const descEl = document.createElement('div');
+        descEl.className = 'spell-pick-desc';
+        descEl.style.marginTop = '8px';
+        descEl.textContent = role.desc;
+        info.appendChild(descEl);
+
+        const checkbox = createCustomCheckbox(isSelected, false, (add) => {
+            state.classDivineRole = add ? role.key : null;
+            const newMax = resolvedCantripCount(cfg);
+            if (state.classCantrips.length > newMax) {
+                state.classCantrips = state.classCantrips.slice(0, newMax);
+            }
+            recomputeBonuses();
+            renderAllSections();
+            updateClassFeaturesUI();
+            return true;
+        });
+
+        item.appendChild(checkbox);
+        item.appendChild(info);
+        container.appendChild(item);
+    });
+}
+
+function renderClassSpellPickers(cfg) {
+    const statusEl = document.getElementById('classSpellStatus');
+    const cantripTitle = document.getElementById('classCantripGroupTitle');
+    const cantripLabelEl = document.getElementById('classCantripGroupLabel');
+    const cantripListEl = document.getElementById('classCantripList');
+    const cantripCounter = document.getElementById('classCantripCounter');
+    const spellTitle = document.getElementById('classSpellGroupTitle');
+    const spellLabelEl = document.getElementById('classSpellGroupLabel');
+    const spellListEl = document.getElementById('classSpellList');
+    const spellCounter = document.getElementById('classSpellCounter');
+    if (!statusEl || !cantripListEl || !spellListEl) return;
+
+    const cantripMax = resolvedCantripCount(cfg);
+    const showCantrips = cantripMax > 0;
+    cantripTitle.style.display = showCantrips ? 'flex' : 'none';
+    cantripListEl.style.display = showCantrips ? '' : 'none';
+    if (showCantrips) {
+        cantripLabelEl.textContent = `Заговоры (выберите ${cantripMax})`;
+        cantripCounter.textContent = `${state.classCantrips.length}/${cantripMax}`;
+        cantripCounter.classList.toggle('full', state.classCantrips.length >= cantripMax);
+    }
+
+    const showSpells = (cfg.spellCount || 0) > 0;
+    spellTitle.style.display = showSpells ? 'flex' : 'none';
+    spellListEl.style.display = showSpells ? '' : 'none';
+    if (showSpells) {
+        spellLabelEl.textContent = `Заклинания ${cfg.spellLevel}-го круга (выберите ${cfg.spellCount})`;
+        spellCounter.textContent = `${state.classSpells.length}/${cfg.spellCount}`;
+        spellCounter.classList.toggle('full', state.classSpells.length >= cfg.spellCount);
+    }
+
+    statusEl.style.display = 'block';
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Загрузка списка заклинаний...';
+    cantripListEl.innerHTML = '';
+    spellListEl.innerHTML = '';
+
+    loadSpellsData().then(spells => {
+        statusEl.style.display = 'none';
+        populateSpellSchoolFilter(spells, 'classSpellSchoolFilter', cfg.spellList);
+
+        const pickerOptions = { classFilter: cfg.spellList, searchInputId: 'classSpellSearch', schoolFilterId: 'classSpellSchoolFilter' };
+
+        if (showCantrips) {
+            renderSpellPickerList(cantripListEl, spells, 0, cantripMax, state.classCantrips, (name, add) => {
+                const arr = state.classCantrips;
+                const idx = arr.indexOf(name);
+                if (add) {
+                    if (idx === -1 && arr.length < cantripMax) arr.push(name);
+                } else if (idx > -1) {
+                    arr.splice(idx, 1);
+                }
+                updateClassFeaturesUI();
+            }, pickerOptions);
+        }
+
+        if (showSpells) {
+            renderSpellPickerList(spellListEl, spells, cfg.spellLevel, cfg.spellCount, state.classSpells, (name, add) => {
+                const arr = state.classSpells;
+                const idx = arr.indexOf(name);
+                if (add) {
+                    if (idx === -1 && arr.length < cfg.spellCount) arr.push(name);
+                } else if (idx > -1) {
+                    arr.splice(idx, 1);
+                }
+                updateClassFeaturesUI();
+            }, pickerOptions);
+        }
+    }).catch(err => {
+        statusEl.style.display = 'block';
+        statusEl.classList.add('error');
+        statusEl.textContent = 'Не удалось загрузить список заклинаний: ' + err.message;
+    });
+}
+
+// Список боевых стилей отображается карточками в том же визуальном стиле, что и заклинания,
+// но выбор одиночный (радиокнопка вместо чекбокса).
+function renderFightingStyleList() {
+    const container = document.getElementById('classFightingStyleList');
+    const counter = document.getElementById('classFightingStyleCounter');
+    if (!container) return;
+    container.innerHTML = '';
+    counter.textContent = state.classFightingStyle ? '1/1' : '0/1';
+    counter.classList.toggle('full', !!state.classFightingStyle);
+
+    FIGHTING_STYLES.forEach(style => {
+        const isSelected = state.classFightingStyle === style.name;
+
+        const item = document.createElement('label');
+        item.className = 'spell-pick-item' + (isSelected ? ' selected' : '');
+        item.style.setProperty('--sc', '#c9a87b');
+
+        const info = document.createElement('span');
+        info.className = 'spell-pick-info';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'spell-pick-name';
+        nameEl.textContent = style.name;
+        info.appendChild(nameEl);
+
+        const descEl = document.createElement('div');
+        descEl.className = 'spell-pick-desc';
+        descEl.style.marginTop = '8px';
+        descEl.textContent = style.desc;
+        info.appendChild(descEl);
+
+        const checkbox = createCustomCheckbox(isSelected, false, (add) => {
+            state.classFightingStyle = add ? style.name : null;
+            renderFightingStyleList();
+            return true;
+        });
+
+        item.appendChild(checkbox);
+        item.appendChild(info);
+        container.appendChild(item);
+    });
+}
+
+
+document.getElementById('classSpellSearch')?.addEventListener('input', function() {
+    const cfg = CLASS_FEATURES[state.class];
+    if (!cfg || !cfg.spellList) return;
+    renderClassSpellPickers(cfg);
+});
+
+document.getElementById('classSpellSchoolFilter')?.addEventListener('change', function() {
+    const cfg = CLASS_FEATURES[state.class];
+    if (!cfg || !cfg.spellList) return;
+    renderClassSpellPickers(cfg);
+});
+
 // Обработчики событий
 document.getElementById('race').addEventListener('change', function() {
     state.race = this.value;
@@ -3183,6 +3523,8 @@ document.getElementById('class').addEventListener('change', function() {
         state.magicInitiateSpell = [];
         updateMagicInitiateUI();
     }
+    classFeaturesReset();
+    updateClassFeaturesUI();
     recomputeBonuses();
     renderAllSections();
 });
@@ -3409,6 +3751,10 @@ document.getElementById('dndForm').addEventListener('submit', async function(e) 
     document.getElementById('magicInitiateClassInput').value = state.magicInitiateClass || '';
     document.getElementById('magicInitiateCantripsInput').value = state.magicInitiateCantrips.join(', ');
     document.getElementById('magicInitiateSpellInput').value = (state.magicInitiateSpell || []).join(', ');
+    document.getElementById('classCantripsInput').value = (state.classCantrips || []).join(', ');
+    document.getElementById('classSpellsInput').value = (state.classSpells || []).join(', ');
+    document.getElementById('classFightingStyleInput').value = state.classFightingStyle || '';
+    document.getElementById('classDivineRoleInput').value = state.classDivineRole || '';
     const eff = getEffectiveStats();
     let statsText = '';
     for (let s of Object.keys(STAT_NAMES)) {
@@ -3433,6 +3779,7 @@ document.getElementById('dndForm').addEventListener('submit', async function(e) 
                 race:'', background:'', class:'', trait:null, traitChoice:null,
                 halfElfStat1:null, halfElfStat2:null, raceSkillChoice:null, raceToolChoice:null,
                 magicInitiateClass:null, magicInitiateCantrips:[], magicInitiateSpell:[],
+                classCantrips:[], classSpells:[], classFightingStyle:null, classDivineRole:null,
                 selectedSkills:[], selectedEquipment:[], selectedTools:[], selectedLanguages:[],
                 baseStats:{strength:8,dexterity:8,constitution:8,intelligence:8,wisdom:8,charisma:8},
                 extras:{strength:0,dexterity:0,constitution:0,intelligence:0,wisdom:0,charisma:0},
@@ -3441,6 +3788,7 @@ document.getElementById('dndForm').addEventListener('submit', async function(e) 
             });
             recomputeBonuses();
             renderAllSections();
+            updateClassFeaturesUI();
             switchMode('points');
             setupExtras();
         } else throw new Error();
