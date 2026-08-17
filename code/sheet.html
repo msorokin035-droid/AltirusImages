@@ -5,6 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DnD Анкета персонажа</title>
 	<style>
+			dice {
+			display: inline-block;
+			background: #8b7355;
+			color: #fff;
+			padding: 2px 8px 2px 4px;
+			border-radius: 4px;
+		}
+		
+		dice::before {
+			content: '';
+			display: inline-block;
+			width: 14px;
+			height: 14px;
+			margin-right: 6px;
+			vertical-align: -2px;
+			background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><rect x='2' y='2' width='20' height='20' rx='4'/><circle cx='8' cy='8' r='1.8' fill='%238b7355'/><circle cx='16' cy='8' r='1.8' fill='%238b7355'/><circle cx='12' cy='12' r='1.8' fill='%238b7355'/><circle cx='8' cy='16' r='1.8' fill='%238b7355'/><circle cx='16' cy='16' r='1.8' fill='%238b7355'/></svg>");
+			background-size: contain;
+			background-repeat: no-repeat;
+		}
+	
+        :root {
+            --acc-cantrip: #c9a87b;
+            --acc-cantrip-bg: rgba(201, 168, 123, 0.16);
+            --acc-spell: #7b9db0;
+            --acc-spell-bg: rgba(123, 157, 176, 0.16);
+            --acc-invocation: #b0784a;
+            --acc-invocation-bg: rgba(176, 120, 74, 0.18);
+            --acc-style: #9aa66b;
+            --acc-style-bg: rgba(154, 166, 107, 0.16);
+            --acc-role: #a8798b;
+            --acc-role-bg: rgba(168, 121, 139, 0.16);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -134,6 +167,72 @@
         .tooltip-container:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
+        }
+        .tooltip-text.force-open {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Кастомный выпадающий список с описанием при наведении на каждый пункт,
+           до того как пункт выбран (для предыстории, расы и черты). */
+        .custom-select-wrap {
+            position: relative;
+        }
+        .custom-select-btn {
+            width: 100%;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #8b7355;
+            color: #d4c4a8;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .custom-select-btn::after {
+            content: '▾';
+            color: #8b7355;
+            flex-shrink: 0;
+        }
+        .custom-select-btn:hover, .custom-select-btn.open {
+            border-color: #c9a87b;
+            background: rgba(0, 0, 0, 0.8);
+        }
+        .custom-select-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 4px;
+            max-height: 260px;
+            overflow-y: auto;
+            background: rgba(10, 8, 6, 0.98);
+            border: 1px solid #8b7355;
+            border-radius: 4px;
+            z-index: 9997;
+        }
+        .custom-select-option {
+            padding: 8px 14px;
+            font-size: 13px;
+            color: #d4c4a8;
+            cursor: pointer;
+            font-family: 'Alfabet', 'Helvetica Neue', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .custom-select-option:hover, .custom-select-option.active {
+            background: rgba(139, 115, 85, 0.4);
+            color: #f0e0b0;
+        }
+        .custom-select-option.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            font-style: italic;
+        }
+        .custom-select-option.disabled:hover {
+            background: none;
+            color: #d4c4a8;
         }
 
         .skills-section, .equipment-section {
@@ -615,6 +714,76 @@
             margin-top: 16px;
         }
 
+        /* ---- Секция-карточка (заговоры / заклинания / воззвания / стиль / роль) ----
+           Каждая группа выбора оформлена отдельным блоком с цветной плашкой-заголовком,
+           чтобы их нельзя было спутать друг с другом при прокрутке. */
+        .spell-picker-section {
+            border: 1px solid #6b5a45;
+            background: rgba(0, 0, 0, 0.22);
+            margin-top: 18px;
+            margin-bottom: 4px;
+        }
+
+        .spell-picker-section:first-child {
+            margin-top: 0;
+        }
+
+        .spell-picker-section .spell-picker-group-title {
+            margin: 0;
+            padding: 11px 14px;
+            border-left: none;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.35);
+            background: #3a2f22;
+        }
+
+        .spell-picker-section .spell-picker-fixed-note {
+            padding: 10px 14px 0;
+        }
+
+        .spell-picker-section .spell-picker-status {
+            padding: 14px;
+        }
+
+        .spell-picker-section .spell-picker-list {
+            border: none;
+            margin: 12px;
+            margin-top: 12px;
+        }
+
+        .spell-picker-section .spell-picker-empty {
+            margin: 0 12px 12px;
+        }
+
+        .spell-picker-section.kind-cantrip { border-left: 4px solid var(--acc-cantrip); }
+        .spell-picker-section.kind-cantrip .spell-picker-group-title { background: var(--acc-cantrip-bg); color: var(--acc-cantrip); }
+
+        .spell-picker-section.kind-spell { border-left: 4px solid var(--acc-spell); }
+        .spell-picker-section.kind-spell .spell-picker-group-title { background: var(--acc-spell-bg); color: var(--acc-spell); }
+
+        .spell-picker-section.kind-invocation { border-left: 4px solid var(--acc-invocation); }
+        .spell-picker-section.kind-invocation .spell-picker-group-title { background: var(--acc-invocation-bg); color: var(--acc-invocation); }
+
+        .spell-picker-section.kind-style { border-left: 4px solid var(--acc-style); }
+        .spell-picker-section.kind-style .spell-picker-group-title { background: var(--acc-style-bg); color: var(--acc-style); }
+
+        .spell-picker-section.kind-role { border-left: 4px solid var(--acc-role); }
+        .spell-picker-section.kind-role .spell-picker-group-title { background: var(--acc-role-bg); color: var(--acc-role); }
+
+        .spell-picker-section .spell-picker-counter {
+            color: inherit;
+            opacity: 0.75;
+        }
+
+        .spell-picker-section .spell-picker-counter.full {
+            color: inherit;
+            opacity: 1;
+            text-shadow: none;
+        }
+
+        .spell-picker-shared-filters {
+            margin-bottom: 16px;
+        }
+
         .spell-picker-filters {
             display: flex;
             gap: 10px;
@@ -861,6 +1030,28 @@
         .spell-picker-status.error {
             color: #c98b7b;
         }
+
+        .spell-picker-fixed-note {
+            color: #a89076;
+            font-size: 11.5px;
+            font-style: italic;
+            padding: 0 2px 10px;
+        }
+
+        .spell-pick-fixed-badge {
+            display: inline-block;
+            margin-left: 8px;
+            font-size: 9.5px;
+            font-weight: 500;
+            font-style: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #8a7a63;
+            border: 1px solid #6b5a45;
+            border-radius: 20px;
+            padding: 1px 7px;
+            vertical-align: middle;
+        }
     </style>
 <script>
 /*!
@@ -942,69 +1133,6 @@
             </div>
 
             <div class="form-group">
-                <label>Класс</label>
-                <div class="tooltip-container">
-                    <select id="class" name="class">
-                        <option value="">Выберите класс</option>
-						<option value="artificer">Артефактор</option>
-						<option value="bard">Бард</option>
-						<option value="barbarian">Варвар</option>
-                        <option value="fighter">Воин</option>
-                        <option value="wizard">Волшебник</option>
-						<option value="druid">Друид</option>
-						<option value="cleric">Жрец</option>
-						<option value="warlock">Колдун</option>
-						<option value="monk">Монах</option>
-						<option value="paladin">Паладин</option>
-                        <option value="rogue">Плут</option>
-                        <option value="ranger">Следопыт</option>
-                        <option value="sorcerer">Чародей</option>
-                    </select>
-                    <div class="tooltip-text" id="classTooltip"></div>
-                </div>
-
-                <div class="magic-initiate-block" id="classFeaturesBlock" style="display:none;">
-                    <div class="spell-picker-wrap" id="classDivineRoleWrap" style="display:none;">
-                        <div class="spell-picker-group-title">
-                            <span>Священная роль (выберите 1)</span>
-                            <span class="spell-picker-counter" id="classDivineRoleCounter">0/1</span>
-                        </div>
-                        <div class="spell-picker-list" id="classDivineRoleList"></div>
-                    </div>
-                    <div class="spell-picker-wrap" id="classSpellsWrap" style="display:none;">
-                        <div class="spell-picker-filters">
-                            <input type="text" class="spell-picker-search" id="classSpellSearch" placeholder="Поиск по названию...">
-                            <select class="spell-picker-search spell-picker-school-filter" id="classSpellSchoolFilter">
-                                <option value="">Школа: любая</option>
-                            </select>
-                        </div>
-
-                        <div id="classSpellStatus" class="spell-picker-status" style="display:none;"></div>
-
-                        <div class="spell-picker-group-title" id="classCantripGroupTitle">
-                            <span id="classCantripGroupLabel">Заговоры</span>
-                            <span class="spell-picker-counter" id="classCantripCounter">0/0</span>
-                        </div>
-                        <div class="spell-picker-list" id="classCantripList"></div>
-
-                        <div class="spell-picker-group-title" id="classSpellGroupTitle">
-                            <span id="classSpellGroupLabel">Заклинания</span>
-                            <span class="spell-picker-counter" id="classSpellCounter">0/0</span>
-                        </div>
-                        <div class="spell-picker-list" id="classSpellList"></div>
-                    </div>
-
-                    <div class="spell-picker-wrap" id="classFightingStyleWrap" style="display:none;">
-                        <div class="spell-picker-group-title">
-                            <span>Боевой стиль (выберите 1)</span>
-                            <span class="spell-picker-counter" id="classFightingStyleCounter">0/1</span>
-                        </div>
-                        <div class="spell-picker-list" id="classFightingStyleList"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
                 <label>Раса</label>
                 <div class="tooltip-container">
                     <select id="race" name="race">
@@ -1022,8 +1150,8 @@
                     <div class="tooltip-text" id="raceTooltip"></div>
                 </div>
             </div>
-
-            <div class="form-group" id="racialFeatureGroup" style="display: none;">
+			
+			            <div class="form-group" id="racialFeatureGroup" style="display: none;">
                 <label id="racialFeatureLabel">Черта</label>
                 <div class="tooltip-container">
                     <select id="racialFeature" name="racial_feature">
@@ -1052,7 +1180,7 @@
                     <div id="magicInitiateAutoClassNote" class="spell-picker-status" style="display:none;"></div>
 
                     <div class="spell-picker-wrap" id="magicInitiateSpellsWrap" style="display:none;">
-                        <div class="spell-picker-filters">
+                        <div class="spell-picker-filters spell-picker-shared-filters">
                             <input type="text" class="spell-picker-search" id="magicInitiateSearch" placeholder="Поиск по названию...">
                             <select class="spell-picker-search spell-picker-school-filter" id="magicInitiateSchoolFilter">
                                 <option value="">Школа: любая</option>
@@ -1061,17 +1189,21 @@
 
                         <div id="magicInitiateStatus" class="spell-picker-status" style="display:none;"></div>
 
-                        <div class="spell-picker-group-title" id="magicCantripGroupTitle">
-                            <span id="magicCantripGroupLabel">Заговоры (выберите 2)</span>
-                            <span class="spell-picker-counter" id="magicCantripCounter">0/2</span>
+                        <div class="spell-picker-section kind-cantrip" id="magicCantripSection">
+                            <div class="spell-picker-group-title" id="magicCantripGroupTitle">
+                                <span id="magicCantripGroupLabel">Заговоры (выберите 2)</span>
+                                <span class="spell-picker-counter" id="magicCantripCounter">0/2</span>
+                            </div>
+                            <div class="spell-picker-list" id="magicCantripList"></div>
                         </div>
-                        <div class="spell-picker-list" id="magicCantripList"></div>
 
-                        <div class="spell-picker-group-title" id="magicSpellGroupTitle">
-                            <span id="magicSpellGroupLabel">Заклинание 1-го круга (выберите 1)</span>
-                            <span class="spell-picker-counter" id="magicSpellCounter">0/1</span>
+                        <div class="spell-picker-section kind-spell" id="magicSpellSection">
+                            <div class="spell-picker-group-title" id="magicSpellGroupTitle">
+                                <span id="magicSpellGroupLabel">Заклинание 1-го круга (выберите 1)</span>
+                                <span class="spell-picker-counter" id="magicSpellCounter">0/1</span>
+                            </div>
+                            <div class="spell-picker-list" id="magicSpellList"></div>
                         </div>
-                        <div class="spell-picker-list" id="magicSpellList"></div>
                     </div>
                 </div>
             </div>
@@ -1105,6 +1237,91 @@
                     <br><br>
                     <label>Вторая характеристика: </label>
                     <select id="halfElfStatChoice2"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Класс</label>
+                <div class="tooltip-container">
+                    <select id="class" name="class">
+                        <option value="">Выберите класс</option>
+						<option value="artificer">Артефактор</option>
+						<option value="bard">Бард</option>
+						<option value="barbarian">Варвар</option>
+                        <option value="fighter">Воин</option>
+                        <option value="wizard">Волшебник</option>
+						<option value="druid">Друид</option>
+						<option value="cleric">Жрец</option>
+						<option value="warlock">Колдун</option>
+						<option value="monk">Монах</option>
+						<option value="paladin">Паладин</option>
+                        <option value="rogue">Плут</option>
+                        <option value="ranger">Следопыт</option>
+                        <option value="sorcerer">Чародей</option>
+                    </select>
+                    <div class="tooltip-text" id="classTooltip"></div>
+                </div>
+
+                <div class="magic-initiate-block" id="classFeaturesBlock" style="display:none;">
+                    <div class="spell-picker-wrap" id="classDivineRoleWrap" style="display:none;">
+                        <div class="spell-picker-section kind-role">
+                            <div class="spell-picker-group-title">
+                                <span>Священная роль (выберите 1)</span>
+                                <span class="spell-picker-counter" id="classDivineRoleCounter">0/1</span>
+                            </div>
+                            <div class="spell-picker-list" id="classDivineRoleList"></div>
+                        </div>
+                    </div>
+                    <div class="spell-picker-wrap" id="classSpellsWrap" style="display:none;">
+                        <div class="spell-picker-filters spell-picker-shared-filters">
+                            <input type="text" class="spell-picker-search" id="classSpellSearch" placeholder="Поиск по названию...">
+                            <select class="spell-picker-search spell-picker-school-filter" id="classSpellSchoolFilter">
+                                <option value="">Школа: любая</option>
+                            </select>
+                        </div>
+
+                        <div id="classSpellStatus" class="spell-picker-status" style="display:none;"></div>
+
+                        <div class="spell-picker-section kind-cantrip" id="classCantripSection">
+                            <div class="spell-picker-group-title" id="classCantripGroupTitle">
+                                <span id="classCantripGroupLabel">Заговоры</span>
+                                <span class="spell-picker-counter" id="classCantripCounter">0/0</span>
+                            </div>
+                            <div class="spell-picker-list" id="classCantripList"></div>
+                        </div>
+
+                        <div class="spell-picker-section kind-spell" id="classSpellSection">
+                            <div class="spell-picker-group-title" id="classSpellGroupTitle">
+                                <span id="classSpellGroupLabel">Заклинания</span>
+                                <span class="spell-picker-counter" id="classSpellCounter">0/0</span>
+                            </div>
+                            <div class="spell-picker-list" id="classSpellList"></div>
+                        </div>
+                    </div>
+
+                    <div class="spell-picker-wrap" id="classFightingStyleWrap" style="display:none;">
+                        <div class="spell-picker-section kind-style">
+                            <div class="spell-picker-group-title">
+                                <span>Боевой стиль (выберите 1)</span>
+                                <span class="spell-picker-counter" id="classFightingStyleCounter">0/1</span>
+                            </div>
+                            <div class="spell-picker-list" id="classFightingStyleList"></div>
+                        </div>
+                    </div>
+
+                    <div class="spell-picker-wrap" id="classInvocationWrap" style="display:none;">
+                        <div class="spell-picker-section kind-invocation">
+                            <div class="spell-picker-group-title">
+                                <span id="classInvocationGroupLabel">Воззвание (выберите 1)</span>
+                                <span class="spell-picker-counter" id="classInvocationCounter">0/1</span>
+                            </div>
+                            <div class="spell-picker-filters" style="padding: 0 12px; margin-top: 12px;">
+                                <input type="text" class="spell-picker-search" id="classInvocationSearch" placeholder="Поиск по названию...">
+                            </div>
+                            <div id="classInvocationStatus" class="spell-picker-status" style="display:none;"></div>
+                            <div class="spell-picker-list" id="classInvocationList"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1203,6 +1420,7 @@
             <input type="hidden" name="class_spells" id="classSpellsInput">
             <input type="hidden" name="class_fighting_style" id="classFightingStyleInput">
             <input type="hidden" name="class_divine_role" id="classDivineRoleInput">
+            <input type="hidden" name="class_invocations" id="classInvocationsInput">
             <input type="hidden" name="stats" id="statsInput">
             <input type="hidden" name="redirect" value="false">
             
@@ -1232,7 +1450,7 @@ const ALL_EQUIPMENT = ['Лёгкая броня','Средняя броня','Т
 
 const ALL_TOOLS = ['Инструменты алхимика','Инструменты гончара','Инструменты кузнеца','Инструменты каменщика','Инструменты кожевника','Инструменты плотника','Инструменты повара','Инструменты портного','Инструменты ремонтника','Инструменты стеклодува','Инструменты художника','Инструменты ювелира','Игровой набор','Музыкальные инструменты','Воровские инструменты','Инструменты навигатора','Набор для грима','Набор для фальсификации','Набор травника'];
 
-const ALL_LANGUAGES = ['Бишальский','Керрасанский','Аргосский','Шамсарский','Асканийский','Арауканский','Таргайский','Хирдский','Уккарский','Бенареский','Эльфийский','Дварфский','Орочий','Инфернальный'];
+const ALL_LANGUAGES = ['Бишальский','Керрасанский','Аргосский','Шамсарский','Асканийский','Арауканский','Таргайский','Хирдский','Уккарский','Бенареский','Эльфийский','Дварфский','Орочий','Гоблинский','Драконий','Небесный','Инфернальный','Друидический'];
 
 // Подсказки
 const raceTooltips = {
@@ -1242,7 +1460,7 @@ const raceTooltips = {
     <p><b>Размер тела:</b> средний</p>
     <p><b>Скорость:</b> 6 клеток</p>
     <p><b>Владение снаряжением:</b> +2 на выбор</p>
-    <p><b>Дополнительный язык:</b> +2 любой язык</p>
+    <p><b>Дополнительный язык:</b> +2 государственных или расовых языка</p>
     <p><b>Прочее:</b><li>Владение 2 навыками на выбор</li></p>`,
 	
     elf: `<p>«Живут долго, говорят красиво, смотрят свысока. Как обычно.»</p>
@@ -1256,11 +1474,11 @@ const raceTooltips = {
     
 	half_elf: `<p>«Слишком люди для эльфов. Слишком эльфы для людей. И никому не нужны полностью.»</p>
     <p><b>Возраст:</b> до 100 лет</p>
-    <p><b>Характеристики:</b> +2 харизма, +1 к двум характеристикам на выбор</p>
+    <p><b>Характеристики:</b> +1 харизма, +1 к двум характеристикам на выбор</p>
     <p><b>Размер тела:</b> средний</p>
     <p><b>Скорость:</b> 6 клеток</p>
     <p><b>Владение снаряжением:</b> +1 на выбор</p>
-    <p><b>Дополнительный язык:</b> эльфийский и +1 любой язык</p>
+    <p><b>Дополнительный язык:</b> эльфийский и +1 государственный или расовый язык</p>
     <p><b>Прочее:</b><li>Тёмное зрение</li><li>Спасброски с преимуществом от очаровывания</li><li>Невозможно усыпить магией</li><li>Владение 1 навыком на выбор</li></p>`,
     
 	dwarf: `<p>«Дай дворфу камень, пиво и слово — и он построит крепость, напьётся и сдержит обещание.»</p>
@@ -1297,7 +1515,7 @@ const raceTooltips = {
     <p><b>Скорость:</b> 5 клеток</p>
     <p><b>Владение снаряжением:</b></p>
     <p><b>Дополнительный язык:</b></p>
-    <p><b>Прочее:</b><li>Когда вы выбрасываете «1» на кости d20, вы можете перебросить кость, использовав новый результат</li><li>Спасброски от испуга с преимуществом</li><li>Вы можете проходить сквозь существ, чей размер больше вашего</li><li>Вы можете попытаться скрыться даже если заслонены только существом, превосходящими вас в размере</li></p>`,
+    <p><b>Прочее:</b><li>Когда вы выбрасываете «1» на кости <dice>d20</dice>, вы можете перебросить кость, использовав новый результат</li><li>Спасброски от испуга с преимуществом</li><li>Вы можете проходить сквозь существ, чей размер больше вашего</li><li>Вы можете попытаться скрыться даже если заслонены только существом, превосходящими вас в размере</li></p>`,
     
 	tiefling: `<p>«Им не доверяют при встрече. И, если честно, иногда не зря.»</p>
     <p><b>Возраст:</b> до 90 лет</p>
@@ -1306,8 +1524,17 @@ const raceTooltips = {
     <p><b>Скорость:</b> 6 клеток</p>
     <p><b>Владение снаряжением:</b></p>
     <p><b>Дополнительный язык:</b> инфернальный</p>
-    <p><b>Прочее:</b><li>Тёмное зрение</li><li>Сопротивление к урону от огня</li><li>Знают заклинание чудотворство. С 3 уровня заклинание адское возмездие как заклинание 2 круга. С 5 уровня заклинание тьма</li></p>`,
+    <p><b>Прочее:</b><li>Тёмное зрение</li><li>Сопротивление к урону от огня</li><li>Знаешь заклинание чудотворство. С 3 уровня заклинание адское возмездие как заклинание 2 круга. С 5 уровня заклинание тьма</li></p>`,
     
+	dragonborn: `<p>«Им не доверяют при встрече. И, если честно, иногда не зря.»</p>
+    <p><b>Возраст:</b> до 90 лет</p>
+    <p><b>Характеристики:</b> +1 интеллект, +2 харизма</p>
+    <p><b>Размер тела:</b> средний</p>
+    <p><b>Скорость:</b> 6 клеток</p>
+    <p><b>Владение снаряжением:</b></p>
+    <p><b>Дополнительный язык:</b> инфернальный</p>
+    <p><b>Прочее:</b><li>Тёмное зрение</li><li>Сопротивление к урону от огня</li><li>Знаешь заклинание чудотворство. С 3 уровня заклинание адское возмездие как заклинание 2 круга. С 5 уровня заклинание тьма</li></p>`,
+	
 	ukkari: `<p>«Кочевник или горожанин — уккари всегда остаётся охотником. Ему довольно когтей и чутья.»</p>
     <p><b>Возраст:</b> до 60 лет</p>
     <p><b>Характеристики:</b> +2 ловкость, +1 мудрость</p>
@@ -1315,13 +1542,13 @@ const raceTooltips = {
     <p><b>Скорость:</b> 7 клеток</p>
     <p><b>Владение снаряжением:</b></p>
     <p><b>Дополнительный язык:</b> уккарский</p>
-    <p><b>Прочее:</b><li>Тёмное зрение</li><li>Преимущество на проверки Скрытности в тусклом свете</li><li>Когти позволяют делать рукопашные атаки с рубящим уроном: 1d4 + Модификатор Силы</li><li>Скорость лазания 4 клетки за счёт цепких когтей</li></p>`
+    <p><b>Прочее:</b><li>Тёмное зрение</li><li>Преимущество на проверки Скрытности в тусклом свете</li><li>Когти позволяют делать рукопашные атаки с рубящим уроном: <dice>1d4 + Модификатор Силы</dice></li><li>Скорость лазания 4 клетки за счёт цепких когтей</li></p>`
 };
 
 const backgroundTooltips = {
     acolyte: `<p>Служил при храме: помогал жрецам, выполнял поручения, жил по уставу. Не обязательно верующий фанатик — скорее человек, привыкший к дисциплине и порядку.</p>
 	<p><b>Владение навыками:</b> Проницательность, Религия</p>
-	<p><b>Знание языков:</b> +1 на выбор</p>
+	<p><b>Знание языков:</b> +1 государственный язык</p>
 	<p><b>Особенность:</b> Может попросить небоевой помощи у настоятелей храма своей религии.</p>`,
 	
     criminal: `<p>Жил вне закона: вор, контрабандист, бандит или что-то рядом.</p>
@@ -1341,35 +1568,34 @@ const backgroundTooltips = {
     
 	hero: `<p>Человек из народа, который однажды помог другим. Его знают и уважают простые люди.</p>
 	<p><b>Владение навыками:</b> Атлетика, Выживание</p>
-	<p><b>Владение инструментами:</b> +1 на выбор</p>
-	<p><b>Особенность:</b> Когда вы разговариваете с крестьянами, ремесленниками, слугами и другими простолюдинами, они видят в вас своего. Вы говорите на их языке, знаете их проблемы и понимаете их заботы. Вам проще добиться их доверия, узнать нужную информацию или найти помощь там, где чужаку откажут.</p>`,
+	<p><b>Особенность:</b> Когда вы разговариваете с крестьянами, ремесленниками, слугами и другими простолюдинами, они видят в вас своего. Вам проще добиться их доверия, узнать нужную информацию или найти помощь там, где чужаку откажут.</p>`,
     
 	noble: `<p>Когда-то принадлежал к знати, но потерял статус или богатство. Сохранил знания, манеры и остатки связей.</p>
 	<p><b>Владение навыками:</b> История, Убеждение</p>
 	<p><b>Владение инструментами:</b> Игровой набор</p>
-	<p><b>Знание языков:</b> +1 на выбор</p>
+	<p><b>Знание языков:</b> +1 государственный язык</p>
 	<p><b>Особенность:</b> Разбирается в гербах и этикете.</p>`,
 	
     sage: `<p>Учёный, философ или исследователь.</p>
 	<p><b>Владение навыками:</b> История, Магия</p>
-	<p><b>Знание языков:</b> +2 на выбор</p>
+	<p><b>Знание языков:</b> +1 любой язык на выбор</p>
 	<p><b>Особенность:</b> Раз в сессию может задать мастеру 1 вопрос о мире и получить правдивый ответ.</p>`,
 	
     sailor: `<p>Жил морем: плавал, работал на кораблях.</p>
 	<p><b>Владение навыками:</b> Атлетика, Внимание</p>
 	<p><b>Владение инструментами:</b> Инструменты навигатора</p>
-	<p><b>Знание языков:</b> +1 на выбор</p>
+	<p><b>Знание языков:</b> +1 государственный язык</p>
 	<p><b>Особенность:</b> моряки и портовые работники по умолчанию считают его "своим" — он может бесплатно узнать расписание/маршруты кораблей в порту, и матросы не станут поднимать тревогу при виде него на борту чужого судна без явного повода.</p>`,
     
 	pirate: `<p>Жил грабежом и риском. Знает силу страха и репутации, привык брать, а не просить.</p>
 	<p><b>Владение навыками:</b> Внимание, Запугивание</p>
 	<p><b>Владение инструментами:</b> Инструменты навигатора</p>
-	<p><b>Знание языков:</b> +1 на выбор</p>
+	<p><b>Знание языков:</b> +1 государственный язык</p>
 	<p><b>Особенность:</b> может попытаться напугать простых моряков/портовых бандитов, совершая проверку Запугивания с преимуществом.</p>`,
 	
     clerk: `<p>Работал с бумагами: законы, договоры, отчёты.</p>
 	<p><b>Владение навыками:</b> Анализ, Проницательность</p>
-	<p><b>Знание языков:</b> +2 на выбор</p>
+	<p><b>Знание языков:</b> +2 государственных или расовых языка</p>
 	<p><b>Особенность:</b> Знает, как добыть нужные документы или "правильную бумажку". Понимает подделки.</p>`,
 	
     soldier: `<p>Служил в армии, прошёл дисциплину и приказы.</p>
@@ -1380,19 +1606,19 @@ const backgroundTooltips = {
     outlander: `<p>Жил вне цивилизации: странник, отшельник или выживальщик.</p>
 	<p><b>Владение навыками:</b> Природа, Выживание</p>
 	<p><b>Владение инструментами:</b> Музыкальные инструменты</p>
-	<p><b>Знание языков:</b> +1 на выбор</p>
+	<p><b>Знание языков:</b> +1 государственный или расовый язык</p>
 	<p><b>Особенность:</b> Не может заблудиться (кроме магических причин). Кроме того, вы каждый день можете находить еду и пресную воду для себя и пяти других товарищей, при условии, что вокруг вас можно найти ягоды, дичь, воду и так далее.</p>`,
     
 	craftsman: `<p>Работал руками: кузнец, кожевник, плотник и т.д.</p>
 	<p><b>Владение навыками:</b> Анализ, Убеждение</p>
 	<p><b>Владение инструментами:</b> 2 ремесленных инструмента на выбор</p>
-	<p><b>Знание языков:</b> +1 на выбор</p>
+	<p><b>Знание языков:</b> +1 государственный язык</p>
 	<p><b>Особенность:</b> Вы с первого взгляда видите ошибку в чужой работе. Сломанный клинок, который кажется целым, трещина там, где её не должно быть, кривой шов — вы это видите сразу. Вы создаёте предметы в 2 раза быстрее. Вы можете импровизировать ремесленные инструменты из подручных материалов. </p>`,
     
 	trader: `<p>Занимался торговлей: сделки, рынки, переговоры. Хорошо чувствует цену и людей.</p>
 	<p><b>Владение навыками:</b> Проницательность, Убеждение</p>
 	<p><b>Владение инструментами:</b> Инструменты навигатора</p>
-	<p><b>Знание языков:</b> +2 на выбор</p>
+	<p><b>Знание языков:</b> +2 государственных или расовых языка</p>
 	<p><b>Особенность:</b> Знает реальную цену вещам и услугам.</p>`,
 	
     hunter: `<p>Профессионально занимался добычей зверя: выслеживал, выжидал, убивал. Привык читать следы, замечать детали и понимать поведение цели.</p>
@@ -1432,7 +1658,7 @@ const backgroundTooltips = {
 	investigator: `<p>Занимался расследованиями: искал пропавших, собирал улики, допрашивал свидетелей — за плату или по долгу службы.</p>
 	<p><b>Владение навыками:</b> Анализ, Проницательность</p>
 	<p><b>Владение инструментами:</b> Набор для грима, Воровские инструменты</p>
-	<p><b>Знание языков:</b> +1 на выбор</p>
+	<p><b>Знание языков:</b> +1 государственный язык</p>
 	<p><b>Особенность:</b> Раз в сессию, расследуя конкретное дело, может спросить мастера, с чего начать поиски или куда двигаться дальше, и получить честную зацепку — не готовое решение, а направление.</p>`,
     
 	farmer: `<p>Родился и вырос в деревне: пахал землю, ухаживал за скотом, знает цену тяжёлому труду и простой еде.</p>
@@ -1442,26 +1668,24 @@ const backgroundTooltips = {
 	chef: `<p>Знаток специй и мастер у котла: провёл годы у плиты, постигая искусство превращать простые продукты в сытные и вкусные блюда. Разбирается в травах, приправах и их сочетаниях.</p>
 	<p><b>Владение навыками:</b> Выживание, Природа</p>
 	<p><b>Владение инструментами:</b> Инструменты повара</p>
-	<p><b>Особенность:</b> Вы можете найти пропитание в практически любой среде и приготовить из этого еду. К каждому броску, связанным с поиском еды или ингредиентов, добавьте 2d6 к броску, а все существа, что отведали ваши блюда получат дополнительно 1d4 временных хитов. У вас есть преимущество к спасброскам Телосложения от отравленных жидкостей и еды.</p>`,
+	<p><b>Особенность:</b> Вы можете найти пропитание в практически любой среде и приготовить из этого еду. К каждому броску, связанным с поиском еды или ингредиентов, добавьте <dice>2d6</dice> к броску, а все существа, что отведали ваши блюда получат дополнительно <dice>1d4</dice> временных хитов. У вас есть преимущество к спасброскам Телосложения от отравленных жидкостей и еды.</p>`,
     
 	amnesiac: `<p>Не помнит своего прошлого: ни имени, ни семьи, ни того, откуда он родом. Воспоминания обрываются где-то в недавнем прошлом, а всё, что было раньше — пустота.</p>
 	<p><b>Владение навыками:</b> +2 на выбор</p>
 	<p><b>Владение снаряжением:</b> +1 на выбор</p>
 	<p><b>Владение инструментами:</b> +1 на выбор</p>
-	<p><b>Знание языков:</b> +2 на выбор</p>
+	<p><b>Знание языков:</b> +2 государственных или расовых языка</p>
 	<p><b>Особенность:</b></p>`,
 	
     courtesan: `<p>Предлагал свои услуги за плату — в борделе, на большой дороге или на улицах города. Ты годами удовлетворял, утешал и отвлекал людей от их боли. Клиенты искали в тебе то, что хотели найти.</p>
 	<p><b>Владение навыками:</b> Проницательность, Убеждение</p>
 	<p><b>Владение инструментами:</b> Набор для грима</p>
-	<p><b>Знание языков:</b> +1 на выбор</p>
+	<p><b>Знание языков:</b> +1 государственный язык</p>
 	<p><b>Особенность:</b> Можно касанием снять с товарища один уровень истощения или убрать эффект испуг (но не ужас) (перезарядка: долгий отдых). Существа не могут вспомнить твое лицо в деталях. Они помнят, что ты был красив, а разговор с тобой был приятен. Но не могут назвать особых примет, нарисовать портрет. Ты для него — как сон: был, но расплылся. Это работает, только если ты не совершил против этого существа явно негативных действий.</p>`,
     
 	madman: `<p>Твой разум сломался от того, что ты видел или пережил. Теперь ты существуешь за гранью нормального восприятия, но именно это делает тебя опасным для тех, кто пытается проникнуть в твою голову.</p>
 	<p><b>Владение навыками:</b> +2 на выбор</p>
-	<p><b>Владение инструментами:</b> Нет</p>
-	<p><b>Знание языков:</b> Нет</p>
-	<p><b>Особенность:</b> Те кто пытается прочитать ваши мысли должны пройти спасбросок Мудрости со сложностью <b>10 + ваш модификатор Интеллекта</b>. При провале — заклинатель получает состояние краткосрочного безумия.</p>`
+	<p><b>Особенность:</b> Те кто пытается прочитать ваши мысли должны пройти спасбросок Мудрости со сложностью <dice>10 + ваш модификатор Интеллекта</dice>. При провале — заклинатель получает состояние краткосрочного безумия.</p>`
 };
 
 // Черты
@@ -1495,19 +1719,19 @@ const humanTraits = [
 	<p>Можно читать по губам, если существо говорит на языке, который вы знаете.</p>`, 
 	statBonus: 'choice', choices: ['intelligence', 'wisdom'], grantsArmor: null, requirements: null },
 	
-    { name: 'Воинский адепт', desc: `<p>Два приёма из списка архетипа воина «мастер боевых искусств» и одна кость превосходства d6.</p>
-	<p>Если приём требует, чтобы цель совершила спасбросок для сопротивления эффекту приёма, то сложность спасброска равна <b>8 + ваш бонус мастерства + ваш модификатор Силы или Ловкости (на ваш выбор)</b>.</p>`, 
+    { name: 'Воинский адепт', desc: `<p>Два приёма из списка архетипа воина «мастер боевых искусств» и одна кость превосходства <dice>d6</dice>.</p>
+	<p>Если приём требует, чтобы цель совершила спасбросок для сопротивления эффекту приёма, то сложность спасброска равна <dice>8 + ваш бонус мастерства + ваш модификатор Силы или Ловкости (на ваш выбор)</dice>.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: null },
 	
     { name: 'Воодушевляющий лидер', desc: `<p>Харизма +1 (с лимитом 20).</p>
-	<p>Можете потратить 10 минут на воодушевление спутников. Они получают временные хиты в количестве ваш уровень + модификатор Харизмы.</p>`, 
+	<p>Можете потратить 10 минут на воодушевление спутников. Они получают временные хиты в количестве <dice>ваш уровень + модификатор Харизмы</dice>.</p>`, 
 	statBonus: 'charisma', grantsArmor: null, requirements: null },
 	
     { name: 'Неистово атакующий', desc: `Можно один раз перебросить все кости урона в ближнем бою.`, 
 	statBonus: null, grantsArmor: null, requirements: null },
 	
     { name: 'Драчун', desc: `<p>Сила или Телосложение +1 (с лимитом 20).</p>
-	<p>Ваши кулаки наносят <b>1d4 + модификатор Силы</b> дробящего урона.</p>
+	<p>Ваши кулаки наносят <dice>1d4 + модификатор Силы</dice> дробящего урона.</p>
 	<p>Можно добавить бонус мастерства к броскам атаки импровизированного оружия.</p>
 	<p>После успешной атаки можно схватить существо бонусным действием.</p>`, 
 	statBonus: 'choice', choices: ['strength', 'constitution'], grantsArmor: null, requirements: null },
@@ -1543,7 +1767,7 @@ const humanTraits = [
 	<p>К урону оружия со свойством «тяжёлое» добавляется бонус мастерства.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: null },
 	
-    { name: 'Мастер древкового оружия', desc: `<p>Держа глефу, алебарду, копьё или боевой посох, можно бонусным действием атаковать противоположным концом оружия, нанеся 1d4 дробящего урона.</p>
+    { name: 'Мастер древкового оружия', desc: `<p>Держа глефу, алебарду, копьё или боевой посох, можно бонусным действием атаковать противоположным концом оружия, нанеся <dice>1d4</dice> дробящего урона.</p>
 	<p>Пока вы держите такое оружие, враги провоцируют вашу атаку, входя в зону досягаемости, а не только покидая её.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: null },
 	
@@ -1562,7 +1786,7 @@ const humanTraits = [
 	statBonus: 'strength', grantsArmor: null, requirements: { armor: 'Тяжелая броня' } },
 	
     { name: 'Мастер щитов', desc: `<p>Сила +1 (с лимитом 20).</p>
-	<p>Можно бонусным действием толкнуть щитом. Цель должна совершить спасбросок Силы со сложностью <b>8 + ваши модификатор Силы + бонус мастерства</b>. При провале вы толкаете цель или накладываете на неё состояние лежит ничком (на ваш выбор).</p>
+	<p>Можно бонусным действием толкнуть щитом. Цель должна совершить спасбросок Силы со сложностью <dice>8 + ваши модификатор Силы + бонус мастерства</dice>. При провале вы толкаете цель или накладываете на неё состояние лежит ничком (на ваш выбор).</p>
 	<p>Можно добавить бонус к КД от щита к спасброскам Ловкости от заклинаний, нацеленных только на вас.</p>
 	<p>Реакцией можно выставить щит для получения половины урона при не успешном спасброске Ловкости и не получить урон при успешном спасброске Ловкости.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: null },
@@ -1579,7 +1803,7 @@ const humanTraits = [
 	
     { name: 'Налётчик', desc: `<p>Сила или Ловкость +1 (с лимитом 20).</p>
 	<p>Когда вы совершаете действие Рывок, ваша Скорость на этот ход увеличивается на 2 клетки.</p>
-	<p>Если перед этим переместились на <b>2 клетки к цели</b> и атаковали эту цель, то выберите один из следующих эффектов: добавьте 1d6 к урону атаки или толкните цель от себя на расстояние до 2 клеток, если её размер не превышает ваш более чем на одну категорию.</p>`, 
+	<p>Если перед этим переместились на <b>2 клетки к цели</b> и атаковали эту цель, то выберите один из следующих эффектов: добавьте <dice>1d6</dice> к урону атаки или толкните цель от себя на расстояние до 2 клеток, если её размер не превышает ваш более чем на одну категорию.</p>`, 
 	statBonus: 'choice', choices: ['strength', 'dexterity'], grantsArmor: null, requirements: null },
 	
     { name: 'Оборонительный дуэлянт', desc: `<p>Требование: Ловкость 13+.</p>
@@ -1645,8 +1869,8 @@ const humanTraits = [
 	statBonus: null, grantsArmor: null, requirements: null },
 	
     { name: 'Лингвист', desc: `<p>Интеллект +1 (с лимитом 20).</p>
-	<p>Узнаёте три языка на выбор.</p>
-	<p>Можете писать шифрованные письма. Другие не могут расшифровать код, пока либо вы не научите их, либо они не преуспеют в проверке Интеллекта сложностью <b>Ваше значение интеллекта + ваш бонус мастерства</b></p>`, 
+	<p>Узнаёте три государственных или расовых языка на выбор.</p>
+	<p>Можете писать шифрованные письма. Другие не могут расшифровать код, пока либо вы не научите их, либо они не преуспеют в проверке Интеллекта сложностью <dice>Ваше значение интеллекта + ваш бонус мастерства</dice></p>`, 
 	statBonus: 'intelligence', grantsArmor: null, requirements: null },
 	
     { name: 'Крушитель', desc: `<p>Сила или Телосложение +1 (с лимитом 20).</p>
@@ -1696,7 +1920,7 @@ const humanTraits = [
 	
     { name: 'Медведь', desc: `<p>Требование: Телосложение 15+.</p>
 	<p>Ваш вес увеличивается на 40 кг</p>
-	<p>Ваша кость хитов увеличивается на одну ступень (1d6 > 1d8 > 1d10 > 1d12). Если ваша кость хитов уже была 1d12, то ваш максимум хитов увеличивается на ваш уровень.</p>
+	<p>Ваша кость хитов увеличивается на одну ступень (<dice>1d6</dice> > <dice>1d8</dice> > <dice>1d10</dice> > <dice>1d12</dice>). Если ваша кость хитов уже была <dice>1d12</dice>, то ваш максимум хитов увеличивается на ваш уровень.</p>
 	<p>У вас есть преимущество к спасброскам от перемещения против вашей воли, будь-то физической силой или магической.</p>`, 
 	statBonus: 'constitution', grantsArmor: null, requirements: { stat: 'constitution', minValue: 15 } },
 	
@@ -1716,7 +1940,7 @@ const humanTraits = [
 	statBonus: null, grantsArmor: null, requirements: null },
 	
     { name: 'Защитник', desc: `<p>Требование: Владение щитами.</p>
-	<p>Когда вы или существо в пределах 1 клетки получают урон, пока вы носите щит, реакцией можно уменьшить этот урон на 2d10 (перезарядка: короткий или долгий отдых).</p>`, 
+	<p>Когда вы или существо в пределах 1 клетки получают урон, пока вы носите щит, реакцией можно уменьшить этот урон на <dice>2d10</dice> (перезарядка: короткий или долгий отдых).</p>`, 
 	statBonus: null, grantsArmor: null, requirements: { armor: 'Щиты' } },
 	
     { name: 'Проворный', desc: `<p>Требование: Ловкость 13+.</p>
@@ -1724,17 +1948,17 @@ const humanTraits = [
 	statBonus: null, grantsArmor: null, requirements: { stat: 'dexterity', minValue: 13 } },
 	
     { name: 'Уклонист', desc: `<p>Ловкость +1 (с лимитом 20).</p>
-	<p>Если цель имеет помеху на бросок атаки по вам, то цель бросает 3 кубика d20 и выбирает наихудший результат.</p>`, 
+	<p>Если цель имеет помеху на бросок атаки по вам, то цель бросает 3 кубика <dice>d20</dice> и выбирает наихудший результат.</p>`, 
 	statBonus: 'dexterity', grantsArmor: null, requirements: null },
 	
     { name: 'Эксперт по топорам', desc: `<p>Требование: Сила или Ловкость 15+.</p>
 	<p>Вы получаете владение одноручными топорами, боевыми топорами и двуручными топорами.</p>
 	<p>Можно использовать модификатор Ловкости вместо модификатора Силы при атаке топором, если оно не имеет свойство «тяжелое».</p>
-	<p>При крите, используя одноручный топор, боевой топор или двуручный топор, дополнительно наносится 1d6 рубящего урона.</p>`, 
+	<p>При крите, используя одноручный топор, боевой топор или двуручный топор, дополнительно наносится <dice>1d6</dice> рубящего урона.</p>`, 
 	statBonus: 'strength', grantsArmor: null, grantsProficiency: ['Одноручные топоры', 'Боевые топоры', 'Двуручные топоры'], requirements: { stat: 'strength_or_dexterity', minValue: 15 } },
 	
     { name: 'Уничтожитель щитов', desc: `<p>Требование: Сила или Ловкость 15+.</p>
-	<p>Можете уничтожить немагический щит атакой топором, что бы он не давал бонус к КД. Цели нужно пройти спасбросок Ловкости, что-бы его щит не был уничтожен, со сложностью <b>8 + ваш бонус мастерства + ваш модификатор Ловкости или Силы на его выбор</b>.</p>`, 
+	<p>Можете уничтожить немагический щит атакой топором, что бы он не давал бонус к КД. Цели нужно пройти спасбросок Ловкости, что-бы его щит не был уничтожен, со сложностью <dice>8 + ваш бонус мастерства + ваш модификатор Ловкости или Силы на его выбор</dice>.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: { stat: 'strength_or_dexterity', minValue: 15 } },
 	
     { name: 'Метатель топоров', desc: `<p>Требование: Сила 13+.</p>
@@ -1743,17 +1967,17 @@ const humanTraits = [
 	statBonus: null, grantsArmor: null, requirements: { stat: 'strength', minValue: 13 } },
 	
     { name: 'Обезоруживатель', desc: `<p>Требование: Ловкость 13+.</p>
-	<p>Когда вы делаете безоружную атаку, при успешном броске атаки вы бонусным действием можете попытаться обезоружить противника, украв его оружие. Цель должна сделать спасбросок Ловкости или Силы на их выбор, со сложностью <b>13 + ваш модификатор Ловкости + ваш бонус мастерства</b>.</p>`, 
+	<p>Когда вы делаете безоружную атаку, при успешном броске атаки вы бонусным действием можете попытаться обезоружить противника, украв его оружие. Цель должна сделать спасбросок Ловкости или Силы на их выбор, со сложностью <dice>13 + ваш модификатор Ловкости + ваш бонус мастерства</dice>.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: { stat: 'dexterity', minValue: 13 } },
 	
     { name: 'Крепкое тело', desc: `<p>Телосложение +1 (с лимитом 20).</p>
 	<p>Вы владеете спасбросками Телосложения и спасбросками от смерти.</p>
-	<p>При получении урона вы можете уменьшить урон на <b>1d12 + ваш бонус мастерства</b>. Вы можете использовать эту способность количество раз, равное вашему бонусу мастерства (перезарядка: долгий отдых).</p>`, 
+	<p>При получении урона вы можете уменьшить урон на <dice>1d12 + ваш бонус мастерства</dice>. Вы можете использовать эту способность количество раз, равное вашему бонусу мастерства (перезарядка: долгий отдых).</p>`, 
 	statBonus: 'constitution', grantsArmor: null, requirements: null },
 	
     { name: 'Костолом', desc: `<p>Требование: Сила или Ловкость 15+.</p>
-	<p>Безоружные удары наносят критический удар при 19 и 20 на кубике d20.</b>.</p>
-	<p>При крите невооружённым ударом, цель должна пройти спасбросок Телосложения сложностью <b>8 + ваш модификатор Силы или Ловкости + ваш бонус мастерства</b>. При неудаче цель получает помеху на атаки до конца их следующего хода или цель получает состояние лежит ничком на ваш выбор.</p>`, 
+	<p>Безоружные удары наносят критический удар при 19 и 20 на кубике <dice>d20</dice>.</p>
+	<p>При крите невооружённым ударом, цель должна пройти спасбросок Телосложения сложностью <dice>8 + ваш модификатор Силы или Ловкости + ваш бонус мастерства</dice>. При неудаче цель получает помеху на атаки до конца их следующего хода или цель получает состояние лежит ничком на ваш выбор.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: { stat: 'strength_or_dexterity', minValue: 15 } },
 	
     { name: 'Мастер луков', desc: `<p>Требование: Ловкость 15+.</p>
@@ -1762,12 +1986,12 @@ const humanTraits = [
 	<p>Нахождение вражеского существа в пределах 1 клетки от вас не даёт помеху дальнобойной атаке.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: { stat: 'dexterity', minValue: 15 } },
 	
-    { name: 'Мясник', desc: `<p>Критический удар при 19 и 20 на кубике d20.</p>
-	<p>При крите рубящим уроном, цель должна сделать спасбросок Телосложения сложностью <b>8 + ваш бонус мастерства + ваш модификатор Силы или Ловкости на выбор</b>. При неудаче цель получает кровотечение и начнёт получать урон 1d4 каждый свой ход. Цель может потратить основное действие, совершив проверку Мудрости (Медицина) со сложностью <b>8 + ваш бонус мастерства + ваш модификатор Силы или Ловкости на выбор</b>, что-бы избавиться от кровотечения.</p>`, 
+    { name: 'Мясник', desc: `<p>Критический удар при 19 и 20 на кубике <dice>d20</dice>.</p>
+	<p>При крите рубящим уроном, цель должна сделать спасбросок Телосложения сложностью <dice>8 + ваш бонус мастерства + ваш модификатор Силы или Ловкости на выбор</dice>. При неудаче цель получает кровотечение и начнёт получать урон <dice>1d4</dice> каждый свой ход. Цель может потратить основное действие, совершив проверку Мудрости (Медицина) со сложностью <dice>8 + ваш бонус мастерства + ваш модификатор Силы или Ловкости на выбор</dice>, что-бы избавиться от кровотечения.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: null },
 	
     { name: 'Задира', desc: `<p>Требование: Харизма 13+.</p>
-	<p>Вы можете подстрекать своих противников сражаться с вами, покрыв их отборным матом. Цель должна пройти спасбросок Мудрости со сложностью <b>8 + ваш модификатор Харизмы</b>. При провале спасброска, цель будет стараться сражаться с вами и при атаке по другим целям получит помеху к броску атаки до начала вашего следующего хода.</p>`, 
+	<p>Вы можете подстрекать своих противников сражаться с вами, покрыв их отборным матом. Цель должна пройти спасбросок Мудрости со сложностью <dice>8 + ваш модификатор Харизмы</dice>. При провале спасброска, цель будет стараться сражаться с вами и при атаке по другим целям получит помеху к броску атаки до начала вашего следующего хода.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: { stat: 'charisma', minValue: 13 } },
 	
     { name: 'Командир', desc: `<p>Требование: Харизма 13+.</p>
@@ -1776,10 +2000,10 @@ const humanTraits = [
 	
     { name: 'Швырятель', desc: `<p>Требование: Сила 15+.</p>
 	<p>Вы можете совершить захват существа бонусным действием.</p>
-	<p>Вы можете основным действием швырнуть существо вашего размера на дистанцию равное <b>3 + ваш модификатор Силы</b> клеток.</p>
+	<p>Вы можете основным действием швырнуть существо вашего размера на дистанцию равное <dice>3 + ваш модификатор Силы</dice> клеток.</p>
 	<p>После швыряния, существо будет лежать ничком.</p>
-	<p>Если существо швырнули в объект, будь-то мебель или стена, оно должно совершить спасбросок Телосложения сложностью <b>8 + ваш бонус мастерства + ваш модификатор Силы</b>. При провале цель получит <b>1d6 + ваш модификатор Силы</b> дробящего урона, плюс 1d6 дробящего урона за каждые 2 клетки, которые он пролетел. При успешном спасброске урон делится пополам в меньшую сторону.</p>
-	<p>Если существо швырнули в другое существо, оно должно пройти спасбросок Ловкости сложностью <b>8 + ваш бонус мастерства + ваш модификатор Силы</b>, иначе оно упадёт и получит дробящий урон равный <b>1d6 + ваш модификатор Силы</b></p>
+	<p>Если существо швырнули в объект, будь-то мебель или стена, оно должно совершить спасбросок Телосложения сложностью <dice>8 + ваш бонус мастерства + ваш модификатор Силы</dice>. При провале цель получит <dice>1d6 + ваш модификатор Силы</dice> дробящего урона, плюс <dice>1d6</dice> дробящего урона за каждые 2 клетки, которые он пролетел. При успешном спасброске урон делится пополам в меньшую сторону.</p>
+	<p>Если существо швырнули в другое существо, оно должно пройти спасбросок Ловкости сложностью <dice>8 + ваш бонус мастерства + ваш модификатор Силы</dice>, иначе оно упадёт и получит дробящий урон равный <dice>1d6 + ваш модификатор Силы</dice></p>
 	<p>Можно швыряться существами вашего размера так, что-бы они не получили урона. Полезно, когда нужно забросить куда-то своего товарища.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: { stat: 'strength', minValue: 15 } },
 	
@@ -1793,30 +2017,31 @@ const humanTraits = [
 const RACE_BONUSES = {
     human:     { stat:{all:1}, skills:2, equipment:2, languages:2, tools:0, fixedSkills:[], fixedEquipment:[], fixedTools:[], fixedLanguages:[], skillChoices:[] },
     elf:       { stat:{dexterity:2, wisdom:1}, skills:0, equipment:0, languages:0, tools:0, fixedSkills:[], fixedEquipment:['Короткие мечи','Длинные мечи','Короткие луки','Длинные луки'], fixedTools:[], fixedLanguages:['Эльфийский'], skillChoices:['Внимание','Выживание','Проницательность'] },
-    half_elf:  { stat:{charisma:2}, skills:1, equipment:1, languages:1, tools:0, fixedSkills:[], fixedEquipment:[], fixedTools:[], fixedLanguages:['Эльфийский'], halfElfBonus:true },
+    half_elf:  { stat:{charisma:1}, skills:1, equipment:1, languages:1, tools:0, fixedSkills:[], fixedEquipment:[], fixedTools:[], fixedLanguages:['Эльфийский'], halfElfBonus:true },
     dwarf:     { stat:{constitution:2, strength:1}, skills:0, equipment:0, languages:0, tools:0, fixedEquipment:['Лёгкая броня','Средняя броня','Боевые топоры','Одноручные топоры','Двуручные топоры','Лёгкие молоты','Двуручные молоты','Боевые молоты'], fixedTools:[], fixedLanguages:['Дварфский'], toolChoices:['Инструменты кузнеца','Инструменты каменщика'] },
     gnome:     { stat:{intelligence:2, dexterity:1}, skills:0, equipment:0, languages:0, tools:0, fixedEquipment:[], fixedTools:['Инструменты ремонтника'], fixedLanguages:[] },
     half_orc:  { stat:{strength:2, constitution:1}, skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Запугивание'], fixedEquipment:[], fixedTools:[], fixedLanguages:['Орочий'] },
     halfling:  { stat:{dexterity:2, charisma:1}, skills:0, equipment:0, languages:0, tools:0, fixedSkills:[], fixedEquipment:[], fixedTools:[], fixedLanguages:[] },
     tiefling:  { stat:{charisma:2, intelligence:1}, skills:0, equipment:0, languages:0, tools:0, fixedSkills:[], fixedEquipment:[], fixedTools:[], fixedLanguages:['Инфернальный'] },
+	dragonborn:{ stat:{strength:1, charisma:2}, skills:0, equipment:0, languages:0, tools:0, fixedSkills:[], fixedEquipment:[], fixedTools:[], fixedLanguages:['Драконий'] },
     ukkari:    { stat:{dexterity:2, wisdom:1}, skills:0, equipment:0, languages:0, tools:0, fixedSkills:[], fixedEquipment:[], fixedTools:[], fixedLanguages:['Уккарский'] }
 };
 
 const BG_BONUSES = {
-    acolyte:      { skills:0, equipment:0, languages:1, tools:0, fixedSkills:['Проницательность','Религия'], fixedTools:[], fixedEquipment:[] },
+    acolyte:      { skills:0, equipment:0, languages:1, languageType:'gov', tools:0, fixedSkills:['Проницательность','Религия'], fixedTools:[], fixedEquipment:[] },
     criminal:     { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Обман','Скрытность'], fixedTools:['Воровские инструменты','Игровой набор'], fixedEquipment:[] },
     charlatan:    { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Ловкость рук','Обман'], fixedTools:['Набор для фальсификации','Набор для грима','Игровой набор'], fixedEquipment:[] },
     artist:       { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Акробатика','Выступление'], fixedTools:['Музыкальные инструменты','Набор для грима'], fixedEquipment:[] },
     hero:         { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Атлетика','Выживание'], fixedTools:[], fixedEquipment:[] },
-    noble:        { skills:0, equipment:0, languages:1, tools:0, fixedSkills:['История','Убеждение'], fixedTools:['Игровой набор'], fixedEquipment:[] },
-    sage:         { skills:0, equipment:0, languages:2, tools:0, fixedSkills:['История','Магия'], fixedTools:[], fixedEquipment:[] },
-    sailor:       { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Атлетика','Внимание'], fixedTools:['Инструменты навигатора'], fixedEquipment:[] },
-    pirate:       { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Внимание','Запугивание'], fixedTools:['Инструменты навигатора'], fixedEquipment:[] },
-    clerk:        { skills:0, equipment:0, languages:2, tools:0, fixedSkills:['Анализ','Проницательность'], fixedTools:[], fixedEquipment:[] },
+    noble:        { skills:0, equipment:0, languages:1, languageType:'gov', tools:0, fixedSkills:['История','Убеждение'], fixedTools:['Игровой набор'], fixedEquipment:[] },
+    sage:         { skills:0, equipment:0, languages:1, languageType:'any', tools:0, fixedSkills:['История','Магия'], fixedTools:[], fixedEquipment:[] },
+    sailor:       { skills:0, equipment:0, languages:1, languageType:'gov', tools:0, fixedSkills:['Атлетика','Внимание'], fixedTools:['Инструменты навигатора'], fixedEquipment:[] },
+    pirate:       { skills:0, equipment:0, languages:1, languageType:'gov', tools:0, fixedSkills:['Внимание','Запугивание'], fixedTools:['Инструменты навигатора'], fixedEquipment:[] },
+    clerk:        { skills:0, equipment:0, languages:2, languageType:'govOrRacial', tools:0, fixedSkills:['Анализ','Проницательность'], fixedTools:[], fixedEquipment:[] },
     soldier:      { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Атлетика','Запугивание'], fixedTools:['Игровой набор'], fixedEquipment:[] },
-    outlander:    { skills:0, equipment:0, languages:1, tools:0, fixedSkills:['Природа','Выживание'], fixedTools:['Музыкальные инструменты'], fixedEquipment:[] },
-    craftsman:    { skills:0, equipment:0, languages:1, tools:2, fixedSkills:['Анализ','Убеждение'], fixedTools:[], toolChoiceAllowed: ALL_TOOLS.filter(t=>!['Воровские инструменты','Игровой набор','Инструменты навигатора','Инструменты художника','Музыкальные инструменты','Набор для грима','Набор для фальсификации','Набор травника'].includes(t)) },
-    trader:       { skills:0, equipment:0, languages:2, tools:0, fixedSkills:['Проницательность','Убеждение'], fixedTools:['Инструменты навигатора'], fixedEquipment:[] },
+    outlander:    { skills:0, equipment:0, languages:1, languageType:'govOrRacial', tools:0, fixedSkills:['Природа','Выживание'], fixedTools:['Музыкальные инструменты'], fixedEquipment:[] },
+    craftsman:    { skills:0, equipment:0, languages:1, languageType:'gov', tools:2, fixedSkills:['Анализ','Убеждение'], fixedTools:[], toolChoiceAllowed: ALL_TOOLS.filter(t=>!['Воровские инструменты','Игровой набор','Инструменты навигатора','Музыкальные инструменты','Набор для грима','Набор для фальсификации','Набор травника'].includes(t)) },
+    trader:       { skills:0, equipment:0, languages:2, languageType:'govOrRacial', tools:0, fixedSkills:['Проницательность','Убеждение'], fixedTools:['Инструменты навигатора'], fixedEquipment:[] },
     hunter:       { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Выживание','Уход за животными'], fixedTools:[], fixedEquipment:[] },
     herbalist:    { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Природа','Медицина'], fixedTools:['Набор травника'], fixedEquipment:[] },
     mercenary:    { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Атлетика','Внимание'], fixedTools:[], fixedEquipment:[] },
@@ -1825,11 +2050,11 @@ const BG_BONUSES = {
     deserter:     { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Проницательность','Убеждение'], fixedTools:[], fixedEquipment:[] },
     urchin:       { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Скрытность','Ловкость рук'], fixedTools:[], fixedEquipment:[] },
     warder:       { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Атлетика','Проницательность'], fixedTools:['Игровой набор'], fixedEquipment:[] },
-    investigator: { skills:0, equipment:0, languages:1, tools:0, fixedSkills:['Анализ','Проницательность'], fixedTools:['Набор для грима','Воровские инструменты'], fixedEquipment:[] },
+    investigator: { skills:0, equipment:0, languages:1, languageType:'gov', tools:0, fixedSkills:['Анализ','Проницательность'], fixedTools:['Набор для грима','Воровские инструменты'], fixedEquipment:[] },
     farmer:       { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Уход за животными','Природа'], fixedTools:[], fixedEquipment:[] },
     chef:         { skills:0, equipment:0, languages:0, tools:0, fixedSkills:['Выживание','Природа'], fixedTools:['Инструменты повара'], fixedEquipment:[] },
-    courtesan:    { skills:0, equipment:0, languages:1, tools:0, fixedSkills:['Проницательность','Убеждение'], fixedTools:['Набор для грима'], fixedEquipment:[] },
-    amnesiac:     { skills:2, equipment:1, languages:2, tools:1, fixedSkills:[], fixedTools:[], fixedEquipment:[] },
+    courtesan:    { skills:0, equipment:0, languages:1, languageType:'gov', tools:0, fixedSkills:['Проницательность','Убеждение'], fixedTools:['Набор для грима'], fixedEquipment:[] },
+    amnesiac:     { skills:2, equipment:1, languages:2, languageType:'govOrRacial', tools:1, fixedSkills:[], fixedTools:[], fixedEquipment:[] },
     madman:       { skills:2, equipment:0, languages:0, tools:0, fixedSkills:[], fixedTools:[], fixedEquipment:[] }
 };
 
@@ -1840,7 +2065,7 @@ humanTraits.forEach(t => {
     if (t.name === 'Одарённый') bonus.skills = 3;
     if (t.name === 'Мастер оружия') bonus.equipment = 2;
     if (t.name === 'Лингвист') bonus.languages = 3;
-    if (t.name === 'Мастеровой') { bonus.tools = 3; bonus.toolChoiceAllowed = ALL_TOOLS.filter(tool=>!['Воровские инструменты','Игровой набор','Инструменты навигатора','Инструменты художника','Музыкальные инструменты','Набор для грима','Набор для фальсификации','Набор травника'].includes(tool)); }
+    if (t.name === 'Мастеровой') { bonus.tools = 3; bonus.toolChoiceAllowed = ALL_TOOLS.filter(tool=>!['Воровские инструменты','Игровой набор','Инструменты навигатора','Музыкальные инструменты','Набор для грима','Набор для фальсификации','Набор травника'].includes(tool)); }
     if (t.grantsSkill) bonus.fixedSkills.push(t.grantsSkill);
     if (t.grantsProficiency) bonus.fixedEquipment.push(...t.grantsProficiency);
     if (t.grantsArmor) bonus.fixedEquipment.push(t.grantsArmor);
@@ -1856,7 +2081,7 @@ const CLASS_INFO = {
         saves: 'Сила, Телосложение',
         desc: `<p>Мастер оружия и боевой тактики.</p>
 		<p>Выберите один Боевой стиль на выбор. При получении нового уровня Воина, можете заменить выбранный Боевой стиль.</p>
-		<p>Второе дыхание. Бонусным действием можно восстановить Хиты в количестве 1d10 + ваш уровень Воина. Это умение можно использовать дважды. После короткого отдыха вы востанавливаете одно использование, и все потраченные использованеия после долгого отдыха.</p>`,
+		<p>Второе дыхание. Бонусным действием можно восстановить Хиты в количестве <dice>1d10 + ваш уровень Воина</dice>. Это умение можно использовать дважды. После короткого отдыха вы восстанавливаете одно использование, и все потраченные использования после долгого отдыха.</p>`,
         link: 'https://www.google.com'
     },
     barbarian: {
@@ -1876,7 +2101,7 @@ const CLASS_INFO = {
 		<li>Вы заставили врага совершить спасбросок.</li>
 		<li>Вы Бонусным действием продлили свою Ярость.</li>
 		<p>Каждый раз, когда Ярость продлевается, она длится до конца вашего следующего хода</p>
-		<p>Пока вы не носите доспехов, ваш базовый КД равен 10 + ваш модификатор Ловкости и Телосложения. Это умение работает даже если вы используете Щит.</p>`,
+		<p>Пока вы не носите доспехов, ваш базовый КД равен <dice>10 + ваш модификатор Ловкости и Телосложения</dice>. Это умение работает даже если вы используете Щит.</p>`,
         link: 'https://www.google.com'
     },
     rogue: {
@@ -1884,7 +2109,7 @@ const CLASS_INFO = {
         primaryStat: 'Ловкость',
         saves: 'Ловкость, Интеллект',
         desc: `<p>Специалист по скрытности, ловкости рук и точным ударам.</p>
-		<p>Скрытая атака. Один раз за ход вы можете нанести 1d6 дополнительного урона одному существу, по которому вы попали броском атаки, совершённым с Преимуществом и с использованием Дальнобойного или Фехтовального оружия. Тип дополнительного урона — тот же, что и тип урона вашего оружия. Если в пределах 5 футов от цели находится ваш союзник, у которого нет состояния Недееспособный, вы можете применить это умение даже если совершали бросок атаки без Преимущества, но только если этот бросок совершался без Помехи.</p>`,
+		<p>Скрытая атака. Один раз за ход вы можете нанести <dice>1d6</dice> дополнительного урона одному существу, по которому вы попали броском атаки, совершённым с Преимуществом и с использованием Дальнобойного или Фехтовального оружия. Тип дополнительного урона — тот же, что и тип урона вашего оружия. Если в пределах 5 футов от цели находится ваш союзник, у которого нет состояния Недееспособный, вы можете применить это умение даже если совершали бросок атаки без Преимущества, но только если этот бросок совершался без Помехи.</p>`,
         link: 'https://www.google.com'
     },
     wizard: {
@@ -1958,9 +2183,9 @@ const CLASS_INFO = {
 		<li>Воинское рукопашное оружие, имеющее свойство Лёгкое</li>
 		<p>Пока вы не носите ни доспехов, ни Щита, и безоружны или вооружены только Монашеским оружием, вы получаете следующие преимущества:</p>
 		<li>Бонусный безоружный удар. Бонусным действием вы можете совершить один Безоружный удар.</li>
-		<li>Кость боевых искусств. Вы можете использовать d6 вместо обычного урона ваших Безоружных ударов и атак Монашеским оружием. Эта кость растёт с вашим уровнем Монаха</li>
+		<li>Кость боевых искусств. Вы можете использовать <dice>d6</dice> вместо обычного урона ваших Безоружных ударов и атак Монашеским оружием. Эта кость растёт с вашим уровнем Монаха</li>
 		<li>Ловкие атаки. Вы можете использовать Ловкость вместо Силы при совершении бросков атаки и урона Безоружных ударов и атак Монашеским оружием. Когда вы пытаетесь совершить захват или толчок, вы можете использовать Ловкость для расчёта Сложности</li>
-		<p>Пока вы не носите ни доспехов, ни Щита, ваш базовый Класс Защиты равен 10 + ваши модификаторы Ловкости и Мудрости.</p>`,
+		<p>Пока вы не носите ни доспехов, ни Щита, ваш базовый Класс Защиты равен <dice>10 + ваши модификаторы Ловкости и Мудрости</dice>.</p>`,
         link: 'https://www.google.com'
     },
     bard: {
@@ -1968,8 +2193,8 @@ const CLASS_INFO = {
         primaryStat: 'Харизма',
         saves: 'Ловкость, Харизма',
         desc: `<p>Заклинатель-универсал, черпающий магию из вдохновения, музыки и слова. Умеет почти всё понемногу.</p>
-		<p>Бонусным действием вы можете вдохновлять других словами, музыкой или танцем. Это вдохновение представляется вашей Костью бардовского вдохновения — на первом уровне это кость d6. Это существо получает одну из ваших Костей бардовского вдохновения. У существа не может быть больше одной Кости бардовского вдохновения единовременно.</p>
-		<p>Если в течение следующего часа это существо провалит Тест d20, оно единожды может бросить Кость бардовского вдохновения и добавить выпавший результат к d20, что может изменить провал на успех. Кость бардовского вдохновения тратится при броске.</p>
+		<p>Бонусным действием вы можете вдохновлять других словами, музыкой или танцем. Это вдохновение представляется вашей Костью бардовского вдохновения — на первом уровне это кость <dice>d6</dice>. Это существо получает одну из ваших Костей бардовского вдохновения. У существа не может быть больше одной Кости бардовского вдохновения единовременно.</p>
+		<p>Если в течение следующего часа это существо провалит Тест <dice>d20</dice>, оно единожды может бросить Кость бардовского вдохновения и добавить выпавший результат к <dice>d20</dice>, что может изменить провал на успех. Кость бардовского вдохновения тратится при броске.</p>
 		<p>Вы можете даровать Кость бардовского вдохновения количество раз, равное вашему модификатору Харизмы (минимум один раз). Перезарядка: долгий отдых.</p>
 		<p>Вы можете использовать музыкальный инструмент в качестве Заклинательной фокусировки для ваших заклинаний Барда.</p>
 		<p>Вы знаете два заговора и четыре заклинания 1-го круга на ваш выбор из списка заклинаний Барда.</p>`,
@@ -1996,7 +2221,7 @@ const CLASS_INFO = {
 		<p>Вы знаете четыре заклинания на ваш выбор из списка заклинаний Друида. Каждый раз, когда вы завершаете долгий отдых, вы можете изменить ваш список подготовленных заклинаний, заменив любое из них количество другими заклинаниями Друида, для которых у вас есть ячейки заклинаний.</p>
 		<p>Вы можете использовать в качестве Заклинательной фокусировки такие предметы как веточка омелы, деревянный посох (в том числе боевой посох) или тисовая палочка.</p>
 		<p>Вы знаете Друидический, тайный язык друидов. У вас всегда подготовлено заклинание Разговор с животными. </p>
-		<p>Вы можете использовать Друидический язык, чтобы оставлять тайные послания. Вы и все, кто знает этот язык, автоматически замечаете такие послания. Другие замечают его только преуспев в проверке Интеллекта (Анализ) Сложностью 15 и не могут расшифровать его без помощи магии.</p>
+		<p>Вы можете использовать Друидический язык, чтобы оставлять тайные послания. Вы и все, кто знает этот язык, автоматически замечаете такие послания. Другие замечают его только преуспев в проверке Интеллекта (Анализ) Сложностью <dice>15</dice> и не могут расшифровать его без помощи магии.</p>
 		<p>Ваша мистическая связь с природой даёт вам бонус к проверкам Интеллекта (Природа или Тайная магия). Бонус равен вашему модификатору Мудрости (минимум +1).</p>`,
         link: 'https://www.google.com'
     },
@@ -2077,7 +2302,9 @@ const state = {
     classSpells: [],
     classFightingStyle: null,
     classDivineRole: null,
+    classInvocations: [],
     choicePoints: { skills:0, equipment:0, tools:0, languages:0 },
+    languagePoints: { gov:0, govOrRacial:0, any:0 },
     selectedSkills: [],
     selectedEquipment: [],
     selectedTools: [],
@@ -2194,6 +2421,10 @@ function isTraitAvailable(trait) {
 // Пересчёт бонусов
 function recomputeBonuses() {
     state.choicePoints = { skills:0, equipment:0, tools:0, languages:0 };
+    // Очки языков разбиты по категориям, на которые их можно потратить:
+    // gov - только государственные; govOrRacial - государственные ИЛИ расовые; any - любые, включая экзотические.
+    // Базовое 1 очко выбора языка есть у любого персонажа и тратится только на гос./расовые языки.
+    state.languagePoints = { gov:0, govOrRacial:1, any:0 };
     state.fixedSkills = [];
     state.fixedEquipment = [];
     state.fixedTools = [];
@@ -2205,7 +2436,8 @@ function recomputeBonuses() {
     state.choicePoints.skills += raceCfg.skills || 0;
     state.choicePoints.equipment += raceCfg.equipment || 0;
     state.choicePoints.tools += raceCfg.tools || 0;
-    state.choicePoints.languages += raceCfg.languages || 0;
+    // Бонусные очки языков от расы (например, +2 у человека, +1 у полуэльфа) тратятся только на гос./расовые языки.
+    state.languagePoints.govOrRacial += raceCfg.languages || 0;
     state.fixedSkills.push(...(raceCfg.fixedSkills||[]));
     state.fixedEquipment.push(...(raceCfg.fixedEquipment||[]));
     state.fixedTools.push(...(raceCfg.fixedTools||[]));
@@ -2216,7 +2448,12 @@ function recomputeBonuses() {
     state.choicePoints.skills += bgCfg.skills || 0;
     state.choicePoints.equipment += bgCfg.equipment || 0;
     state.choicePoints.tools += bgCfg.tools || 0;
-    state.choicePoints.languages += bgCfg.languages || 0;
+    // Очки языков от предыстории тратятся по типу, указанному в её конфигурации
+    // (gov / govOrRacial / any - см. BG_BONUSES).
+    if (bgCfg.languages) {
+        const bgLangType = bgCfg.languageType || 'gov';
+        state.languagePoints[bgLangType] += bgCfg.languages;
+    }
     state.fixedSkills.push(...(bgCfg.fixedSkills||[]));
     state.fixedTools.push(...(bgCfg.fixedTools||[]));
     if (bgCfg.toolChoiceAllowed) state.toolChoiceAllowed = bgCfg.toolChoiceAllowed;
@@ -2227,11 +2464,15 @@ function recomputeBonuses() {
         state.choicePoints.skills += traitCfg.skills || 0;
         state.choicePoints.equipment += traitCfg.equipment || 0;
         state.choicePoints.tools += traitCfg.tools || 0;
-        state.choicePoints.languages += traitCfg.languages || 0;
+        // Черта "Лингвист" даёт +3 очка, тратятся только на гос./расовые языки.
+        state.languagePoints.govOrRacial += traitCfg.languages || 0;
         state.fixedSkills.push(...(traitCfg.fixedSkills||[]));
         state.fixedEquipment.push(...(traitCfg.fixedEquipment||[]));
         if (traitCfg.toolChoiceAllowed) state.toolChoiceAllowed = traitCfg.toolChoiceAllowed;
     }
+
+    // Итоговое суммарное число очков языков (для общего счётчика)
+    state.choicePoints.languages = state.languagePoints.gov + state.languagePoints.govOrRacial + state.languagePoints.any;
 
     // Класс
 	const clsCfg = classSkillsMap[state.class];
@@ -2274,18 +2515,27 @@ function recomputeBonuses() {
 }
 
 // Рендер
-function createCustomCheckbox(checked, disabled, onChange) {
+function createCustomCheckbox(checked, disabled, onChange, label) {
     const span = document.createElement('span');
     span.className = 'custom-checkbox';
     if (checked) span.classList.add('checked');
-    span.addEventListener('click', (e) => {
-        e.stopPropagation();
+    const toggle = (e) => {
+        if (e) e.stopPropagation();
         if (disabled) return;
         if (onChange(!checked)) {
             if (checked) span.classList.remove('checked');
             else span.classList.add('checked');
         }
-    });
+    };
+    span.addEventListener('click', toggle);
+    // Позволяем выбирать пункт кликом по всей строке (тексту), а не только по галочке.
+    if (label) {
+        label.style.cursor = disabled ? 'default' : 'pointer';
+        label.addEventListener('click', (e) => {
+            if (e.target === span) return; // клик по самой галочке уже обработан выше
+            toggle();
+        });
+    }
     return span;
 }
 
@@ -2347,7 +2597,7 @@ function renderTools() {
                 }
                 renderAllSections();
                 return true;
-            });
+            }, label);
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(' ' + tool));
             row.appendChild(label);
@@ -2358,25 +2608,51 @@ function renderTools() {
 }
 
 // Рендер языков с группировкой по алфавиту
+const LANGUAGE_GROUPS = {
+    'Государственные': [
+        'Бишальский','Керрасанский','Аргосский','Шамсарский',
+        'Асканийский','Арауканский','Таргайский','Хирдский',
+        'Уккарский','Бенареский'
+    ],
+    'Расовые': [
+        'Эльфийский','Дварфский','Орочий','Гоблинский'
+    ],
+    'Экзотические': [
+        'Драконий','Небесный','Инфернальный','Друидический'
+    ]
+};
+
+// Категория языка ('gov' / 'racial' / 'exotic') - определяет, из какого пула очков его можно выбрать.
+function languageCategory(lang) {
+    if (LANGUAGE_GROUPS['Государственные'].includes(lang)) return 'gov';
+    if (LANGUAGE_GROUPS['Расовые'].includes(lang)) return 'racial';
+    return 'exotic';
+}
+
+// Проверяет, хватает ли очков (с учётом их категорий) на выбор ещё одного языка данной категории,
+// при текущем наборе уже выбранных языков.
+function canAffordLanguage(category) {
+    let g = 0, r = 0, e = 0;
+    state.selectedLanguages.forEach(l => {
+        const c = languageCategory(l);
+        if (c === 'gov') g++; else if (c === 'racial') r++; else e++;
+    });
+    if (category === 'gov') g++;
+    else if (category === 'racial') r++;
+    else e++;
+
+    const lp = state.languagePoints || { gov:0, govOrRacial:0, any:0 };
+    if (e > lp.any) return false; // экзотические языки тратят только "любые" очки
+    if (r + e > lp.govOrRacial + lp.any) return false; // расовые - гос./расовые или любые очки
+    if (g + r + e > lp.gov + lp.govOrRacial + lp.any) return false; // государственные - любые подходящие очки
+    return true;
+}
+
 function renderLanguages() {
     const container = document.getElementById('languagesSection');
     container.innerHTML = '';
 
-    const languageGroups = {
-        'Государственные': [
-            'Бишальский','Керрасанский','Аргосский','Шамсарский',
-            'Асканийский','Арауканский','Таргайский','Хирдский',
-            'Уккарский','Бенареский'
-        ],
-        'Расовые': [
-            'Эльфийский','Дварфский','Орочий','Инфернальный'
-        ],
-        'Мёртвые / учёные': [
-            // ПЛЕЙСХОЛДЕР
-        ]
-    };
-
-    for (const [groupName, langs] of Object.entries(languageGroups)) {
+    for (const [groupName, langs] of Object.entries(LANGUAGE_GROUPS)) {
         if (langs.length === 0) continue;
         const col = document.createElement('div');
         col.className = 'skill-column';
@@ -2390,14 +2666,15 @@ function renderLanguages() {
             label.className = 'skill-item';
             const isFixed = state.fixedLanguages.includes(lang);
             const isSelected = state.selectedLanguages.includes(lang);
-            const canSelect = !isFixed && (state.selectedLanguages.length < state.choicePoints.languages);
+            const category = languageCategory(lang);
+            const canSelect = !isFixed && canAffordLanguage(category);
             const disabled = isFixed || (!canSelect && !isSelected);
             if (isFixed) label.classList.add('fixed');
             if (disabled && !isFixed) label.classList.add('disabled');
 
             const checkbox = createCustomCheckbox(isFixed || isSelected, disabled, (add) => {
                 if (add) {
-                    if (state.selectedLanguages.length >= state.choicePoints.languages) return false;
+                    if (!canAffordLanguage(category)) return false;
                     state.selectedLanguages.push(lang);
                 } else {
                     const idx = state.selectedLanguages.indexOf(lang);
@@ -2405,7 +2682,7 @@ function renderLanguages() {
                 }
                 renderAllSections();
                 return true;
-            });
+            }, label);
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(' ' + lang));
             row.appendChild(label);
@@ -2456,7 +2733,7 @@ function renderSkills() {
                 }
                 renderAllSections();
                 return true;
-            });
+            }, label);
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(' ' + skill));
             row.appendChild(label);
@@ -2525,7 +2802,7 @@ function renderEquipment() {
                 }
                 renderAllSections();
                 return true;
-            });
+            }, label);
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(' ' + item));
             row.appendChild(label);
@@ -2624,6 +2901,7 @@ function validateCurrentTrait() {
     const trait = humanTraits.find(t => t.name === state.trait);
     if (!trait || !isTraitAvailable(trait)) {
         document.getElementById('racialFeature').value = '';
+        document.getElementById('racialFeature')._syncCustomDropdown?.();
         document.getElementById('racialFeatureTooltip').innerHTML = 'Черта - дополнительная особенность';
         state.trait = null;
         state.traitChoice = null;
@@ -2777,6 +3055,33 @@ function loadSpellsData() {
             throw err;
         });
     return spellsLoadingPromise;
+}
+
+// Ссылка на файл воззваний Колдуна
+const INVOCATIONS_URL = "https://raw.githubusercontent.com/msorokin035-droid/AltirusImages/refs/heads/master/code/invocations.hjson";
+
+let invocationsCache = null;
+let invocationsLoadingPromise = null;
+
+function loadInvocationsData() {
+    if (invocationsCache) return Promise.resolve(invocationsCache);
+    if (invocationsLoadingPromise) return invocationsLoadingPromise;
+    invocationsLoadingPromise = fetch(INVOCATIONS_URL, { cache: 'no-store' })
+        .then(res => {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.text();
+        })
+        .then(text => {
+            const data = Hjson.parse(text);
+            if (!Array.isArray(data)) throw new Error('Неверный формат данных в файле воззваний');
+            invocationsCache = data;
+            return invocationsCache;
+        })
+        .catch(err => {
+            invocationsLoadingPromise = null;
+            throw err;
+        });
+    return invocationsLoadingPromise;
 }
 
 function magicInitiateResetSelections() {
@@ -3195,7 +3500,7 @@ function renderSpellPickerList(container, allSpells, level, max, selectedList, o
 // Ремесленные инструменты на выбор Артефактором и владения от предыстории "Ремесленник" -
 // один и тот же список (без Инструментов ремонтника - они у Артефактора уже есть по умолчанию)
 const ARTISAN_TOOLS = ALL_TOOLS.filter(t => !['Воровские инструменты', 'Игровой набор', 'Инструменты навигатора',
-    'Инструменты художника', 'Музыкальные инструменты', 'Набор для грима', 'Набор для фальсификации',
+    'Музыкальные инструменты', 'Набор для грима', 'Набор для фальсификации',
     'Набор травника', 'Инструменты ремонтника'].includes(t));
 
 const FIGHTING_STYLES = [
@@ -3221,7 +3526,7 @@ const CLASS_FEATURES = {
     wizard: { cantripCount: 3, spellCount: 6, spellLevel: 1, spellList: 'волшебник' },
     cleric: { cantripCount: 3, spellCount: 4, spellLevel: 1, spellList: 'жрец', divineRole: true },
     sorcerer: { cantripCount: 4, spellCount: 2, spellLevel: 1, spellList: 'чародей' },
-    warlock: { cantripCount: 2, spellCount: 2, spellLevel: 1, spellList: 'колдун' },
+    warlock: { cantripCount: 2, spellCount: 2, spellLevel: 1, spellList: 'колдун', invocationCount: 1, invocationLevel: 1 },
     bard: { cantripCount: 2, spellCount: 4, spellLevel: 1, spellList: 'бард' },
     druid: { cantripCount: 3, spellCount: 4, spellLevel: 1, spellList: 'друид' },
     paladin: { spellCount: 2, spellLevel: 1, spellList: 'паладин' },
@@ -3241,6 +3546,7 @@ function classFeaturesReset() {
     state.classSpells = [];
     state.classFightingStyle = null;
     state.classDivineRole = null;
+    state.classInvocations = [];
 }
 
 // Число заговоров с учётом дополнительных условий (например, роль Чудотворца у Жреца)
@@ -3256,7 +3562,8 @@ function updateClassFeaturesUI() {
     const spellsWrap = document.getElementById('classSpellsWrap');
     const styleWrap = document.getElementById('classFightingStyleWrap');
     const roleWrap = document.getElementById('classDivineRoleWrap');
-    if (!block || !spellsWrap || !styleWrap || !roleWrap) return;
+    const invocationWrap = document.getElementById('classInvocationWrap');
+    if (!block || !spellsWrap || !styleWrap || !roleWrap || !invocationWrap) return;
 
     const cfg = CLASS_FEATURES[state.class];
     if (!cfg) {
@@ -3264,6 +3571,7 @@ function updateClassFeaturesUI() {
         spellsWrap.style.display = 'none';
         styleWrap.style.display = 'none';
         roleWrap.style.display = 'none';
+        invocationWrap.style.display = 'none';
         return;
     }
 
@@ -3288,6 +3596,13 @@ function updateClassFeaturesUI() {
         renderFightingStyleList();
     } else {
         styleWrap.style.display = 'none';
+    }
+
+    if (cfg.invocationCount) {
+        invocationWrap.style.display = 'block';
+        renderClassInvocationList(cfg);
+    } else {
+        invocationWrap.style.display = 'none';
     }
 }
 
@@ -3458,6 +3773,110 @@ function renderFightingStyleList() {
 }
 
 
+// Список воззваний Колдуна - карточки в том же простом стиле, что священная роль/боевой стиль,
+// но с загрузкой данных из invocations.hjson, поиском по названию и лимитом выбора.
+function renderClassInvocationList(cfg) {
+    const statusEl = document.getElementById('classInvocationStatus');
+    const container = document.getElementById('classInvocationList');
+    const counter = document.getElementById('classInvocationCounter');
+    const labelEl = document.getElementById('classInvocationGroupLabel');
+    if (!statusEl || !container || !counter) return;
+
+    const max = cfg.invocationCount || 1;
+    const level = cfg.invocationLevel || 1;
+    if (labelEl) labelEl.textContent = `Воззвание (выберите ${max})`;
+    counter.textContent = `${state.classInvocations.length}/${max}`;
+    counter.classList.toggle('full', state.classInvocations.length >= max);
+
+    statusEl.style.display = 'block';
+    statusEl.classList.remove('error');
+    statusEl.textContent = 'Загрузка списка воззваний...';
+    container.innerHTML = '';
+
+    loadInvocationsData().then(invocations => {
+        statusEl.style.display = 'none';
+
+        const searchInput = document.getElementById('classInvocationSearch');
+        const term = (searchInput?.value || '').trim().toLowerCase();
+
+        let list = invocations.filter(inv => {
+            if (Number(inv.level) !== level) return false;
+            if (term && !String(inv.name || '').toLowerCase().includes(term)) return false;
+            return true;
+        });
+        list.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ru'));
+
+        if (list.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'spell-picker-empty';
+            empty.textContent = 'Ничего не найдено';
+            container.appendChild(empty);
+            return;
+        }
+
+        const atLimit = state.classInvocations.length >= max;
+
+        list.forEach(inv => {
+            const name = inv.name || '';
+            const isSelected = state.classInvocations.includes(name);
+            const disabled = !isSelected && atLimit;
+
+            const item = document.createElement('label');
+            item.className = 'spell-pick-item' + (disabled ? ' disabled' : '') + (isSelected ? ' selected' : '');
+            item.style.setProperty('--sc', '#c9a87b');
+
+            const info = document.createElement('span');
+            info.className = 'spell-pick-info';
+
+            const nameEl = document.createElement('div');
+            nameEl.className = 'spell-pick-name';
+            nameEl.textContent = name || 'Без названия';
+            info.appendChild(nameEl);
+
+            if (inv.require) {
+                const reqEl = document.createElement('div');
+                reqEl.className = 'spell-pick-school';
+                reqEl.textContent = `Требование: ${inv.require}`;
+                info.appendChild(reqEl);
+            }
+
+            if (inv.desc) {
+                const descEl = document.createElement('div');
+                descEl.className = 'spell-pick-desc';
+                descEl.style.marginTop = inv.require ? '5px' : '8px';
+                descEl.textContent = String(inv.desc).trim();
+                info.appendChild(descEl);
+            }
+
+            const checkbox = createCustomCheckbox(isSelected, disabled, (add) => {
+                const arr = state.classInvocations;
+                const idx = arr.indexOf(name);
+                if (add) {
+                    if (idx === -1 && arr.length < max) arr.push(name);
+                } else if (idx > -1) {
+                    arr.splice(idx, 1);
+                }
+                renderClassInvocationList(cfg);
+                return true;
+            });
+
+            item.appendChild(checkbox);
+            item.appendChild(info);
+            container.appendChild(item);
+        });
+    }).catch(err => {
+        statusEl.style.display = 'block';
+        statusEl.classList.add('error');
+        statusEl.textContent = 'Не удалось загрузить список воззваний: ' + err.message;
+    });
+}
+
+document.getElementById('classInvocationSearch')?.addEventListener('input', function() {
+    const cfg = CLASS_FEATURES[state.class];
+    if (!cfg || !cfg.invocationCount) return;
+    renderClassInvocationList(cfg);
+});
+
 document.getElementById('classSpellSearch')?.addEventListener('input', function() {
     const cfg = CLASS_FEATURES[state.class];
     if (!cfg || !cfg.spellList) return;
@@ -3488,6 +3907,7 @@ document.getElementById('race').addEventListener('change', function() {
     if (state.race !== 'human') {
         state.trait = null;
         document.getElementById('racialFeature').value = '';
+        document.getElementById('racialFeature')._syncCustomDropdown?.();
     }
     recomputeBonuses();
     renderAllSections();
@@ -3500,23 +3920,25 @@ document.getElementById('background').addEventListener('change', function() {
     renderAllSections();
 });
 
-document.getElementById('class').addEventListener('change', function() {
-    state.class = this.value;
-    const clsCfg = classSkillsMap[state.class];
-    const info = CLASS_INFO[state.class];
-    const tip = document.getElementById('classTooltip');
+function classDescHtml(val) {
+    const clsCfg = classSkillsMap[val];
+    const info = CLASS_INFO[val];
     if (clsCfg && info) {
-        tip.innerHTML = `<p>${info.desc}</p>
-                         <p><b>Кость хитов:</b> ${info.hitDie} &nbsp; <b>Осн. характеристика:</b> ${info.primaryStat}</p>
+        return `<p>${info.desc}</p>
+                         <p><b>Кость хитов:</b> <dice>${info.hitDie}</dice> &nbsp; <b>Осн. характеристика:</b> ${info.primaryStat}</p>
                          <p><b>Владение спасбросками:</b> ${info.saves}</p>
                          <div>Класс даёт ${clsCfg.choices} навыка на выбор</div>
                          <a href="${info.link}" target="_blank" style="display:inline-block;padding:5px 12px;background:#8b7355;color:#fff;text-decoration:none;margin-top:5px">Узнать больше</a>`;
     } else if (clsCfg) {
-        tip.innerHTML = `<div>Класс даёт ${clsCfg.choices} навыка на выбор</div>
+        return `<div>Класс даёт ${clsCfg.choices} навыка на выбор</div>
                          <a href="https://www.google.com" target="_blank" style="display:inline-block;padding:5px 12px;background:#8b7355;color:#fff;text-decoration:none;margin-top:5px">Узнать больше</a>`;
-    } else {
-        tip.innerHTML = '';
     }
+    return '';
+}
+
+document.getElementById('class').addEventListener('change', function() {
+    state.class = this.value;
+    document.getElementById('classTooltip').innerHTML = classDescHtml(state.class);
     const magicCfg = MAGIC_TRAITS[state.trait];
     if (magicCfg && magicCfg.classMode === 'auto') {
         state.magicInitiateCantrips = [];
@@ -3755,6 +4177,7 @@ document.getElementById('dndForm').addEventListener('submit', async function(e) 
     document.getElementById('classSpellsInput').value = (state.classSpells || []).join(', ');
     document.getElementById('classFightingStyleInput').value = state.classFightingStyle || '';
     document.getElementById('classDivineRoleInput').value = state.classDivineRole || '';
+    document.getElementById('classInvocationsInput').value = (state.classInvocations || []).join(', ');
     const eff = getEffectiveStats();
     let statsText = '';
     for (let s of Object.keys(STAT_NAMES)) {
@@ -3779,7 +4202,7 @@ document.getElementById('dndForm').addEventListener('submit', async function(e) 
                 race:'', background:'', class:'', trait:null, traitChoice:null,
                 halfElfStat1:null, halfElfStat2:null, raceSkillChoice:null, raceToolChoice:null,
                 magicInitiateClass:null, magicInitiateCantrips:[], magicInitiateSpell:[],
-                classCantrips:[], classSpells:[], classFightingStyle:null, classDivineRole:null,
+                classCantrips:[], classSpells:[], classFightingStyle:null, classDivineRole:null, classInvocations:[],
                 selectedSkills:[], selectedEquipment:[], selectedTools:[], selectedLanguages:[],
                 baseStats:{strength:8,dexterity:8,constitution:8,intelligence:8,wisdom:8,charisma:8},
                 extras:{strength:0,dexterity:0,constitution:0,intelligence:0,wisdom:0,charisma:0},
@@ -3806,6 +4229,120 @@ document.getElementById('dndForm').addEventListener('submit', async function(e) 
     const select = document.getElementById('racialFeature');
     select.innerHTML = '<option value="">Выберите черту</option>' + humanTraits.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
 })();
+
+// Кастомные выпадающие списки с показом описания при наведении на пункт,
+// ещё до того, как он выбран (предыстория, раса, черта).
+function makeTooltipDropdown(selectId, tooltipId, descFn) {
+    const select = document.getElementById(selectId);
+    const tooltipEl = document.getElementById(tooltipId);
+    if (!select || !tooltipEl) return;
+    const wrap = select.parentElement;
+    wrap.classList.add('custom-select-wrap');
+
+    const btn = document.createElement('div');
+    btn.className = 'custom-select-btn';
+    btn.tabIndex = 0;
+
+    const list = document.createElement('div');
+    list.className = 'custom-select-list';
+    list.style.display = 'none';
+
+    function syncBtnText() {
+        const opt = select.options[select.selectedIndex];
+        btn.textContent = opt ? opt.textContent : '';
+    }
+
+    // Подсказка всегда должна быть строго снизу: под кнопкой, а если список открыт - под списком.
+    // Небольшое отрицательное перекрытие (-2px), чтобы между списком/кнопкой и подсказкой
+    // не было "мёртвой зоны", из-за которой наведение на подсказку (для клика/выделения текста) слетало.
+    function positionTooltip() {
+        const listOpen = list.style.display !== 'none';
+        const base = listOpen ? (btn.offsetHeight + list.offsetHeight) : btn.offsetHeight;
+        tooltipEl.style.top = (base - 2) + 'px';
+        tooltipEl.style.left = '0';
+    }
+
+    function buildList() {
+        list.innerHTML = '';
+        Array.from(select.options).forEach(opt => {
+            const item = document.createElement('div');
+            item.className = 'custom-select-option';
+            item.textContent = opt.textContent;
+            if (opt.value === select.value) item.classList.add('active');
+            if (opt.disabled) item.classList.add('disabled');
+            item.addEventListener('mouseenter', () => {
+                tooltipEl.innerHTML = descFn(opt.value) || '';
+                positionTooltip();
+            });
+            item.addEventListener('click', () => {
+                if (opt.disabled) return; // недоступный вариант (не проходит проверку требований) выбрать нельзя
+                select.value = opt.value;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+                closeList();
+                syncBtnText();
+            });
+            list.appendChild(item);
+        });
+    }
+
+    function openList() {
+        buildList();
+        list.style.display = 'block';
+        btn.classList.add('open');
+        tooltipEl.innerHTML = descFn(select.value) || '';
+        positionTooltip();
+    }
+    function closeList() {
+        list.style.display = 'none';
+        btn.classList.remove('open');
+        positionTooltip();
+    }
+
+    btn.addEventListener('click', () => {
+        if (list.style.display === 'none') openList(); else closeList();
+    });
+    btn.addEventListener('mouseenter', positionTooltip);
+    document.addEventListener('click', (e) => {
+        if (!wrap.contains(e.target)) closeList();
+    });
+
+    // Подстраховка: держим подсказку видимой, пока курсор находится над кнопкой,
+    // списком или самой подсказкой, чтобы можно было навести на неё и выделить
+    // текст / кликнуть по ссылке "Узнать больше", даже если она визуально
+    // выходит за пределы блока кнопки/списка.
+    let hideTimer = null;
+    function showTooltipSticky() {
+        clearTimeout(hideTimer);
+        tooltipEl.classList.add('force-open');
+    }
+    function scheduleHideTooltip() {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => tooltipEl.classList.remove('force-open'), 200);
+    }
+    wrap.addEventListener('mouseenter', showTooltipSticky);
+    wrap.addEventListener('mouseleave', scheduleHideTooltip);
+    tooltipEl.addEventListener('mouseenter', showTooltipSticky);
+    tooltipEl.addEventListener('mouseleave', scheduleHideTooltip);
+
+    select.style.display = 'none';
+    wrap.insertBefore(btn, select);
+    wrap.appendChild(list);
+    syncBtnText();
+    positionTooltip();
+    select.addEventListener('change', syncBtnText);
+    // Позволяет остальному коду синхронизировать кастомную кнопку/список после
+    // прямого изменения select.value (без события change), например при сбросе
+    // недоступной черты в validateCurrentTrait().
+    select._syncCustomDropdown = () => { syncBtnText(); if (list.style.display !== 'none') buildList(); };
+}
+
+makeTooltipDropdown('background', 'backgroundTooltip', (val) => backgroundTooltips[val] || '');
+makeTooltipDropdown('race', 'raceTooltip', (val) => raceTooltips[val] || '');
+makeTooltipDropdown('racialFeature', 'racialFeatureTooltip', (val) => {
+    const trait = humanTraits.find(t => t.name === val);
+    return trait ? trait.desc : 'Черта - дополнительная особенность';
+});
+makeTooltipDropdown('class', 'classTooltip', (val) => classDescHtml(val));
 
 recomputeBonuses();
 updateRaceSkillChoiceUI();
