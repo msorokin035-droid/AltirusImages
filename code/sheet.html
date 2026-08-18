@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DnD Анкета персонажа</title>
 	<style>
+	
+	shove, prone {
+    display: inline-block;
+    width: 1.1em;
+    height: 1.1em;
+    vertical-align: -0.2em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+shove {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/shove.png"); /* или .png */
+}
+prone {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/prone.png");
+}
 			dice {
 			display: inline-block;
 			background: #8b7355;
@@ -1786,7 +1802,7 @@ const humanTraits = [
 	statBonus: 'strength', grantsArmor: null, requirements: { armor: 'Тяжелая броня' } },
 	
     { name: 'Мастер щитов', desc: `<p>Сила +1 (с лимитом 20).</p>
-	<p>Можно бонусным действием толкнуть щитом. Цель должна совершить спасбросок Силы со сложностью <dice>8 + ваши модификатор Силы + бонус мастерства</dice>. При провале вы толкаете цель или накладываете на неё состояние лежит ничком (на ваш выбор).</p>
+	<p>Можно бонусным действием толкнуть щитом. Цель должна совершить спасбросок Силы со сложностью <dice>8 + ваши модификатор Силы + бонус мастерства</dice>. При неудаче вы <shove></shove> толкаете врага или <prone></prone> сбиваете его с ног.</p>
 	<p>Можно добавить бонус к КД от щита к спасброскам Ловкости от заклинаний, нацеленных только на вас.</p>
 	<p>Реакцией можно выставить щит для получения половины урона при не успешном спасброске Ловкости и не получить урон при успешном спасброске Ловкости.</p>`, 
 	statBonus: null, grantsArmor: null, requirements: null },
