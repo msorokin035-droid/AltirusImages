@@ -21,7 +21,7 @@
 		/* Значки-иконки посреди текста, как эмодзи: <shove> - толкание/опрокидывание,
 		   <prone> - падение/состояние "лежит ничком". Без фоновой плашки, в отличие
 		   от <dice> - просто маленькая картинка, вписанная в строку текста. */
-	shove, prone {
+	shove, prone, piercing, slashing, bludgeoning {
     display: inline-block;
     width: 1.6em;
     height: 1.6em;
@@ -36,7 +36,101 @@ shove {
 prone {
     background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/prone.png");
 }
-	
+piercing {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/piercing.png");
+}
+slashing {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/slashing.png");
+}
+bludgeoning {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/bludgeoning.png");
+}
+
+/* Общий псевдоэлемент для всех */
+acid::before, thunder::before, fire::before, cold::before, 
+poison::before, necrotic::before, psychic::before, 
+force::before, radiant::before, lightning::before {
+	content: '';
+	display: inline-block;
+	width: 1.6em;
+	height: 1.6em;
+	vertical-align: -0.6em;
+	background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center; 
+}
+
+/* Индивидуальные стили */
+acid {
+    color: #80b000;
+}
+acid::before {
+    background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/acid.png');
+}
+
+thunder {
+    color: #8844bb;
+}
+thunder::before {
+    background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/thunder.png');
+}
+
+fire {
+    color: #ee5500;
+}
+fire::before {
+    background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/fire.png');
+}
+
+cold {
+    color: #3399cc;
+}
+cold::before {
+    background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/cold.png');
+}
+
+poison {
+    color: #44bb00;
+}
+poison::before {
+    background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/poison.png');
+}
+
+necrotic {
+    color: #40b050;
+}
+necrotic::before {
+    background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/necrotic.png');
+}
+
+psychic {
+    color: #cc77aa;
+}
+psychic::before {
+    background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/psychic.png');
+}
+
+force {
+    color: #cc3333;
+}
+force::before {
+    background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/force.png');
+}
+
+radiant {
+    color: #ccaa00;
+}
+radiant::before {
+    background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/radiant.png');
+}
+
+lightning {
+    color: #3366cc;
+}
+lightning::before {
+    background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/lightning.png');
+}
+		
         :root {
             --acc-cantrip: #c9a87b;
             --acc-cantrip-bg: rgba(201, 168, 123, 0.16);
