@@ -21,7 +21,7 @@
 		/* Значки-иконки посреди текста, как эмодзи: <shove> - толкание/опрокидывание,
 		   <prone> - падение/состояние "лежит ничком". Без фоновой плашки, в отличие
 		   от <dice> - просто маленькая картинка, вписанная в строку текста. */
-	shove, prone, piercing, slashing, bludgeoning {
+	shove, prone, piercing, slashing, bludgeoning, charisma, constitution, dexterity, intelligence, strength, wisdom {
     display: inline-block;
     width: 1.6em;
     height: 1.6em;
@@ -49,7 +49,9 @@ bludgeoning {
 /* Общий псевдоэлемент для всех */
 acid::before, thunder::before, fire::before, cold::before, 
 poison::before, necrotic::before, psychic::before, 
-force::before, radiant::before, lightning::before {
+force::before, radiant::before, lightning::before,
+cha::before, con::before, dex::before,
+int::before, str::before, wis::before {
 	content: '';
 	display: inline-block;
 	width: 1.6em;
@@ -130,6 +132,44 @@ lightning {
 lightning::before {
     background-image: url('https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/lightning.png');
 }
+
+cha::before {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/charisma.png");
+}
+con::before {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/constitution.png");
+}
+dex::before {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/dexterity.png");
+}
+int::before {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/intelligence.png");
+}
+str::before {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/strength.png");
+}
+wis {
+    background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/wisdom.png");
+}
+str {
+    color: #FFAAAA;
+}
+dex {
+    color: #FFD799;
+}
+con {
+    color: #affdc8;
+}
+int {
+    color: #99CCFF;
+}
+wis {
+    color: #D9A3FF
+}
+cha {
+    color: #FF99CC;
+}
+
 		
         :root {
             --acc-cantrip: #c9a87b;
