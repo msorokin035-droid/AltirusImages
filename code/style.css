@@ -148,7 +148,7 @@ int::before {
 str::before {
     background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/strength.png");
 }
-wis {
+wis::before {
     background-image: url("https://media.githubusercontent.com/media/msorokin035-droid/AltirusImages/refs/heads/master/icons/wisdom.png");
 }
 str {
